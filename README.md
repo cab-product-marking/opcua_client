@@ -26,7 +26,7 @@ Install the open62541 library:
     $ cmake ..
     $ make
 
-Build the configure the client project:
+Build and configure the client project:
 
     $ cd home/user/opcua_client/
     $ mkdir build 
@@ -45,8 +45,8 @@ Visit home/user/opcua_client/res/usage.txt for usecases and examples or call ./c
 
 To use the same functionality in a client based on python:
 
-    $ sudo apt install python-opcua # Library
-    $ sudo apt install python-opcua-tools # Command-line tools
+    $ sudo apt install python-opcua 
+    $ sudo apt install python-opcua-tools
 
 Make sure OPC UA is actiavated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
