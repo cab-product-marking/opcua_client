@@ -1,7 +1,5 @@
 #include "cab_client.h"
 
-/* This is only for testing */
-
 CAB_Client::CAB_Client() 
                 : client_arguments_{"192.168.200.70", 
                                     "4840", 
