@@ -14,9 +14,9 @@ An environment supporting C++17 is necessary. Project dependencies:
 
 The open62541 library version 1.3.8 is required for the c++ client. 
 This is included in the project. Newer versions and documentation on:
-https://www.open62541.org/
-https://www.open62541.org/doc/0.3/toc.html
-https://github.com/open62541/open62541
+ * https://www.open62541.org/
+ * https://www.open62541.org/doc/0.3/toc.html
+ * https://github.com/open62541/open62541
 
 Install the open62541 library:
 
