@@ -1,0 +1,85 @@
+Usage
+^^^^^
+Check if OPC UA is enabled in the printer settings and check the rights.
+(Menu/Setup/Interfaces/Network services)
+If there are no arguments the default values are used. 
+For non anonymus access its necessary to set the mode flag to user.
+
+Options
+^^^^^^^ 
+   -p "<name>" 
+   --password="<name>"        = Enter OPC UA password. 
+   -u "<name>"
+   --username="<name>"        = Enter OPC UA username. 
+   -I "<name>"
+   --ip="<name>"              = Enter server IP adress. 
+   -P "<name>"
+   --port="<name>"            = Enter server port. 
+   -m "<name>" 
+   --mode="<name>"            = Enter "user" for secure connection, else is anonymus. 
+
+It's also possible to enter the complete url for connection. 
+   --url="<name>"             = Enter connection url. 
+   -url "<name>"              = Enter connection url.
+   example: ./opcuac --url=opc.tcp://192.167.200.70:4840
+     or     ./opcuac -url opc.tcp://opcuser:opcpass@192.167.200.70:4840
+
+Jobs
+^^^^
+A standard job is stored in the code. This adds a monitored item with the server time.
+You can add as many jobs as you want, provided that they are also available as a case
+in the code.
+   -j "<name>" 
+   --job="<name>"            = Enter client job.
+
+Currently availible jobs
+^^^^^^^^^^^^^^^^^^^^^^^^
+There are different job types to give specific instructions to the client.
+   mitem_add                 = Add monitored item.
+   mitem_delete              = Delete monitored item(not available in python example).
+   node_read                 = Read node.
+   node_write                = Write node.
+   browse                    = Browse nodes in printer or browse network.
+   print                     = Print label.
+   replace                   = Load template, replace and print.
+
+The separator used in the syntax is always a ':'. The node identifier and its namespace
+can always be attached directly to the job type. Please note that arguments with spaces 
+must always be enclosed in quotation marks ("<argument>")! A few examples;
+   mitem_add:ID_CLOCK_TIME:4 # Add ID_CLOCK_TIME as monitored item
+   node_read:2258:0 # Read the node 2258
+   node_read:ID_CLOCK_TIME:4
+   browse # Browse the complete printer
+   browse:ID_PRINTING:4 # Browse the node ID_PRINTING
+
+For writing nodes you need to know the data type and the new value.
+   node_write:ID_HEAT_LEVEL:4:int32_t:2
+   node_write:ID_CLOCK_TIME:4:datetime:10:10:2010:10:10:10:10
+
+For printing use the following syntax;
+   print:JScript:f # feed
+   print:JScript:label.txt # Print label.txt locate in res/ directory
+   print:JScript:label.txt:cablogo.png # Load cablogo.png, locate in res/ directory, 
+                                         on device and print the label
+
+For replace use the following syntax. Note, there must always be a label with replace contents
+in the printer buffer, i.e. a label was previously printed or sent to the printer.
+   print:JScript:replace.txt* # Send the label replace.txt to the printing device
+   replace:REPLACE:Hello world! # Replace REPLACE variable with "Hello world!"
+   replace:REPLACE:Hello world!:CONTENTS:Any number of contents fields.
+You can add any number of replace variables with new content one after the other.
+The prerequisite is that these are also present on the previously printed or loaded label.
+
+You can find more examples in the file res/jobs.txt. It's possible to use a filename 
+with datatype *.txt to load jobs direktly from it. The client automatically works with 
+files located in the res/ directory. This does not have to be stated explicitly.
+
+Call client anonymus and feed:
+   ./client.py -I 192.168.200.70 --port=4840 -j print:JScript:f
+   ./clinet.py -I 192.168.200.70 --port=4840 --job="print:JScript:f"
+Call client secure and feed:
+   ./client.py -I 192.168.200.70 --port=4840 -p opcpass -u opcuser --mode=user -j "print:JScript:f"
+
+
+
+2023 cab© 
