@@ -362,15 +362,17 @@ class Job:
             with open(f"{WORKFILES_PATH}{file}", "rb") as handle:
                 print(f"Found data {WORKFILES_PATH}{file} in filesystem.")
                 contents = handle.read()
-                print(f"Type of contents: {type(contents)}")
+                # print(f"Type of contents: {type(contents)}")
                 # Load file
                 methods = printer.get_objects_node().get_child(["2:DeviceSet","3:Printer","2:MethodSet"])
                 load_data = methods.get_child("3:FileUpload")
                 try:
                     methods.call_method(load_data,
-                                        ua.Variant(int(1), ua.VariantType.UInt32),
+                                        ua.Variant(int(1), ua.VariantType.Int32),
                                         ua.Variant(str(file), ua.VariantType.String),
                                         ua.Variant(contents, ua.VariantType.ByteString))
+                    # Wait because its not possible to check upload status
+                    time.sleep(0.5)
                 except Exception as inner_e:
                     print(f"Error, {inner_e}")
         except Exception as e:

@@ -31,7 +31,7 @@
 ### Print label
 # print:JScript:label.txt
 # print:JScript:f
-print:JScript:label.txt:cablogo.png
+# print:JScript:label.txt:cablogo.png
 # print:JScript:PrintNow
 # print:JScript:replace.txt
 # print:JScript:PrintNow
