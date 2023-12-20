@@ -11,6 +11,12 @@ from opcua import ua
 
 from queue import Queue
 
+if os.name == 'nt':
+    # Try to get ANSI color support for Windows
+    from ctypes import windll
+    kernel32 = windll.kernel32
+    kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+
 # --------------------------------------------------------------------------------------------------
 
 # ANSI escape codes for color 
