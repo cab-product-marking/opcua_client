@@ -43,6 +43,11 @@ To test or use the client make sure OPC UA is actiavated in printer settings.
 
 Visit home/user/opcua_client/res/usage.txt for usecases and examples or call ./client --help.
 
+The python client works with the python-opcua library witch is build 
+on FreeOpcUa. For more information visit:
+ * https://github.com/FreeOpcUa/python-opcua
+ * https://python-opcua.readthedocs.io/en/latest/
+
 To use the same functionality in a client based on python:
 
     $ sudo apt install python-opcua 
