@@ -805,7 +805,7 @@ OPCUA_Client::opcuac_call_method_FileUpload(std::shared_ptr<JOB> &job)
     /* Object MethodSet */
     object_id = UA_NODEID_NUMERIC(3, 10012);
 
-    /* Storage device */
+    /* 1. Storage device */
     // UA_UInt32 storage_device = 0; /* Default storage */
     UA_Int32 storage_device = 1; /* IFFS */
 
@@ -821,12 +821,12 @@ OPCUA_Client::opcuac_call_method_FileUpload(std::shared_ptr<JOB> &job)
     {
         identifier = fname;
     }
-    /* Filename */
+    /* 2. Filename */
     UA_String filename;
     UA_String_init(&filename);
     filename = UA_String_fromChars(identifier.c_str());
     
-    /* File contents */
+    /* 3. File contents */
     UA_ByteString byte_string;
     UA_ByteString_init(&byte_string);
     std::ifstream file(job->intern_data->file_name, std::ios::binary | std::ios::ate);
@@ -861,7 +861,7 @@ OPCUA_Client::opcuac_call_method_FileUpload(std::shared_ptr<JOB> &job)
         return;
     }
     
-    /* 1. Array with language type at first position and data at second*/
+    /* Array with language type at first position and data at second*/
     size_t array_size = {3};
     UA_Variant *array = (UA_Variant*)UA_Array_new(array_size, &UA_TYPES[UA_TYPES_VARIANT]);
     if(!array)
