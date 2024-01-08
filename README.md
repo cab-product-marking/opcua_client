@@ -83,7 +83,7 @@ on FreeOpcUa. For more information visit:
  * https://python-opcua.readthedocs.io/en/latest/
 
 To use the same functionality in a client based on python the python-opcua library is required.
-For installing the library you need the virtual pip environment:
+For installing the library you need the virtual environment pip:
 
     $ pip install opcua
 
