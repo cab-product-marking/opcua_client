@@ -9,13 +9,14 @@ can be set up.
 ### Dependencies and installation on Linux systems
 
 An environment supporting C++17 is necessary. Project dependencies:
- * cmake >= 3.16.3
+ * CMake >= 3.16.3
  * GNU Make >= 4.2.1
  * open62541 >= v1.3.8
  * Python3 >= 3.8.10 
 
-The open62541 library version 1.3.8 is required for the c++ client. 
-This is included in the project. Newer versions and documentation on:
+The open62541 library version 1.3.8 is required for the c++ and python client. 
+Download the open62541 sources (using git or as a zipfile from github) or use the included in the project. 
+Newer versions and documentation on:
  * https://www.open62541.org/
  * https://www.open62541.org/doc/0.3/toc.html
  * https://github.com/open62541/open62541
@@ -55,6 +56,7 @@ For istalling the library use following syntax:
 
     $ sudo apt install python-opcua 
     $ sudo apt install python-opcua-tools
+    # pip install opcua
 
 Make sure OPC UA is actiavated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
@@ -69,12 +71,38 @@ The python script automatically generates a build directory with output files, d
 
 ### Dependencies and installation on Windows systems
 
-An environment supporting C++17 is necessary. Project dependencies:
- * xxx
- * xxx
- * xxx
- * pip >= 23.3.2
- * Python3 >= 3.10.11 
+Use Microsoft Visual Studio 17 2022 working with cpp-client.
+
+Project dependencies:
+ * CMake >= 3.28.1: http://www.cmake.org/cmake/resources/software.html
+ * Microsoft Visual Studio: https://www.visualstudio.com/products/visual-studio-community-vs
+ * Python >= 3.12.1: https://python.org/downloads
+
+The open62541 library version 1.3.8 is required for the c++ and python client. 
+Download the open62541 sources (using git or as a zipfile from github) or use the included in the project. 
+Newer versions and documentation on:
+ * https://www.open62541.org/
+ * https://www.open62541.org/doc/0.3/toc.html
+ * https://github.com/open62541/open62541
+
+Open a Windows Power Shell (cmd) and run;
+
+    $ cd C:\Users\admin\source\repos\opcua_client\open62541
+    $ mkdir build   
+    $ cd build
+    $ C:\Users\admin\tools\cmake.exe .. -G "Visual Studio 17 2022"
+    # You can use cmake-gui for a graphical user-interface to select features.
+    # Then open buildopen62541.sln in VS Studio and build as usual.
+
+
+
+
+
+
+
+
+
+
 
 
 The python client works with the python-opcua library witch is build 
@@ -83,18 +111,15 @@ on FreeOpcUa. For more information visit:
  * https://python-opcua.readthedocs.io/en/latest/
 
 To use the same functionality in a client based on python the python-opcua library is required.
-For installing the library you need the virtual environment pip:
+For istalling the library use following syntax:
 
     $ pip install opcua
 
 Make sure OPC UA is actiavated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
 
-    $ cd home/user/opcua_cab/
-    $ chmod +x client.py
-    $ python3 client.py 
-        or
-    $ ./client.py --help
+    $ cd C:\Users\admin\source\repos\opcua_client\
+    $ python .\client.py --help
 
 The python script automatically generates a build directory with output files, depending on jobs entered.
 
@@ -102,5 +127,6 @@ The python script automatically generates a build directory with output files, d
 ## History
  * 11.12.2023 - Complete testing and write README.md doc
  * 14.12.2023 - Completion sequence added when uploading files and update directory handling
+ * 16.12.2023 - Finish tests on windows systems with python and cpp code
 
 <!-- Eof -->
