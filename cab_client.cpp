@@ -1324,34 +1324,59 @@ CAB_Client::string_data_time(const std::string& string)
         return time;
     }
 }
-    
-data_time   
+
+data_time 
 CAB_Client::get_system_time(void) 
 {
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
+    auto now = std::chrono::system_clock::now();
+    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
 
-    struct tm *now = localtime(&tv.tv_sec);
+    time_t t = std::chrono::system_clock::to_time_t(now);
+    struct tm* now_tm = localtime(&t);
 
     data_time dt;
-    dt.tm_msec = tv.tv_usec / 1000; 
-    dt.tm_sec = now->tm_sec;
-    dt.tm_min = now->tm_min;
-    dt.tm_hour = now->tm_hour;
-    dt.tm_mday = now->tm_mday;
-    dt.tm_mon = now->tm_mon;
-    dt.tm_year = now->tm_year;
+    dt.tm_msec = milliseconds.count() % 1000;
+    dt.tm_sec = now_tm->tm_sec;
+    dt.tm_min = now_tm->tm_min;
+    dt.tm_hour = now_tm->tm_hour;
+    dt.tm_mday = now_tm->tm_mday;
+    dt.tm_mon = now_tm->tm_mon + 1;  
+    dt.tm_year = now_tm->tm_year + 1900;  
 
-    print_info("Time linux: "
-                << dt.tm_mday << '.'
-                << dt.tm_mon << '.'
-                << dt.tm_year << " | "
-                << dt.tm_hour << ':'
-                << dt.tm_min << ':'
-                << dt.tm_sec << ':'
-                << dt.tm_msec);
+    print_info("Time: " << dt.tm_mday << '.' << dt.tm_mon << '.' << dt.tm_year << " | "
+        << dt.tm_hour << ':' << dt.tm_min << ':' << dt.tm_sec << '.' << dt.tm_msec);
+
     return dt;
 }
+
+    
+//data_time   
+//CAB_Client::get_system_time(void) 
+//{
+//    struct timeval tv;
+//    gettimeofday(&tv, NULL);
+//
+//    struct tm *now = localtime(&tv.tv_sec);
+//
+//    data_time dt;
+//    dt.tm_msec = tv.tv_usec / 1000; 
+//    dt.tm_sec = now->tm_sec;
+//    dt.tm_min = now->tm_min;
+//    dt.tm_hour = now->tm_hour;
+//    dt.tm_mday = now->tm_mday;
+//    dt.tm_mon = now->tm_mon;
+//    dt.tm_year = now->tm_year;
+//
+//    print_info("Time linux: "
+//                << dt.tm_mday << '.'
+//                << dt.tm_mon << '.'
+//                << dt.tm_year << " | "
+//                << dt.tm_hour << ':'
+//                << dt.tm_min << ':'
+//                << dt.tm_sec << ':'
+//                << dt.tm_msec);
+//    return dt;
+//}
 
 bool 
 CAB_Client::string_bool(const std::string& string)

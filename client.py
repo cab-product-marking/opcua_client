@@ -473,7 +473,7 @@ class Parser:
             while i < len(self.arguments):
                 if self.arguments[i] == "-h" or self.arguments[i] == "--help":
                     self.print_usage()
-                    self.job_list.append("end")
+                    sys.exit(0)
                     return self.printer_url, self.job_list
                 elif self.arguments[i] == "-url":
                     i += 1
@@ -589,12 +589,7 @@ if __name__ == "__main__":\
 
     parser = Parser(sys.argv)
     printer_url, job_list = parser.parse()
-    try:
-        if job_list[0] == "end":
-            # Program end
-            sys.exit(0)
-    except:
-        pass
+       
     printer = Client(printer_url)
     try:
         # Connect and init
@@ -606,9 +601,9 @@ if __name__ == "__main__":\
                 if jobs.empty():
                     # Waiting animation
                     if int(time.time() * 1000) % 2 == 0:
-                        print("Polling...nothing to do ¯\_(ツ)_/¯. CTRL+C to end. \\", end="\r")
+                        print("Polling...nothing to do ¯\\_(ツ)_/¯. CTRL+C to end. \\", end="\r")
                     else:
-                        print("Polling...nothing to do ¯\_(ツ)_/¯. CTRL+C to end. /", end="\r")
+                        print("Polling...nothing to do ¯\\_(ツ)_/¯. CTRL+C to end. /", end="\r")
                 index = 0
                 while not jobs.empty():
                     try:
@@ -625,6 +620,7 @@ if __name__ == "__main__":\
             print("\nControlled client shutdown.")
     except:
         print("Fatal error!")
+
     finally:
         # Disconnect
         printer.disconnect()

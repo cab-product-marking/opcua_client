@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef __CAB_CLIENT_H__
 #define __CAB_CLIENT_H__
 
@@ -10,7 +8,8 @@
 #include <memory>
 #include <fstream>
 #include <iomanip>
-#include <sys/time.h>
+//#include <sys/time.h>
+#include <chrono>
 #include <map>
 #include <filesystem>
 

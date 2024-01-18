@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef __OPCUA_CLIENT_H__
 #define __OPCUA_CLIENT_H__
 
