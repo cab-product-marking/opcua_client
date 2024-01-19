@@ -96,10 +96,14 @@ Open a Windows Power Shell (cmd) with admin rights and run;
     $ mkdir build   
     $ cd build
     $ call "C:\Programm Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64 # Configure environment
-    $ "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release ..
-    $ msbuild /m /p:Configuration=Release /p:Platform=x64 open62541.sln
+    $ "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug ..
+    $ msbuild /m /p:Configuration=Debug /p:Platform=x64 open62541.sln
 
 Under <>\open62541\build\bin\Debug the *.dll, *.lib, *.exp and *.pdb files fall out.
+
+Open solution open62541.sln and add 
+
+
     
 
 
