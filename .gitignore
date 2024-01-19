@@ -399,5 +399,6 @@ FodyWeavers.xsd
 
 # internal
 open62541/
+lib/
 
 # Eof

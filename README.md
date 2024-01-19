@@ -83,7 +83,8 @@ Download the open62541 sources using git or as a zipfile from github.
     
     $ cd C:\Users\shadow\source\repos\opcua_client
     $ git clone https://github.com/open62541/open62541.git
-    $ git checkout v1.3.8
+    $ cd open62541
+    $ git checkout tags/v1.3.8
 
 Newer versions and documentation on:
  * https://www.open62541.org/
@@ -94,14 +95,27 @@ Open a Windows Power Shell (cmd) with admin rights and run;
 
     $ cd C:\Users\shadow\source\repos\opcua_client\open62541
     $ mkdir build   
+    $ mkdir lib
     $ cd build
     $ call "C:\Programm Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64 # Configure environment
-    $ "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug ..
-    $ msbuild /m /p:Configuration=Debug /p:Platform=x64 open62541.sln
+    $ call "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake-gui.exe" 
+    
+Configure built with the cmake gui. 
+Where is the source code: C:\Users\shadow\source\repos\opcua_client\open62541
+Where to build the binaries: C:\Users\shadow\source\repos\opcua_client\open62541\build
+Press >Configure< and select your Visual Studio version. Continue with >Finish<.
+Change only the following parameters;
+BUILD_SHARED_LIBS=ON
+CMAKE_BUILD_TYPE=Release
+CMAKE_INSTALL_PREFIX=C:\User\shadow\source\repos\opcua_client\lib
+Press >Configure< and continue with pressing >Generate<.
+Switch to your cmd window and enter the following commands;
 
-Under <>\open62541\build\bin\Debug the *.dll, *.lib, *.exp and *.pdb files fall out.
+    $ msbuild /m /p:Configuration=Release /p:Platform=x64 open62541.sln
+    $ call "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake.exe" --install .
 
-Open solution open62541.sln and add 
+Under C:\User\shadow\source\repos\opcua_client\lib the files fall out.
+
 
 
     
