@@ -20,7 +20,7 @@
 #include <open62541/server_config_default.h>
 #include <open62541/client.h>
 
-#define CLIENT_TIMEOUT                  1000
+#define CLIENT_TIMEOUT                  1000    
 #define CLIENT_CONNECTIONS_ATTEMPTS     4
 #define CLIENT_CONNECTION_WAITING_TIME  100
 #define CLIENT_CONNECTION_RETRY_TIME    10000

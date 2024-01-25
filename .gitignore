@@ -397,8 +397,11 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# internal
+# Internal folders
 open62541/
-lib/
+open62541_lib/
+
+
+
 
 # Eof

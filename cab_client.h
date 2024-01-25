@@ -17,6 +17,11 @@
 #include "data_types.h"
 #include "opcua_client.h"
 
+#define DEFAULT_IP          "192.168.200.70"
+#define DEFAULT_PORT        "4840"
+#define DEFAULT_USER        "opcuser"
+#define DEFAULT_PASS        "opcpass"
+
 #define RESPONSE_COLUMN     56
 #define RES_FILEPATH        "../res/"
 #define MAX_JOB_LENGTH      100

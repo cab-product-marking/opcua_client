@@ -1,10 +1,10 @@
 #include "cab_client.h"
 
 CAB_Client::CAB_Client() 
-                : client_arguments_{"192.168.200.70", 
-                                    "4840", 
-                                    "opcuser", 
-                                    "opcpass", 
+                : client_arguments_{DEFAULT_IP, 
+                                    DEFAULT_PORT, 
+                                    DEFAULT_USER, 
+                                    DEFAULT_PASS, 
                                     false}
 {
 #ifdef FEATURE_CONSTRUCTOR_VISABLE
@@ -1325,29 +1325,59 @@ CAB_Client::string_data_time(const std::string& string)
     }
 }
 
-data_time 
-CAB_Client::get_system_time(void) 
+data_time CAB_Client::get_system_time(void) 
 {
     auto now = std::chrono::system_clock::now();
     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
 
     time_t t = std::chrono::system_clock::to_time_t(now);
-    struct tm* now_tm = localtime(&t);
+    struct tm now_tm;
+
+    localtime_s(&now_tm, &t); 
 
     data_time dt;
-    dt.tm_msec = milliseconds.count() % 1000;
-    dt.tm_sec = now_tm->tm_sec;
-    dt.tm_min = now_tm->tm_min;
-    dt.tm_hour = now_tm->tm_hour;
-    dt.tm_mday = now_tm->tm_mday;
-    dt.tm_mon = now_tm->tm_mon + 1;  
-    dt.tm_year = now_tm->tm_year + 1900;  
+    dt.tm_msec = static_cast<int>(milliseconds.count() % 1000);
+    dt.tm_sec = now_tm.tm_sec;
+    dt.tm_min = now_tm.tm_min;
+    dt.tm_hour = now_tm.tm_hour;
+    dt.tm_mday = now_tm.tm_mday;
+    dt.tm_mon = now_tm.tm_mon + 1;
+    dt.tm_year = now_tm.tm_year + 1900;
 
-    print_info("Time: " << dt.tm_mday << '.' << dt.tm_mon << '.' << dt.tm_year << " | "
-        << dt.tm_hour << ':' << dt.tm_min << ':' << dt.tm_sec << '.' << dt.tm_msec);
-
+    print_info("Time: "
+            << dt.tm_mday << '.'
+            << dt.tm_mon << '.'
+            << dt.tm_year << " | "
+            << dt.tm_hour << ':'
+            << dt.tm_min << ':'
+            << dt.tm_sec << ':'
+            << dt.tm_msec);
     return dt;
 }
+
+//data_time 
+//CAB_Client::get_system_time(void) 
+//{
+//    auto now = std::chrono::system_clock::now();
+//    auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+//
+//    time_t t = std::chrono::system_clock::to_time_t(now);
+//    struct tm* now_tm = localtime_s(&t);
+//
+//    data_time dt;
+//    dt.tm_msec = milliseconds.count() % 1000;
+//    dt.tm_sec = now_tm->tm_sec;
+//    dt.tm_min = now_tm->tm_min;
+//    dt.tm_hour = now_tm->tm_hour;
+//    dt.tm_mday = now_tm->tm_mday;
+//    dt.tm_mon = now_tm->tm_mon + 1;  
+//    dt.tm_year = now_tm->tm_year + 1900;  
+//
+//    print_info("Time: " << dt.tm_mday << '.' << dt.tm_mon << '.' << dt.tm_year << " | "
+//        << dt.tm_hour << ':' << dt.tm_min << ':' << dt.tm_sec << '.' << dt.tm_msec);
+//
+//    return dt;
+//}
 
     
 //data_time   

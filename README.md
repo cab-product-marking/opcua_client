@@ -25,28 +25,34 @@ Newer versions and documentation on:
 
 Install the open62541 library:
 
-    $ cd home/shadow/opcua_client/open62541-1.3.8/
+    $ cd <paths to>/opcua_client
+    $ git clone https://github.com/open62541/open62541.git
+    $ cd open62541
+    $ git checkout tags/v1.3.8
+    $ git checkout -b "new_main"
     $ mkdir build
     $ cd build/
-    $ cmake ..
+    $ cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug ..
     $ make
+    $ make install
 
 Build and configure the client project:
 
-    $ cd home/shadow/opcua_client/
+    $ cd <paths to>/opcua_client/
     $ mkdir build 
     $ cd build/
-    $ cmake ..
+    $ cmake -DCMAKE_BUILD_TYPE=Debug ..
     $ make
 
 To test or use the client make sure OPC UA is activated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+The client needs printer ip and port for connection. Change the defaults in cab_client.h or enter with arguments.
 
-    $ cd home/shadow/opcua_client/build
+    $ cd <paths to>/opcua_client/build
     $ chmod +x client
     $ ./client -h
 
-Visit home/shadow/opcua_client/res/usage.txt for usecases and examples or call ./client --help.
+Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call ./client --help.
 
 ### Use the python-opcua-client
 
@@ -65,7 +71,7 @@ For istalling the library use following syntax:
 Make sure OPC UA is activated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
 
-    $ cd home/shadow/opcua_cab/
+    $ cd <paths to>/opcua_client
     $ chmod +x client.py
     $ python3 client.py 
         or
@@ -84,13 +90,14 @@ Project dependencies:
  * Microsoft Visual Studio: https://www.visualstudio.com/products/visual-studio-community-vs
  * Python >= 3.12.1: https://python.org/downloads
 
-The open62541 library version 1.3.8 is required for the c++ and python client. 
+The open62541 library version 1.3.8 is required for the client. 
 Download the open62541 sources using git or as a zipfile from github.
     
-    $ cd C:\Users\shadow\source\repos\opcua_client
+    $ cd <paths to>\opcua_client
     $ git clone https://github.com/open62541/open62541.git
     $ cd open62541
     $ git checkout tags/v1.3.8
+    $ git checkout -b "new_main"
 
 Newer versions and documentation on:
  * https://www.open62541.org/
@@ -99,36 +106,54 @@ Newer versions and documentation on:
 
 Open a Windows Power Shell (cmd) with admin rights and run;
 
-    $ cd C:\Users\shadow\source\repos\opcua_client\open62541
-    $ mkdir build   
-    $ mkdir lib
+    $ cd <paths to>\opcua_client\open62541
+    $ mkdir build  
     $ cd build
-    $ call "C:\Programm Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64 # Configure environment
-    $ call "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake-gui.exe" 
-    
-Configure built with the cmake gui. 
- * Where is the source code: C:\Users\shadow\source\repos\opcua_client\open62541
- * Where to build the binaries: C:\Users\shadow\source\repos\opcua_client\open62541\build
-Press >Configure< and select your Visual Studio version. Continue with >Finish<.
-Change only the following parameters;
- * BUILD_SHARED_LIBS=ON
- * CMAKE_BUILD_TYPE=Release
- * CMAKE_INSTALL_PREFIX=C:\User\shadow\source\repos\opcua_client\lib
-Press >Configure< and continue with pressing >Generate<.
-Switch to your cmd window and enter the following commands;
+    # Configure environment 
+    $ call "C:\Programm Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
 
+    # Release build and install
+    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=\open62541_lib\Release ..
     $ msbuild /m /p:Configuration=Release /p:Platform=x64 open62541.sln
-    $ call "C:\Users\shadow\source\tools\cmake-3.28.1-windows-x86_64\bin\cmake.exe" --install .
+    $ call "<paths to>\cmake.exe" --install .
 
-Under C:\User\shadow\source\repos\opcua_client\lib the files fall out.
+    # Debug build and install
+    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX:PATH=\open62541_lib\Debug ..
+    $ msbuild /m /p:Configuration=Debug /p:Platform=x64 open62541.sln
+    $ call "<paths to>\cmake.exe" --install .
 
+    $ cd ../../
+    $ opcua_client.sln .
 
+In <paths to>\opcua_client\open62541_lib\Debug or ..\Release the files fall out.
+Next, need to check the include paths for the *.h files. 
+If installed the open62541 library as described above, the paths should be OK.
+Checking the project settings for Debug and Release is recommended.
 
-    
+Debug settings:
+ * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Debug\include
+ * Properties>Configuration Properties>C/C++>Linker>General -> open62541_lib\Debug\lib
+ * Properties>Configuration Properties>C/C++>Linker>Input -> open62541.lib
 
+Release settings:
+ * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Release\include
+ * Properties>Configuration Properties>C/C++>Linker>General -> open62541_lib\Release\lib
+ * Properties>Configuration Properties>C/C++>Linker>Input -> open62541.lib
 
+The client needs the open62541.dll for runtime.
+Copy *.dll from <paths to>\opcua_client\open62541_lib\Debug\bin to <paths to>\opcua_client\x64\Debug.
+Same procedure for Release build.
 
+Use the client with VS or call the *.exe in <paths to>\opcua_client\x64\Debug or ..\Release.
 
+To test or use the client make sure OPC UA is activated in printer settings. 
+(/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+The client needs printer ip and port for connection. Change the defaults in cab_client.h or enter with arguments.
+
+    $ cd <paths to>\opcua_client\x64\Debug
+    $ .\opcua_client.exe -h
+
+Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call .\opcua_client --help.
 
 ### Use the python-opcua-client
 
