@@ -97,7 +97,6 @@ Download the open62541 sources using git or as a zipfile from github.
     $ git clone https://github.com/open62541/open62541.git
     $ cd open62541
     $ git checkout tags/v1.3.8
-    $ git checkout -b "new_main"
 
 Newer versions and documentation on:
  * https://www.open62541.org/
