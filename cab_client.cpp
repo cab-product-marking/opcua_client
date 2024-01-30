@@ -1035,8 +1035,8 @@ CAB_Client::get_data_value_string(std::shared_ptr<JOB> &job)
 void
 CAB_Client::print_job_list(void)
 {
+#ifdef FEATURE_DEBUG_INFO  
     print_info("print job list." << std::endl << CONSOLE_STARS_50);
-#ifdef FEATURE_DEBUG_INFO   
     if(job_buffer_.empty() == true)
     {
         print_info("job list empty.");

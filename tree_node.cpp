@@ -389,6 +389,4 @@ Tree_Node::print_tree_file_(std::ofstream &file,
     return;
 }
 
-
-
 /* Eof */
