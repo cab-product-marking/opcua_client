@@ -29,8 +29,7 @@ CAB_Client::connect(const std::string &url)
 }
 
 int 
-CAB_Client::connect(int &argc, 
-                           char *argv[])
+CAB_Client::connect(int &argc, char *argv[])
 {
     int state = {EXIT_FAILURE};
     std::string url = {"DEFAULT"};
@@ -214,7 +213,9 @@ void
 CAB_Client::disconnect()
 {
     opcuac_disconnect();
+#ifdef __linux__
     CAB_Client::_cab(RESPONSE_COLUMN);
+#endif // __linux__
     return;
 }
 
