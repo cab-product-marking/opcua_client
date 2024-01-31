@@ -104,10 +104,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>open62541_lib\Debug\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>open62541_lib\Debug\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>open62541.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -119,20 +123,32 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>open62541_lib\Release\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>open62541_lib\Release\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>open62541.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="cab_client.h" />
-    <ClInclude Include="data_types.h" />
-    <ClInclude Include="opcua_client.h" />
-    <ClInclude Include="tools.h" />
-    <ClInclude Include="tree_node.h" />
+    <None Include=".gitignore" />
+    <None Include="client.py" />
+    <None Include="LICENSE" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\cablogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+    <Text Include="res\jobs.txt" />
+    <Text Include="res\label.txt" />
+    <Text Include="res\replace.txt" />
+    <Text Include="res\usage.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cab_client.cpp" />
@@ -141,16 +157,11 @@
     <ClCompile Include="tree_node.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\cablogo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="res\jobs.txt" />
-    <Text Include="res\label.txt" />
-    <Text Include="res\replace.txt" />
-    <Text Include="res\usage.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="README.md" />
+    <ClInclude Include="cab_client.h" />
+    <ClInclude Include="data_types.h" />
+    <ClInclude Include="opcua_client.h" />
+    <ClInclude Include="tools.h" />
+    <ClInclude Include="tree_node.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

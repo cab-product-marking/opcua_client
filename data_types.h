@@ -6,8 +6,13 @@
 #include <map>
 #include <memory>
 
-#define OUTPUT_DIRECTORY    "res/"
-#define BUILD_DIRECTORY     "build/"
+#ifdef __linux__
+#define DIR_RES         "res/"
+#define DIR_BUILD       "build/"
+#else
+#define DIR_RES
+#define DIR_BUILD           
+#endif
 
 
 /* Data Types */

@@ -12,10 +12,9 @@
 /* Settings */
 /* ^^^^^^^^ */
 
-// #define FEATURE_CONSTRUCTOR_VISABLE 
-// #define FEATURE_DEBUG_INFO
-// #define FEATURE_DEBUG_ERROR
-// 
+//#define FEATURE_CONSTRUCTOR_VISABLE 
+#define FEATURE_DEBUG_INFO
+#define FEATURE_DEBUG_ERROR
 
 /* Console color features */
 /* ^^^^^^^^^^^^^^^^^^^^^^ */

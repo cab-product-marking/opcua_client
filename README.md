@@ -112,17 +112,17 @@ Open a Windows Power Shell (cmd) with admin rights and run;
     $ call "C:\Programm Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvarsall.bat" x64
 
     # Release build and install
-    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=\open62541_lib\Release ..
+    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX:PATH=..\..\open62541_lib\Release ..
     $ msbuild /m /p:Configuration=Release /p:Platform=x64 open62541.sln
     $ call "<paths to>\cmake.exe" --install .
 
     # Debug build and install
-    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX:PATH=\open62541_lib\Debug ..
+    $ call "<paths to>\cmake.exe" -G "Visual Studio 17 2022" -A x64 -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX:PATH=..\..\open62541_lib\Debug ..
     $ msbuild /m /p:Configuration=Debug /p:Platform=x64 open62541.sln
     $ call "<paths to>\cmake.exe" --install .
 
     $ cd ../../
-    $ opcua_client.sln .
+    $ client.sln .
 
 In <paths to>\opcua_client\open62541_lib\Debug or ..\Release the files fall out.
 Next, need to check the include paths for the *.h files. 
@@ -131,15 +131,15 @@ Checking the project settings for Debug and Release is recommended.
 
 Debug settings:
  * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Debug\include
- * Properties>Configuration Properties>C/C++>Linker>General -> open62541_lib\Debug\lib
- * Properties>Configuration Properties>C/C++>Linker>Input -> open62541.lib
+ * Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories -> open62541_lib\Debug\lib
+ * Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies -> open62541.lib
 
 Release settings:
  * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Release\include
- * Properties>Configuration Properties>C/C++>Linker>General -> open62541_lib\Release\lib
- * Properties>Configuration Properties>C/C++>Linker>Input -> open62541.lib
+ * Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories -> open62541_lib\Release\lib
+ * Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies -> open62541.lib
 
-The client needs the open62541.dll for runtime.
+The client needs the open62541.dll for runtime. To generate x64 folder start build for Debug and Release.
 Copy *.dll from <paths to>\opcua_client\open62541_lib\Debug\bin to <paths to>\opcua_client\x64\Debug.
 Same procedure for Release build.
 
@@ -150,9 +150,9 @@ To test or use the client make sure OPC UA is activated in printer settings.
 The client needs printer ip and port for connection. Change the defaults in cab_client.h or enter with arguments.
 
     $ cd <paths to>\opcua_client\x64\Debug
-    $ .\opcua_client.exe -h
+    $ .\client.exe "-h" or .\client.exe "--help"
 
-Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call .\opcua_client --help.
+Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call .\client.exe "--help".
 
 ### Use the python-opcua-client
 
