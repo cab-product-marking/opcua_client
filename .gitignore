@@ -400,6 +400,7 @@ FodyWeavers.xsd
 # Internal folders
 open62541/
 open62541_lib/
+build/
 
 # Internal files 
 # test.md
