@@ -401,7 +401,7 @@ FodyWeavers.xsd
 open62541/
 open62541_lib/
 
-
-
+# Internal files 
+test.txt
 
 # Eof

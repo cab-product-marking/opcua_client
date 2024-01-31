@@ -33,8 +33,8 @@ TREE_END =              "└── "
 TREE_MIDDLE =           "├── "
 TREE_MAX_LAYERS =       20
 
-WORKFILES_PATH =        "res/"
-OUTPUTFILES_PATH =      "build/"
+DIR_RES =               "res/"
+DIR_BUILD =             "build/"
 
 # --------------------------------------------------------------------------------------------------
 
@@ -201,17 +201,17 @@ class Job:
                 root = printer.get_node(ua.NodeId(identifier, namespace_index))
             try:
                 # Is filepath?
-                if not os.path.exists(OUTPUTFILES_PATH):
-                    os.makedirs(OUTPUTFILES_PATH)
+                if not os.path.exists(DIR_BUILD):
+                    os.makedirs(DIR_BUILD)
                 # Clear file
-                with open(f"{OUTPUTFILES_PATH}browse.txt", 'w') as file:
+                with open(f"{DIR_BUILD}browse.txt", 'w') as file:
                     pass
             except Exception as inner_e:
                 print(f"Error: {inner_e}")
             # Print in console 
             print(f"{root} - [ {MAGENTA}VALUE | TYPE | NODECLASS{BLUE} ]")
             # Write in file 
-            with open(f"{OUTPUTFILES_PATH}browse.txt", 'a') as file:  # 'a' append mode
+            with open(f"{DIR_BUILD}browse.txt", 'a') as file:  # 'a' append mode
                 file.write(f"{root} - [ VALUE | TYPE | NODECLASS ]" + '\n')
             # Nodes browser
             fill = [False] * TREE_MAX_LAYERS
@@ -261,10 +261,10 @@ class Job:
         print(console_line)
         # Write in file with 'a' append mode
         if os.name == 'nt':
-            with open(f"{OUTPUTFILES_PATH}browse.txt", 'a', encoding='utf-8') as file: 
+            with open(f"{DIR_BUILD}browse.txt", 'a', encoding='utf-8') as file: 
                 file.write(file_line + '\n')
         elif os.name == 'posix':
-            with open(f"{OUTPUTFILES_PATH}browse.txt", 'a') as file:  
+            with open(f"{DIR_BUILD}browse.txt", 'a') as file:  
                 file.write(file_line + '\n')
     
     # Print label from file or string
@@ -279,9 +279,9 @@ class Job:
                 # Work with input contents
                 contents = self.parsed_list[2]
                 # Is textfile?
-                if os.path.isfile(f"{WORKFILES_PATH}{contents}"):
-                    print(f"Found label {WORKFILES_PATH}{contents} in filesystem.")
-                    handle = open(f"{WORKFILES_PATH}{contents}", "rb")
+                if os.path.isfile(f"{DIR_RES}{contents}"):
+                    print(f"Found label {DIR_RES}{contents} in filesystem.")
+                    handle = open(f"{DIR_RES}{contents}", "rb")
                     lbl = handle.read()
                     handle.close()
                     contents = lbl  
@@ -305,9 +305,9 @@ class Job:
                 # Work with input contents
                 contents = self.parsed_list[2]
                 # Is textfile?
-                if os.path.isfile(f"{WORKFILES_PATH}{contents}"):
-                    print(f"Found label {WORKFILES_PATH}{contents} in filesystem.")
-                    handle = open(f"{WORKFILES_PATH}{contents}", "rb")
+                if os.path.isfile(f"{DIR_RES}{contents}"):
+                    print(f"Found label {DIR_RES}{contents} in filesystem.")
+                    handle = open(f"{DIR_RES}{contents}", "rb")
                     lbl = handle.read()
                     handle.close()
                     contents = lbl  
@@ -317,7 +317,7 @@ class Job:
             else:
                 language = 0
             try:
-                if os.path.isfile(f"{WORKFILES_PATH}{contents}"):
+                if os.path.isfile(f"{DIR_RES}{contents}"):
                     # Check loading state
                     var = printer.get_node(ua.NodeId(int(10086), int(3)))
                     data_value = var.get_data_value()
@@ -359,8 +359,8 @@ class Job:
 
     def load_file(self, file):
         try:
-            with open(f"{WORKFILES_PATH}{file}", "rb") as handle:
-                print(f"Found data {WORKFILES_PATH}{file} in filesystem.")
+            with open(f"{DIR_RES}{file}", "rb") as handle:
+                print(f"Found data {DIR_RES}{file} in filesystem.")
                 contents = handle.read()
                 # print(f"Type of contents: {type(contents)}")
                 # Load file
@@ -427,7 +427,7 @@ class Parser:
 
     # Print usage of client
     def print_usage(self):
-        with open(f'{WORKFILES_PATH}usage.txt', 'r') as file:
+        with open(f'{DIR_RES}usage.txt', 'r') as file:
             for line in file:
                 print(line, end='')
 
@@ -531,9 +531,9 @@ def import_jobs(job_list):
         # If job is filename, import jobs frome file and insert in list jobs[]
         for job in job_list:
             try:
-                if os.path.isfile(f"{WORKFILES_PATH}{job}"):
+                if os.path.isfile(f"{DIR_RES}{job}"):
                     print(f"Found file {job} in filesystem.")
-                    with open(f"{WORKFILES_PATH}{job}", 'r') as file:
+                    with open(f"{DIR_RES}{job}", 'r') as file:
                         for line in file:
                             # Seperate at '#' - dont read comments
                             line = line.split('#')[0].strip()
