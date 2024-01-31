@@ -455,6 +455,7 @@ class Parser:
                                 self.printer_ip + 
                                 ":" +
                                 self.printer_port)
+        print(self.printer_url)
 
     def extractor(self, text):
         match = re.search(r'"([^"]*)"', text)
@@ -568,7 +569,7 @@ def connect_printer(printer_url):
             run += 1
             if run == 3:
                 print("Printer is not available.")
-                break
+                sys.exit(0)
             else:
                 print("Retry to connect in few seconds.")
                 time.sleep(i * run)  
@@ -614,16 +615,17 @@ if __name__ == "__main__":\
                         print(f"Error work with job {index}: {e}")
                         continue
                     index += 1
-                time.sleep(0.5)
+                time.sleep(0.2)
         # Keyboard interrupt CTRL+C
         except KeyboardInterrupt:
             print("\nControlled client shutdown.")
+            # Disconnect
+            printer.disconnect()
     except:
         print("Fatal error!")
 
     finally:
-        # Disconnect
-        printer.disconnect()
+        # Nothing to do 
         print("Disconnect client, bye!")
 
 # Eof
