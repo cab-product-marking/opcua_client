@@ -11,6 +11,12 @@ from opcua import ua
 
 from queue import Queue
 
+if os.name == 'nt':
+    # Try to get ANSI color support for Windows
+    from ctypes import windll
+    kernel32 = windll.kernel32
+    kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+
 # --------------------------------------------------------------------------------------------------
 
 # ANSI escape codes for color 
@@ -140,7 +146,7 @@ class Job:
             if len(self.parsed_list) < 4:
                 raise ValueError("Parsed list does not contain enough elements.")
             # Extract/Create node id
-            value = self.parsed_list[3]
+            value = self.parsed_list[4]
             namespace_index = int(self.parsed_list[2])
             identifier = self.parsed_list[1]
             if identifier.isdigit():
@@ -253,9 +259,13 @@ class Job:
             file_line = f"{string}{präfix}{child}"
         # Print in console
         print(console_line)
-        # Write in file 
-        with open(f"{OUTPUTFILES_PATH}browse.txt", 'a') as file:  # 'a' append mode
-            file.write(file_line + '\n')
+        # Write in file with 'a' append mode
+        if os.name == 'nt':
+            with open(f"{OUTPUTFILES_PATH}browse.txt", 'a', encoding='utf-8') as file: 
+                file.write(file_line + '\n')
+        elif os.name == 'posix':
+            with open(f"{OUTPUTFILES_PATH}browse.txt", 'a') as file:  
+                file.write(file_line + '\n')
     
     # Print label from file or string
     def print_label(self):
@@ -270,7 +280,7 @@ class Job:
                 contents = self.parsed_list[2]
                 # Is textfile?
                 if os.path.isfile(f"{WORKFILES_PATH}{contents}"):
-                    print(f"Found label {contents} in filesystem.")
+                    print(f"Found label {WORKFILES_PATH}{contents} in filesystem.")
                     handle = open(f"{WORKFILES_PATH}{contents}", "rb")
                     lbl = handle.read()
                     handle.close()
@@ -288,7 +298,19 @@ class Job:
                     # Use entered contents
                     print("Use entered contents.")
                     contents = contents.encode()
-                contents += b"\n"         
+                contents += b"\n"  
+            elif len(self.parsed_list) == 4:
+                # Load argument four cablogo.png in separate function
+                self.load_file(self.parsed_list[3])
+                # Work with input contents
+                contents = self.parsed_list[2]
+                # Is textfile?
+                if os.path.isfile(f"{WORKFILES_PATH}{contents}"):
+                    print(f"Found label {WORKFILES_PATH}{contents} in filesystem.")
+                    handle = open(f"{WORKFILES_PATH}{contents}", "rb")
+                    lbl = handle.read()
+                    handle.close()
+                    contents = lbl  
             # JScript or zpl?
             if self.parsed_list[1] == "zpl":
                 language = 1
@@ -323,7 +345,7 @@ class Job:
                                         ua.Variant(contents, ua.VariantType.ByteString))
                 else:
                     # Send contents 
-                    print(f"Load found contents: {contents}")
+                    print(f"Load found contents: {contents[:50]}")
                     methods = printer.get_objects_node().get_child(["2:DeviceSet","3:Printer","2:MethodSet"])
                     print_data = methods.get_child("3:PrintData")
                     methods.call_method(print_data,
@@ -334,6 +356,27 @@ class Job:
         except Exception as e:
             print(f"Error: {e}")
         print(RESET)
+
+    def load_file(self, file):
+        try:
+            with open(f"{WORKFILES_PATH}{file}", "rb") as handle:
+                print(f"Found data {WORKFILES_PATH}{file} in filesystem.")
+                contents = handle.read()
+                # print(f"Type of contents: {type(contents)}")
+                # Load file
+                methods = printer.get_objects_node().get_child(["2:DeviceSet","3:Printer","2:MethodSet"])
+                load_data = methods.get_child("3:FileUpload")
+                try:
+                    methods.call_method(load_data,
+                                        ua.Variant(int(1), ua.VariantType.Int32),
+                                        ua.Variant(str(file), ua.VariantType.String),
+                                        ua.Variant(contents, ua.VariantType.ByteString))
+                    # Wait because its not possible to check upload status
+                    time.sleep(0.5)
+                except Exception as inner_e:
+                    print(f"Error, {inner_e}")
+        except Exception as e:
+            print(f"Error, {e}")
 
     # Replace contents field
     def replace_label(self):
@@ -430,7 +473,7 @@ class Parser:
             while i < len(self.arguments):
                 if self.arguments[i] == "-h" or self.arguments[i] == "--help":
                     self.print_usage()
-                    self.job_list.append("end")
+                    sys.exit(0)
                     return self.printer_url, self.job_list
                 elif self.arguments[i] == "-url":
                     i += 1
@@ -491,7 +534,6 @@ def import_jobs(job_list):
                 if os.path.isfile(f"{WORKFILES_PATH}{job}"):
                     print(f"Found file {job} in filesystem.")
                     with open(f"{WORKFILES_PATH}{job}", 'r') as file:
-                        print("test")
                         for line in file:
                             # Seperate at '#' - dont read comments
                             line = line.split('#')[0].strip()
@@ -547,12 +589,7 @@ if __name__ == "__main__":\
 
     parser = Parser(sys.argv)
     printer_url, job_list = parser.parse()
-    try:
-        if job_list[0] == "end":
-            # Program end
-            sys.exit(0)
-    except:
-        pass
+       
     printer = Client(printer_url)
     try:
         # Connect and init
@@ -564,9 +601,9 @@ if __name__ == "__main__":\
                 if jobs.empty():
                     # Waiting animation
                     if int(time.time() * 1000) % 2 == 0:
-                        print("Polling...nothing to do ¯\_(ツ)_/¯. CTRL+C to end. \\", end="\r")
+                        print("Polling...nothing to do ¯\\_(ツ)_/¯. CTRL+C to end. \\", end="\r")
                     else:
-                        print("Polling...nothing to do ¯\_(ツ)_/¯. CTRL+C to end. /", end="\r")
+                        print("Polling...nothing to do ¯\\_(ツ)_/¯. CTRL+C to end. /", end="\r")
                 index = 0
                 while not jobs.empty():
                     try:
@@ -583,6 +620,7 @@ if __name__ == "__main__":\
             print("\nControlled client shutdown.")
     except:
         print("Fatal error!")
+
     finally:
         # Disconnect
         printer.disconnect()

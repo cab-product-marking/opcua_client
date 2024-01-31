@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef __TREE_NODE_H__
 #define __TREE_NODE_H__
 
@@ -11,6 +9,7 @@
 
 #include "tools.h"
 #include "data_types.h"
+
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
 

@@ -1,45 +1,45 @@
 ### Each line can be interpreted as a separate job 
 
 ### Add monitored items
-# mitem_add:ID_CLOCK_TIME:4* # Printer time
-# mitem_add:2258:0* # Server time
+# mitem_add:ID_CLOCK_TIME:4 # Printer time
+# mitem_add:2258:0 # Server time
 
 ### Delete monitored items only in cpp
-# mitem_delete:2258:0*
+# mitem_delete:2258:0
 
 ### Read node
-# node_read:2258:0*
-# node_read:ID_HEAT_LEVEL:4*
-# node_read:10024:3 # JOBRDY*
+# node_read:2258:0
+# node_read:ID_HEAT_LEVEL:4
+# node_read:10024:3 # JOBRDY
 
 ### Write node
-# node_read:ID_HEAT_LEVEL:4*
-# node_write:ID_HEAT_LEVEL:4:int32_t:6*
-# node_read:ID_HEAT_LEVEL:4*
-# node_read:ID_CLOCK_TIME:4*
-# node_write:ID_CLOCK_TIME:4:datetime:10:11:2023:10:10:10:10*
-# node_write:ID_CLOCK_TIME:4:datetime:actual*
-# node_read:ID_CLOCK_TIME:4*
+# node_read:ID_HEAT_LEVEL:4
+# node_write:ID_HEAT_LEVEL:4:int32_t:6
+# node_read:ID_HEAT_LEVEL:4
+# node_read:ID_CLOCK_TIME:4
+# node_write:ID_CLOCK_TIME:4:datetime:10:11:2023:10:10:10:10
+# node_write:ID_CLOCK_TIME:4:datetime:actual
+# node_read:ID_CLOCK_TIME:4
 
 ### Browse nodes
-# browse*
-# browse:2253:0*
-# browse:ID_RIBBON:4*
-# browse:ID_PRINTING:4*
-# browse:ID_TEARING_OFF:4*
+# browse
+# browse:2253:0
+# browse:ID_RIBBON:4
+# browse:ID_PRINTING:4
+# browse:ID_TEARING_OFF:4
 
 ### Print label
-# print:JScript:label.txt*
-# print:JScript:f*
-# print:JScript:label.txt:cablogo.png*
-# print:JScript:PrintNow*
-# print:JScript:replace.txt*
-# print:JScript:PrintNow*
+# print:JScript:label.txt
+# print:JScript:f
+# print:JScript:label.txt:cablogo.png
+# print:JScript:PrintNow
+# print:JScript:replace.txt
+# print:JScript:PrintNow
 
 ### Print label replace 
-# print:JScript:replace.txt*
-# print:JScript:PrintNow*
+# print:JScript:replace.txt
+# print:JScript:PrintNow
 ### Befor replace be sure a label is loaded!
-# replace:REPLACE:replace REPLACE with OPC UA Client*
-# replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS*
-# print:JScript:PrintNow*
+# replace:REPLACE:replace REPLACE with OPC UA Client
+# replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS
+# print:JScript:PrintNow

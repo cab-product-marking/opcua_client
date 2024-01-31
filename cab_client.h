@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef __CAB_CLIENT_H__
 #define __CAB_CLIENT_H__
 
@@ -10,13 +8,19 @@
 #include <memory>
 #include <fstream>
 #include <iomanip>
-#include <sys/time.h>
+//#include <sys/time.h>
+#include <chrono>
 #include <map>
 #include <filesystem>
 
 #include "tools.h"
 #include "data_types.h"
 #include "opcua_client.h"
+
+#define DEFAULT_IP          "192.168.200.70"
+#define DEFAULT_PORT        "4840"
+#define DEFAULT_USER        "opcuser"
+#define DEFAULT_PASS        "opcpass"
 
 #define RESPONSE_COLUMN     56
 #define RES_FILEPATH        "../res/"

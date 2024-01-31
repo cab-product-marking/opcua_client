@@ -1,4 +1,5 @@
 #include <iostream>
+#include <signal.h>
 
 #include "cab_client.h"
 

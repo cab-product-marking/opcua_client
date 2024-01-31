@@ -1,5 +1,3 @@
-#pragma once
-
 #ifndef __TOOLS_H__
 #define __TOOLS_H__
 
@@ -98,7 +96,7 @@ public:
                     << FONT_RESET << std::endl;
     #endif // FEATURE_CONSTRUCTOR_VISABLE 
         m_ = {"_cab"}, e_ = {"end  "};
-        ml_ = m_.length(); /* = 4 */
+        ml_ = (int)m_.length(); /* = 4 */
         el_ = ml_;
         counter_ = {0};
     }
