@@ -14,7 +14,6 @@ An environment supporting C++17 is necessary. Project dependencies:
  * CMake >= 3.16.3
  * GNU Make >= 4.2.1
  * open62541 >= v1.3.8
- * Python3 >= 3.8.10 
 
 The open62541 library version 1.3.8 is required for the c++ and python client. 
 Download the open62541 sources (using git or as a zipfile from github) or use the included in the project. 
@@ -55,6 +54,9 @@ The client needs printer ip and port for connection. Change the defaults in cab_
 Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call ./client --help.
 
 ### Use the python-opcua-client
+
+Project dependencies:
+ * Python >= 3.8.10: https://python.org/downloads
 
 The python client works with the python-opcua library witch is build 
 on FreeOpcUa. For more information visit:
@@ -152,6 +154,7 @@ The client needs printer ip and port for connection. Change the defaults in cab_
     $ cd <paths to>\opcua_client\x64\Debug
     $ .\client.exe "-h" or .\client.exe "--help"
 
+If there are problems with the terminal arguments use brackets.
 Visit <paths to>/opcua_client/res/usage.txt for usecases and examples or call .\client.exe "--help".
 
 ### Use the python-opcua-client
@@ -175,6 +178,7 @@ Make sure OPC UA is activated in printer settings.
     $ cd C:\Users\shadow\source\repos\opcua_client\
     $ python .\client.py --help
 
+If there are problems with the terminal arguments use brackets.
 The python script automatically generates a build directory with output files, depending on jobs entered.
 
 <!-- Eof -->
