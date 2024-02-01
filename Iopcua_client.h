@@ -1,68 +1,37 @@
-#pragma once
-
-/* Class OPCUA_Client */
-/* ^^^^^^^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <memory>
-#include <vector>
-#include <map>
-#include <fstream>
 #include <cstring>
-#include <sstream>
 
-#include "defines.h"
-#include "logger.h"
-
-#include "data_types.h"
-#include "tree_node.h"
-
-#include <open62541/client_config_default.h>
-#include <open62541/client_highlevel.h>
-#include <open62541/client_subscriptions.h>
-#include <open62541/plugin/log_stdout.h>
-#include <open62541/server_config_default.h>
-#include <open62541/client.h>
-
-#define CLIENT_TIMEOUT                  1000    
-#define CLIENT_CONNECTIONS_ATTEMPTS     4
-#define CLIENT_CONNECTION_WAITING_TIME  100
-#define CLIENT_CONNECTION_RETRY_TIME    10000
-#define CLIENT_ITERATE_TIME             100
-
-#define BROWSE_START_LAYER              1
-
-class OPCUA_Client 
+class IOPCUA_Client 
 {
 
 public:
+    IOPCUA_Client();
 
-    OPCUA_Client();
+    IOPCUA_Client(const IOPCUA_Client&) = delete;
 
-    OPCUA_Client(const OPCUA_Client&) = delete;
+    IOPCUA_Client&
+    operator=(const IOPCUA_Client&) = delete;
 
-    OPCUA_Client&
-    operator=(const OPCUA_Client&) = delete;
+    IOPCUA_Client(IOPCUA_Client&&) = delete;
 
-    OPCUA_Client(OPCUA_Client&&) = delete;
-
-    OPCUA_Client&
-    operator=(OPCUA_Client&&) = delete;
+    IOPCUA_Client&
+    operator=(IOPCUA_Client&&) = delete;
 
     virtual
-    ~OPCUA_Client();
+    ~IOPCUA_Client();
 
-    void
-    opcuac_init(void);
+    virtual void
+    opcuac_init(void) = 0;
 
-    int 
+    virtual int 
     opcuac_connect(const std::string &url, 
                         client_arg &arg);
 
-    void 
+    virtual void 
     opcuac_disconnect(void);
 
-    int
+    virtual int
     opcuac_run_iterate(void);
 
     /* Services */
@@ -150,5 +119,3 @@ private:
     static UA_SessionState actual_session_state_;
 
 };
-
-/* Eof */
