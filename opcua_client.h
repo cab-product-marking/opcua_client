@@ -1,5 +1,7 @@
-#ifndef __OPCUA_CLIENT_H__
-#define __OPCUA_CLIENT_H__
+#pragma once
+
+/* Class OPCUA_Client */
+/* ^^^^^^^^^^^^^^^^^^ */
 
 #include <iostream>
 #include <memory>
@@ -9,7 +11,9 @@
 #include <cstring>
 #include <sstream>
 
-#include "tools.h"
+#include "defines.h"
+#include "logger.h"
+
 #include "data_types.h"
 #include "tree_node.h"
 
@@ -28,10 +32,6 @@
 
 #define BROWSE_START_LAYER              1
 
-
-/* Class OPCUA_Client */
-/* ^^^^^^^^^^^^^^^^^^ */
-
 class OPCUA_Client 
 {
 
@@ -39,6 +39,17 @@ public:
 
     OPCUA_Client();
 
+    OPCUA_Client(const OPCUA_Client&) = delete;
+
+    OPCUA_Client&
+    operator=(const OPCUA_Client&) = delete;
+
+    OPCUA_Client(OPCUA_Client&&) = delete;
+
+    OPCUA_Client&
+    operator=(OPCUA_Client&&) = delete;
+
+    virtual
     ~OPCUA_Client();
 
     void
@@ -140,4 +151,4 @@ private:
 
 };
 
-#endif // __OPCUA_CLIENT_H__
+/* Eof */

@@ -1,24 +1,24 @@
 #include "cab_client.h"
 
-CAB_Client::CAB_Client() 
+CAB_Client::CAB_Client()
                 : client_arguments_{DEFAULT_IP, 
                                     DEFAULT_PORT, 
                                     DEFAULT_USER, 
                                     DEFAULT_PASS, 
                                     false}
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_GREEN << "CAB_Client::CAB_Client()" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE 
+#endif // _DEBUG 
 }
 
 CAB_Client::~CAB_Client() 
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_GREEN << "CAB_Client::~CAB_Client()" 
                 << FONT_RESET << std::endl;   
-#endif // FEATURE_CONSTRUCTOR_VISABLE     
+#endif // _DEBUG     
 }
 
 int
@@ -163,11 +163,11 @@ CAB_Client::connect(int &argc, char *argv[])
     /* Create all jobs from input */
     for(std::string &job_input : job_list_buffer)
     {
-        if(find_file_in_directory(RES_FILEPATH, job_input))
+        if(find_file_in_directory(DIR_RES, job_input))
         {
-            std::string file_path = RES_FILEPATH + std::string(job_input);
+            std::string file_path = DIR_RES + std::string(job_input);
 
-            print_info("Use jobs from file: " << file_path);
+            cLOG(Level::INFO, "Use jobs from file: " + file_path);
             std::ifstream file(file_path);
             std::string line;
             if(file.is_open())
@@ -188,7 +188,7 @@ CAB_Client::connect(int &argc, char *argv[])
             }
             else
             {
-                print_error("Can not open file: " << file_path);
+                cLOG(Level::ERROR, "Can not open file: " + file_path);
             }
         }
         else
@@ -213,9 +213,6 @@ void
 CAB_Client::disconnect()
 {
     opcuac_disconnect();
-#ifdef __linux__
-    CAB_Client::_cab(RESPONSE_COLUMN);
-#endif // __linux__
     return;
 }
 
@@ -240,13 +237,13 @@ CAB_Client::run_iterate()
             //                         << "Iterate - job list empty."
             //                         << " /";
             // }
-            print_info("Iterate - job list empty.");
+            cLOG(Level::INFO, "Iterate - job list empty.");
         }
         else
         {
             if(!new_jobs_.empty())
             {
-                print_info("received new jobs.");
+                cLOG(Level::INFO, "received new jobs.");
                 /* Iterate and insert new jobs */
                 for(auto it = new_jobs_.begin(); it != new_jobs_.end(); ++it)
                 {
@@ -255,7 +252,7 @@ CAB_Client::run_iterate()
                 new_jobs_.clear();
             }
             /* Main iterate loop */
-            print_info("Iterate - working ... ");
+            cLOG(Level::INFO, "Iterate - working ... ");
             for(auto actual_job = job_buffer_.begin(); 
                 actual_job < job_buffer_.end(); /* ++actual_job */)
             {
@@ -291,7 +288,7 @@ CAB_Client::run_iterate()
                 /* Delete actual job and iterate when delete */
                 if((*actual_job)->erase == true)
                 {
-                    print_info("delete job.");
+                    cLOG(Level::INFO, "delete job.");
                     actual_job = job_buffer_.erase(actual_job);
                 }
                 else
@@ -300,7 +297,7 @@ CAB_Client::run_iterate()
                     ++actual_job;
                 }
             }
-            print_info("end iterate loop.");
+            cLOG(Level::INFO, "end iterate loop.");
         }
     }
     return;
@@ -313,7 +310,7 @@ CAB_Client::job_create(const std::string input,
     std::string input_string = input;
     if(input_string.empty())
     {
-        print_info("input_string empty.");
+        cLOG(Level::INFO, "input_string empty.");
         return;
     }
 
@@ -321,7 +318,7 @@ CAB_Client::job_create(const std::string input,
     std::map<int, std::string> input_map = parse_arguments(input_string);
     if(input_map.empty())
     {
-        print_info("input_map empty.");
+        cLOG(Level::INFO, "input_map empty.");
         return;
     }
 
@@ -364,7 +361,7 @@ CAB_Client::job_create(const std::string input,
         job->intern_data->type_data = get_data_type(element3.second);
         if(job->intern_data->type_data == data_type::DEFAULT)
         {
-            print_error("Invalid write input format found.");
+            cLOG(Level::ERROR, "Invalid write input format found.");
             return;
         }
         
@@ -398,11 +395,11 @@ CAB_Client::job_create(const std::string input,
         /* Find label content without validation */
         job->intern_data->type_data = data_type::c_string;
         auto element2 = *input_map.find(2);
-        if(find_file_in_directory(RES_FILEPATH, element2.second))
+        if(find_file_in_directory(DIR_RES, element2.second))
         {
-            std::string temp_path = RES_FILEPATH + element2.second;
+            std::string temp_path = DIR_RES + element2.second;
 
-            print_info("Use label content from file; " << temp_path);
+            cLOG(Level::INFO, "Use label content from file " + temp_path);
             std::ifstream file(temp_path);
             if(file.is_open())
             {
@@ -413,7 +410,7 @@ CAB_Client::job_create(const std::string input,
             }
             else
             {
-                print_error("Can not open file; " << temp_path);
+                cLOG(Level::ERROR, "Can not open file " + temp_path);
             }
         }
         else if(element2.second == "PrintNow")
@@ -428,9 +425,9 @@ CAB_Client::job_create(const std::string input,
         if(input_map.size() > 3)
         {
             auto element3 = *input_map.find(3);
-            if(find_file_in_directory(RES_FILEPATH, element3.second) == true)
+            if(find_file_in_directory(DIR_RES, element3.second) == true)
             {
-                job->intern_data->file_name = RES_FILEPATH + element3.second;
+                job->intern_data->file_name = DIR_RES + element3.second;
             }
             else
             {
@@ -452,7 +449,7 @@ CAB_Client::job_create(const std::string input,
         /* Get data for replacement */
         if(input_map.size() < 3 || !(input_map.size() % 2))
         {
-            print_error("you entered replace with invalid arguments.");
+            cLOG(Level::ERROR, "you entered replace with invalid arguments.");
             return;
         }
         /* Parse replacement data */
@@ -470,7 +467,7 @@ CAB_Client::job_create(const std::string input,
     }
     else if(job->type == job_type::DEFAULT)
     {
-        print_info("job_type is invalid. No job was create.");
+        cLOG(Level::INFO, "job_type is invalid. No job was create.");
         return;
     }
 
@@ -490,8 +487,7 @@ CAB_Client::job_create(const std::string input,
 void
 CAB_Client::add_monitored_item(std::shared_ptr<JOB> job)
 {
-    print_info("add_monitored_item()" << job->init_string);
-    print_console_message(job, "add monitored item");
+    jLOG(Level::JOB, "add monitored item", job);
     opcuac_add_monitored_item(job);
     /* Erase from job list */
     job->erase = true;
@@ -501,8 +497,7 @@ CAB_Client::add_monitored_item(std::shared_ptr<JOB> job)
 void
 CAB_Client::delete_monitored_item(std::shared_ptr<JOB> job)
 {
-    print_info("delete_monitored_item()" << job->init_string);
-    print_console_message(job, "delete monitored item");
+    jLOG(Level::JOB, "delete monitored item", job);
     opcuac_delete_monitored_item(job);
     /* Erase from job list */
     job->erase = true;
@@ -512,7 +507,7 @@ CAB_Client::delete_monitored_item(std::shared_ptr<JOB> job)
 void 
 CAB_Client::read_node(std::shared_ptr<JOB> job)
 {
-    print_info("read_node()" << job->init_string);
+    jLOG(Level::JOB, "read_node", job);
     opcuac_read_node(job);
     print_console_message_data(job, "read response");
     /* Erase from job list */
@@ -523,7 +518,7 @@ CAB_Client::read_node(std::shared_ptr<JOB> job)
 void
 CAB_Client::write_node(std::shared_ptr<JOB> job)
 {
-    print_info("write_node()" << job->init_string);
+    jLOG(Level::JOB, "write_node", job);
     std::shared_ptr<DATA> store_job_data = job->intern_data;
     opcuac_read_node(job);
     if(job->intern_data->type_data == store_job_data->type_data)
@@ -534,7 +529,7 @@ CAB_Client::write_node(std::shared_ptr<JOB> job)
     }
     else
     {
-        print_error("entered wrong data type.");
+        cLOG(Level::ERROR, "entered wrong data type.");
     }
     /* Erase from job list */
     job->erase = true;
@@ -544,8 +539,7 @@ CAB_Client::write_node(std::shared_ptr<JOB> job)
 void
 CAB_Client::browse_nodes(std::shared_ptr<JOB> job)
 {
-    print_info("browse_nodes()" << job->init_string);
-    print_console_message(job, "browse nodes with Tree_Node objects");
+    jLOG(Level::JOB, "browse nodes with Tree_Node objects", job);
     opcuac_browse_nodes(job, client_url_);
     /* Erase from job list */
     job->erase = true;
@@ -555,8 +549,7 @@ CAB_Client::browse_nodes(std::shared_ptr<JOB> job)
 void 
 CAB_Client::print_label(std::shared_ptr<JOB> job)
 {
-    print_info("print_label()" << job->init_string);
-    print_console_message(job, "print label with JScript/zpl");
+    jLOG(Level::JOB, "print label with JScript/zpl", job);
     if(job->intern_data->u16_value == 1)
     {
         /* Print */
@@ -584,8 +577,7 @@ CAB_Client::replace_label(std::shared_ptr<JOB> job)
     /* Label with replace contents needs to load or print before */
     if(job->intern_data->u32_value == 0)
     {
-        print_info("replace_label()" << job->init_string);
-        print_console_message(job, "start replace items in label procedure");
+        jLOG(Level::JOB, "start replace items in label procedure", job);
         /* Need to know then contents item you want to replace */
         std::shared_ptr<JOB> node = std::make_shared<JOB>(init_job());
         for(auto it = job->intern_data->replace.begin(); 
@@ -601,7 +593,7 @@ CAB_Client::replace_label(std::shared_ptr<JOB> job)
             
             if(opcuac_write_node(node) != EXIT_SUCCESS)
             {
-                print_info("write replace contents failed.");
+                cLOG(Level::INFO, "write replace contents failed.");
                 job->erase = true;
                 return;
             }
@@ -667,11 +659,11 @@ void
 CAB_Client::show_usage(void)
 {
     /* Usage */
-    std::string file_path = RES_FILEPATH + std::string("usage.txt");
+    std::string file_path = DIR_RES + std::string("usage.txt");
     std::ifstream file(file_path);
     if(!file.is_open())
     {
-        print_error("Can not open file; " << file_path);
+        cLOG(Level::ERROR, "Can not open file; " + file_path);
         return;
     }
     else
@@ -710,7 +702,7 @@ CAB_Client::upload_stream(std::shared_ptr<JOB> job)
         opcuac_read_node(node);
         int start = node->intern_data->u32_value;
         int end = start;
-        print_info("start counter: " << start);
+        cLOG(Level::INFO, "start counter: " + start);
 
         /* Monitored method call */
         opcuac_call_method_PrintData(job);
@@ -720,11 +712,12 @@ CAB_Client::upload_stream(std::shared_ptr<JOB> job)
             breaker++;
             opcuac_read_node(node);
             end = node->intern_data->u32_value;
-            print_info("end counter: " << end << " - breaker = " << breaker << "/100");
+            cLOG(Level::INFO, "end counter: " + std::to_string(end) + 
+                " - breaker = " + std::to_string(breaker) + "/100");
         } while (end == start && breaker < 100);
         if(breaker == 100)
         {
-            print_error("breaker stopped loop");
+            cLOG(Level::ERROR, "breaker stopped loop");
         }
         return;
     }
@@ -749,7 +742,7 @@ CAB_Client::find_file_in_directory(const std::string &directory,
         /* Check the directory */
         if (!std::filesystem::exists(str) || !std::filesystem::is_directory(str)) 
         {
-            print_error("directory invalid: " << str);
+            cLOG(Level::ERROR, "directory invalid: " + str);
             return false;
         }
         /* Iterate inside directory */
@@ -763,7 +756,7 @@ CAB_Client::find_file_in_directory(const std::string &directory,
     } 
     catch(const std::filesystem::filesystem_error& e) 
     {
-        print_error("system directory error");
+        cLOG(Level::ERROR, "system directory error");
     }
     return false;
 }
@@ -782,7 +775,7 @@ CAB_Client::parse_arguments(const std::string &input)
     /* Last char is ':' */
     if(str.back() == ':')
     {
-        print_error("syntax error.")
+        cLOG(Level::ERROR, "syntax error.");
         return result;
     }
 
@@ -793,7 +786,7 @@ CAB_Client::parse_arguments(const std::string &input)
     {
         if(item.empty())
         {
-            print_error("single argument is empty.");
+            cLOG(Level::ERROR, "single argument is empty.");
             std::map<int, std::string> end;
             return end;
         }
@@ -1036,11 +1029,11 @@ CAB_Client::get_data_value_string(std::shared_ptr<JOB> &job)
 void
 CAB_Client::print_job_list(void)
 {
-#ifdef FEATURE_DEBUG_INFO  
-    print_info("print job list." << std::endl << CONSOLE_STARS_50);
+#ifndef NDEBUG  
+    cLOG(Level::INFO, "print job list.\n" + CONSOLE_LINE_80);
     if(job_buffer_.empty() == true)
     {
-        print_info("job list empty.");
+        cLOG(Level::INFO, "job list empty.");
     }
     else
     {
@@ -1049,7 +1042,7 @@ CAB_Client::print_job_list(void)
             print_job(dummy);
         }
     }
-#endif // FEATURE_DEBUG_INFO
+#endif // NDEBUG
     return;
 }
 
@@ -1058,15 +1051,23 @@ CAB_Client::print_job(std::shared_ptr<JOB> &job)
 {
     if(get_job_type(job) == job_type::node_write)
     {
-        std::cout   << "type: " << get_job_type_string(job->type) << std::endl
-                    << "type_id: " << get_id_type_string(job->type_id) << std::endl
-                    << "id_string: " << job->id_string << std::endl
-                    << "id_numeric: " << job->id_numeric << std::endl
-                    << "ns: " << job->namespace_index << std::endl
-                    << "init_string: " << job->init_string << std::endl
-                    << "data_type: " << get_data_type_string(job->intern_data->type_data) << std::endl
-                    << "data_value: " << get_data_value_string(job) << std::endl
-                    << CONSOLE_STARS_50 
+        std::cout   << std::setw(20) << std::left << "| type: " 
+                    << std::setw(59) << std::left << get_job_type_string(job->type) << '|' << std::endl
+                    << std::setw(20) << std::left << "| type_id: " 
+                    << std::setw(59) << std::left << get_id_type_string(job->type_id) << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_string: " 
+                    << std::setw(59) << std::left << job->id_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_numeric: " 
+                    << std::setw(59) << std::left << job->id_numeric << '|' << std::endl
+                    << std::setw(20) << std::left << "| ns: " 
+                    << std::setw(59) << std::left << job->namespace_index << '|' << std::endl
+                    << std::setw(20) << std::left << "| init_string: " 
+                    << std::setw(59) << std::left << job->init_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| data_type: " 
+                    << std::setw(59) << std::left << get_data_type_string(job->intern_data->type_data) << '|' << std::endl
+                    << std::setw(20) << std::left << "| data_value: " 
+                    << std::setw(59) << std::left << get_data_value_string(job) << '|' << std::endl
+                    << CONSOLE_LINE_80 
                     << std::endl;
     }
     else if(get_job_type(job) == job_type::print)
@@ -1080,67 +1081,77 @@ CAB_Client::print_job(std::shared_ptr<JOB> &job)
         {
             sub_string = get_data_value_string(job) + " ...";
         }
-        std::cout   << "type: " << get_job_type_string(job->type) << std::endl
-                    << "type_id: " << get_id_type_string(job->type_id) << std::endl
-                    << "id_string: " << job->id_string << std::endl
-                    << "id_numeric: " << job->id_numeric << std::endl
-                    << "ns: " << job->namespace_index << std::endl
-                    << "init_string: " << job->init_string << std::endl
-                    << "data_type: " << get_data_type_string(job->intern_data->type_data) << std::endl
-                    << "data_value: \n" << sub_string << std::endl
-                    << "zpl: " << job->intern_data->b_value << std::endl
-                    << "bitmap: " << job->intern_data->file_name << std::endl
-                    << CONSOLE_STARS_50 
+        std::cout   << std::setw(20) << std::left << "| type: " 
+                    << std::setw(59) << std::left << get_job_type_string(job->type) << '|' << std::endl
+                    << std::setw(20) << std::left << "| type_id: " 
+                    << std::setw(59) << std::left << get_id_type_string(job->type_id) << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_string: " 
+                    << std::setw(59) << std::left << job->id_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_numeric: " 
+                    << std::setw(59) << std::left << job->id_numeric << '|' << std::endl
+                    << std::setw(20) << std::left << "| ns: " 
+                    << std::setw(59) << std::left << job->namespace_index << '|' << std::endl
+                    << std::setw(20) << std::left << "| init_string: " 
+                    << std::setw(59) << std::left << job->init_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| data_type: " 
+                    << std::setw(59) << std::left << get_data_type_string(job->intern_data->type_data) << '|' << std::endl
+                    << std::setw(20) << std::left << "| data_value: \n" 
+                    << std::setw(59) << std::left << sub_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| zpl: " 
+                    << std::setw(59) << std::left << job->intern_data->b_value << '|' << std::endl
+                    << std::setw(20) << std::left << "| bitmap: " 
+                    << std::setw(59) << std::left << job->intern_data->file_name << '|' << std::endl
+                    << CONSOLE_LINE_80 
                     << std::endl;
     }
     else if(get_job_type(job) == job_type::replace)
     {
-        std::cout   << "type: " << get_job_type_string(job->type) << std::endl
-                    << "type_id: " << get_id_type_string(job->type_id) << std::endl
-                    << "id_string: " << job->id_string << std::endl
-                    << "id_numeric: " << job->id_numeric << std::endl
-                    << "ns: " << job->namespace_index << std::endl
-                    << "init_string: " << job->init_string << std::endl
-                    << "data_value: " << std::endl;
+        std::cout   << std::setw(20) << std::left << "| type: " 
+                    << std::setw(59) << std::left << get_job_type_string(job->type) << '|' << std::endl
+                    << std::setw(20) << std::left << "| type_id: " 
+                    << std::setw(59) << std::left << get_id_type_string(job->type_id) << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_string: " 
+                    << std::setw(59) << std::left << job->id_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_numeric: " 
+                    << std::setw(59) << std::left << job->id_numeric << '|' << std::endl
+                    << std::setw(20) << std::left << "| ns: " 
+                    << std::setw(59) << std::left << job->namespace_index << '|' << std::endl
+                    << std::setw(20) << std::left << "| init_string: " 
+                    << std::setw(59) << std::left << job->init_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| data_value: " 
+                    << std::setw(59) << std::left << '|' << std::endl;
         for(auto it = job->intern_data->replace.begin(); it != job->intern_data->replace.end(); ++it)
         {
-            std::cout   << "Replace " 
+            std::cout   << std::setw(20) << std::left << "| Replace " 
                         << it->first 
                         << " contents with " 
                         << FONT_LIGHT_PURPLE
                         << it->second 
                         << FONT_RESET
-                        << std::endl;
+                        << '|' << std::endl;
         }
-        std::cout   << CONSOLE_STARS_50 
+        std::cout   << CONSOLE_LINE_80 
                     << std::endl;            
 
                     
     }
     else
     {
-        std::cout   << "type: " << get_job_type_string(job->type) << std::endl
-                    << "type_id: " << get_id_type_string(job->type_id) << std::endl
-                    << "id_string: " << job->id_string << std::endl
-                    << "id_numeric: " << job->id_numeric << std::endl
-                    << "ns: " << job->namespace_index << std::endl
-                    << "init_string: " << job->init_string << std::endl
-                    << CONSOLE_STARS_50 
+        std::cout   << std::setw(20) << std::left << "| type: " 
+                    << std::setw(59) << std::left << get_job_type_string(job->type) << '|' << std::endl
+                    << std::setw(20) << std::left << "| type_id: " 
+                    << std::setw(59) << std::left << get_id_type_string(job->type_id) << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_string: " 
+                    << std::setw(59) << std::left << job->id_string << '|' << std::endl
+                    << std::setw(20) << std::left << "| id_numeric: " 
+                    << std::setw(59) << std::left << job->id_numeric << '|' << std::endl
+                    << std::setw(20) << std::left << "| ns: " 
+                    << std::setw(59) << std::left << job->namespace_index << '|' << std::endl
+                    << std::setw(20) << std::left << "| init_string: " 
+                    << std::setw(59) << std::left << job->init_string << '|' << std::endl
+                    << CONSOLE_LINE_80 
                     << std::endl;
     }
-    return;
-}
-
-void
-CAB_Client::print_console_message(std::shared_ptr<JOB> &job,
-                        std::string type)
-{
-    std::cout   << CAB_USER
-                << " - "
-                << job->init_string 
-                << " - "
-                << type 
-                << std::endl;
     return;
 }
 
@@ -1291,7 +1302,7 @@ CAB_Client::string_data_time(const std::string& string)
         std::map<int, std::string> input = parse_arguments(string);
         if(input.size() != 7)
         {
-            print_info("argument syntax invalid. return actual time.")
+            cLOG(Level::INFO, "argument syntax invalid. return actual time.");
             return time;
         }
 
@@ -1313,14 +1324,14 @@ CAB_Client::string_data_time(const std::string& string)
         time.tm_sec = std::stoi(e6.second);
         time.tm_msec = std::stoi(e7.second);
 
-        print_info("Time input: "
-                << time.tm_mday << '.'
-                << time.tm_mon << '.'
-                << time.tm_year << " | "
-                << time.tm_hour << ':'
-                << time.tm_min << ':'
-                << time.tm_sec << ':'
-                << time.tm_msec);
+        cLOG(Level::INFO, "Time input: "
+                + std::to_string(time.tm_mday) + '.'
+                + std::to_string(time.tm_mon) + '.'
+                + std::to_string(time.tm_year) + " | "
+                + std::to_string(time.tm_hour) + ':'
+                + std::to_string(time.tm_min) + ':'
+                + std::to_string(time.tm_sec) + ':'
+                + std::to_string(time.tm_msec));
 
         return time;
     }
@@ -1334,7 +1345,7 @@ data_time CAB_Client::get_system_time(void)
     time_t t = std::chrono::system_clock::to_time_t(now);
     struct tm now_tm;
 
-    localtime_s(&now_tm, &t); 
+    lset::wrapper_localtime(&t, &now_tm);
 
     data_time dt;
     dt.tm_msec = static_cast<int>(milliseconds.count() % 1000);
@@ -1345,14 +1356,14 @@ data_time CAB_Client::get_system_time(void)
     dt.tm_mon = now_tm.tm_mon + 1;
     dt.tm_year = now_tm.tm_year + 1900;
 
-    print_info("Time: "
-            << dt.tm_mday << '.'
-            << dt.tm_mon << '.'
-            << dt.tm_year << " | "
-            << dt.tm_hour << ':'
-            << dt.tm_min << ':'
-            << dt.tm_sec << ':'
-            << dt.tm_msec);
+    cLOG(Level::INFO, "Time: "
+            + std::to_string(dt.tm_mday) + '.'
+            + std::to_string(dt.tm_mon) + '.'
+            + std::to_string(dt.tm_year) + " | "
+            + std::to_string(dt.tm_hour) + ':'
+            + std::to_string(dt.tm_min) + ':'
+            + std::to_string(dt.tm_sec) + ':'
+            + std::to_string(dt.tm_msec));
     return dt;
 }
 

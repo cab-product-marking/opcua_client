@@ -1,5 +1,7 @@
-#ifndef __CAB_CLIENT_H__
-#define __CAB_CLIENT_H__
+#pragma once 
+
+/* Class CAB_Client */
+/* ^^^^^^^^^^^^^^^^ */
 
 #include <iostream>
 #include <vector>
@@ -8,12 +10,14 @@
 #include <memory>
 #include <fstream>
 #include <iomanip>
-//#include <sys/time.h>
 #include <chrono>
 #include <map>
 #include <filesystem>
 
-#include "tools.h"
+#include "defines.h"
+#include "logger.h"
+#include "local_set.h"
+
 #include "data_types.h"
 #include "opcua_client.h"
 
@@ -22,21 +26,28 @@
 #define DEFAULT_USER        "opcuser"
 #define DEFAULT_PASS        "opcpass"
 
-#define RESPONSE_COLUMN     56
-#define RES_FILEPATH        "../res/"
 #define MAX_JOB_LENGTH      100
 
+#define CAB_USER            FONT_LIGHT_BLUE << "cab" << FONT_RESET
 
-/* Class CAB_Client */
-/* ^^^^^^^^^^^^^^^^ */
-
-class CAB_Client : public OPCUA_Client, public CAB
+class CAB_Client : public OPCUA_Client
 {
 public:
 
     CAB_Client();
 
+    virtual
     ~CAB_Client();
+
+    CAB_Client(const CAB_Client&) = delete;
+
+    CAB_Client&
+    operator=(const CAB_Client&) = delete;
+
+    CAB_Client(CAB_Client&&) = delete;
+
+    CAB_Client&
+    operator=(CAB_Client&&) = delete;
 
     /* Basics */
     int 
@@ -146,9 +157,9 @@ private:
     void
     print_job(std::shared_ptr<JOB> &job);
 
-    void
-    print_console_message(std::shared_ptr<JOB> &job,
-                        std::string type);
+    // void
+    // print_console_message(std::shared_ptr<JOB> &job,
+    //                     std::string type);
     void
     print_console_message_data(std::shared_ptr<JOB> &job,
                         std::string type);
@@ -197,4 +208,4 @@ private:
 
 };
 
-#endif // __CAB_CLIENT_H__
+/* Eof */

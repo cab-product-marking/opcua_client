@@ -2,11 +2,11 @@
 
 Tree_Node::Tree_Node(std::string url) : printer_identifier_(url)
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
                 << "Tree_Node::Tree_Node(std::string url);" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE 
+#endif // NDEBUG 
 
     node_ = init_node();
     node_.display_name = {url};
@@ -14,20 +14,20 @@ Tree_Node::Tree_Node(std::string url) : printer_identifier_(url)
 
 Tree_Node::Tree_Node(node actual_node) : node_(actual_node)
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
                 << "Tree_Node::Tree_Node(node actual_node);" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE 
+#endif // NDEBUG 
 }
 
 Tree_Node::~Tree_Node()
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
                 << "Tree_Node::~Tree_Node();" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE
+#endif // NDEBUG
 }
 
 node
@@ -73,7 +73,7 @@ Tree_Node::get_response_data(UA_ReferenceDescription *ref,
     {
         // UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
         //              "Error, node id data string invalid."):
-        print_error("Error, node id data string invalid.");
+        cLOG(Level::ERROR, "Node id data sting invalid");
         return state;
     }
     std::string str;
@@ -107,7 +107,7 @@ Tree_Node::get_response_data(UA_ReferenceDescription *ref,
             {
                 // UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                 //              "Error, node id data string invalid.");
-                print_error("Error, node id data string invalid.");
+                cLOG(Level::ERROR, "Node id data string invalid");
                 return state;
             }
             std::string str;
@@ -147,7 +147,7 @@ Tree_Node::get_response_data(UA_ReferenceDescription *ref,
     {
         // UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
         //             "No object, method or variable.");
-        print_info("No object, method or variable.");
+        cLOG(Level::ERROR, "No object, method or variable.");
     }
     return state;
 }
@@ -338,9 +338,9 @@ Tree_Node::print_tree_file(const std::string &filename)
     std::ofstream file(filename);
     if(!file.is_open())
     {
-        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                     "Error, create file browse_out.txt");
-        print_error("Error, create file browse.txt");
+        // UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+        //              "Error, create file browse_out.txt");
+        cLOG(Level::ERROR, "Can not create file browse.txt");
     }
     else
     {
@@ -349,9 +349,9 @@ Tree_Node::print_tree_file(const std::string &filename)
         std::ofstream out_file(filename, std::ios::app);
         if(!out_file.is_open())
         {
-            UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-                         "Error, while open file output_browse.txt");
-            print_error("Error, while open file browse.txt");
+            // UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+            //              "Error, while open file output_browse.txt");
+            cLOG(Level::ERROR, "Can not open file browse.txt");
         }
         else
         {

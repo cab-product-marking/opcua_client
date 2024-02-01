@@ -9,6 +9,9 @@ add_executable(client
                main.cpp
                opcua_client.cpp
                cab_client.cpp
-               tree_node.cpp)  
+               tree_node.cpp
+               local_set.cpp
+               show_cab.cpp
+               logger.cpp)  
                
 target_link_libraries(client open62541::open62541)

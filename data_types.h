@@ -1,22 +1,12 @@
-#ifndef __DATA_TYPES_H__
-#define __DATA_TYPES_H__
+#pragma once
+
+/* Data Types */
+/* ^^^^^^^^^^ */
 
 #include <iostream>
 #include <ctime>
 #include <map>
 #include <memory>
-
-#ifdef __linux__
-#define DIR_RES         "res/"
-#define DIR_BUILD       "build/"
-#else
-#define DIR_RES
-#define DIR_BUILD           
-#endif
-
-
-/* Data Types */
-/* ^^^^^^^^^^ */
 
 typedef float f32_t;
 typedef double f64_t;
@@ -151,4 +141,4 @@ struct MITEM
     int subscription_id;
 };
 
-#endif // __DATA_TYPES_H__
+/* Eof */

@@ -403,6 +403,6 @@ open62541_lib/
 build/
 
 # Internal files 
-# test.md
+# test.md # need for testing on Linux and Windows 
 
 # Eof

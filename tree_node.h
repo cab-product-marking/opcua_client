@@ -1,5 +1,7 @@
-#ifndef __TREE_NODE_H__
-#define __TREE_NODE_H__
+#pragma once
+
+/* Class Tree_Node */
+/* ^^^^^^^^^^^^^^^ */
 
 #include <iostream>
 #include <vector>
@@ -7,15 +9,13 @@
 #include <memory>
 #include <fstream>
 
-#include "tools.h"
+#include "defines.h"
+#include "logger.h"
+
 #include "data_types.h"
 
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
-
-
-/* Class Tree_Node */
-/* ^^^^^^^^^^^^^^^ */
 
 class Tree_Node
 {
@@ -25,6 +25,17 @@ public:
 
     Tree_Node(node actual_node);
 
+    Tree_Node(const Tree_Node&) = delete;
+
+    Tree_Node&
+    operator=(const Tree_Node&) = delete;
+
+    Tree_Node(Tree_Node&&) = delete;
+
+    Tree_Node&
+    operator=(Tree_Node&&) = delete;
+
+    virtual
     ~Tree_Node();
 
     static node
@@ -104,4 +115,4 @@ private:
 
 };
 
-#endif // __TREE_NODE_H__
+/* Eof */

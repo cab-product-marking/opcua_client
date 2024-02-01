@@ -4,18 +4,18 @@ UA_SessionState OPCUA_Client::actual_session_state_;
 
 OPCUA_Client::OPCUA_Client()
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_RED << "OPCUA_Client::OPCUA_Client()" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE 
+#endif // NDEBUG 
 }
 
 OPCUA_Client::~OPCUA_Client()
 {
-#ifdef FEATURE_CONSTRUCTOR_VISABLE
+#ifndef NDEBUG
     std::cout   << FONT_RED << "OPCUA_Client::~OPCUA_Client()" 
                 << FONT_RESET << std::endl;
-#endif // FEATURE_CONSTRUCTOR_VISABLE        
+#endif // NDEBUG        
 }
 
 void 
@@ -1185,7 +1185,7 @@ OPCUA_Client::data_handler_write(UA_Variant &target,
         //     UA_UInt16 nanoSec;
         //     UA_UInt16 microSec;
         //     UA_UInt16 milliSec;
-        //     UA_UInt16 sec;
+        //     UA_UInt16 sec;   
         //     UA_UInt16 min;
         //     UA_UInt16 hour;
         //     UA_UInt16 day;   /* From 1 to 31 */
@@ -1193,14 +1193,15 @@ OPCUA_Client::data_handler_write(UA_Variant &target,
         //     UA_UInt16 year;
         // } UA_DateTimeStruct;
 
-        print_info("Time write: "
-                << job->intern_data->time.tm_mday << '.'
-                << job->intern_data->time.tm_mon << '.'
-                << job->intern_data->time.tm_year << " | "
-                << job->intern_data->time.tm_hour << ':'
-                << job->intern_data->time.tm_min << ':'
-                << job->intern_data->time.tm_sec << ':'
-                << job->intern_data->time.tm_msec);
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "Time write: %d.%d.%d | %d:%d:%d:%d",
+                    job->intern_data->time.tm_mday,
+                    job->intern_data->time.tm_mon,
+                    job->intern_data->time.tm_year,
+                    job->intern_data->time.tm_hour,
+                    job->intern_data->time.tm_min,
+                    job->intern_data->time.tm_sec,
+                    job->intern_data->time.tm_msec);
 
         UA_DateTimeStruct dts;
         dts.nanoSec = 0;
