@@ -1,10 +1,9 @@
 # OPEN SOURCE OPC UA CLIENT FOR CAB PRINTER USECASES
 
 These are examples of an OPC UA client written in C++ and Python. Basic functionalities in 
-dealing with a CAB printer and OPC UA are shown. This includes reading and writing configurations, 
+dealing with CAB printers and OPC UA are shown. This includes reading and writing configurations, 
 handling and printing labels and replacing data fields in the label using Replace. These examples 
-are intended to give you an idea of how the functionalities of the printer and with the printer 
-can be set up.
+give you an concrete overview how you can control and set up cab printers with OPC UA.
 
 ## Dependencies and installation on Linux systems
 
@@ -16,7 +15,7 @@ An environment supporting C++17 is necessary. Project dependencies:
  * open62541 >= v1.3.8
 
 The open62541 library version 1.3.8 is required for the c++ and python client. 
-Download the open62541 sources (using git or as a zipfile from github) or use the included in the project. 
+Download the open62541 sources using git or as a zipfile from github. 
 Newer versions and documentation on:
  * https://www.open62541.org/
  * https://www.open62541.org/doc/0.3/toc.html
@@ -28,11 +27,10 @@ Install the open62541 library:
     $ git clone https://github.com/open62541/open62541.git
     $ cd open62541
     $ git checkout tags/v1.3.8
-    $ git checkout -b "new_main"
     $ mkdir build
     $ cd build/
     $ cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug ..
-    $ make
+    $ make -j4
     $ make install
 
 Build and configure the client project:
@@ -105,7 +103,7 @@ Newer versions and documentation on:
  * https://www.open62541.org/doc/0.3/toc.html
  * https://github.com/open62541/open62541
 
-Open a Windows Power Shell (cmd) with admin rights and run;
+Open a Windows Power Shell (cmd) with admin rights and run:
 
     $ cd <paths to>\opcua_client\open62541
     $ mkdir build  
@@ -131,15 +129,17 @@ Next, need to check the include paths for the *.h files.
 If installed the open62541 library as described above, the paths should be OK.
 Checking the project settings for Debug and Release is recommended.
 
-Debug settings:
- * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Debug\include
- * Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories -> open62541_lib\Debug\lib
- * Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies -> open62541.lib
+| Debug properties | Setting |
+|-|-|
+| Properties>Configuration Properties>C/C++>General>Additional Include Directories | open62541_lib\Debug\include |
+| Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories | open62541_lib\Debug\lib |
+| Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies | open62541.lib |
 
-Release settings:
- * Properties>Configuration Properties>C/C++>General>Additional Include Directories -> open62541_lib\Release\include
- * Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories -> open62541_lib\Release\lib
- * Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies -> open62541.lib
+| Release properties | Setting |
+|-|-|
+| Properties>Configuration Properties>C/C++>General>Additional Include Directories | open62541_lib\Release\include |
+| Properties>Configuration Properties>C/C++>Linker>General>Additional Library Directories | open62541_lib\Release\lib |
+| Properties>Configuration Properties>C/C++>Linker>Input>Additional Dependencies | open62541.lib |
 
 The client needs the open62541.dll for runtime. To generate x64 folder start build for Debug and Release.
 Copy *.dll from <paths to>\opcua_client\open62541_lib\Debug\bin to <paths to>\opcua_client\x64\Debug.
@@ -175,7 +175,7 @@ For istalling the library use following syntax:
 Make sure OPC UA is activated in printer settings. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
 
-    $ cd C:\Users\shadow\source\repos\opcua_client\
+    $ cd <paths to>\opcua_client
     $ python .\client.py --help
 
 If there are problems with the terminal arguments use brackets.
