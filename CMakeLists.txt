@@ -9,7 +9,7 @@ add_executable(client
                main.cpp
                opcua_client.cpp
                cab_client.cpp
-               NodeTree.cpp
+               node_tree.cpp
                local_set.cpp
                logger.cpp)  
                
