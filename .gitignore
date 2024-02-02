@@ -401,6 +401,7 @@ FodyWeavers.xsd
 open62541/
 open62541_lib/
 build/
+.vscode/
 
 # Internal files 
 # test.md # need for testing on Linux and Windows 
