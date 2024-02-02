@@ -1,7 +1,9 @@
 #pragma once
 
-/* Data Types */
-/* ^^^^^^^^^^ */
+/**
+ * Data types
+ * ^^^^^^^^^^
+*/
 
 #include <iostream>
 #include <ctime>

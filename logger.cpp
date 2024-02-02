@@ -61,6 +61,9 @@ Logger::log(Level level, const std::string& message, std::shared_ptr<JOB> sptr)
                 << sptr->init_string << " - " << message << std::endl;
             }
             break;
+        case Level::DATA:
+            /* to do */
+            break;
     }
 }
 

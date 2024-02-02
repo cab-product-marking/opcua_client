@@ -1,8 +1,5 @@
 #pragma once
 
-/* Class OPCUA_Client */
-/* ^^^^^^^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -15,7 +12,7 @@
 #include "logger.h"
 
 #include "data_types.h"
-#include "tree_node.h"
+#include "node_tree.h"
 
 #include <open62541/client_config_default.h>
 #include <open62541/client_highlevel.h>
@@ -32,6 +29,10 @@
 
 #define BROWSE_START_LAYER              1
 
+/**
+ * Class OPCUA_Client 
+ * ^^^^^^^^^^^^^^^^^^
+*/
 class OPCUA_Client 
 {
 

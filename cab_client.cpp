@@ -539,7 +539,7 @@ CAB_Client::write_node(std::shared_ptr<JOB> job)
 void
 CAB_Client::browse_nodes(std::shared_ptr<JOB> job)
 {
-    jLOG(Level::JOB, "browse nodes with Tree_Node objects", job);
+    jLOG(Level::JOB, "browse nodes with NodeTree objects", job);
     opcuac_browse_nodes(job, client_url_);
     /* Erase from job list */
     job->erase = true;

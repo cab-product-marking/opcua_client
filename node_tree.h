@@ -1,8 +1,5 @@
 #pragma once
 
-/* Class Tree_Node */
-/* ^^^^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <vector>
 #include <iomanip>
@@ -17,26 +14,30 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
 
-class Tree_Node
+/**
+ * Class NodeTree
+ * ^^^^^^^^^^^^^^^
+*/
+class NodeTree
 {
 public:
 
-    Tree_Node(std::string);
+    NodeTree(std::string);
 
-    Tree_Node(node actual_node);
+    NodeTree(node actual_node);
 
-    Tree_Node(const Tree_Node&) = delete;
+    NodeTree(const NodeTree&) = delete;
 
-    Tree_Node&
-    operator=(const Tree_Node&) = delete;
+    NodeTree&
+    operator=(const NodeTree&) = delete;
 
-    Tree_Node(Tree_Node&&) = delete;
+    NodeTree(NodeTree&&) = delete;
 
-    Tree_Node&
-    operator=(Tree_Node&&) = delete;
+    NodeTree&
+    operator=(NodeTree&&) = delete;
 
     virtual
-    ~Tree_Node();
+    ~NodeTree();
 
     static node
     init_node(void);
@@ -46,7 +47,7 @@ public:
 
     /* Add node */
     void
-    add_child(std::shared_ptr<Tree_Node> shared);
+    add_child(std::shared_ptr<NodeTree> shared);
 
     static int
     get_response_data(UA_ReferenceDescription *ref, 
@@ -111,7 +112,7 @@ private:
     const std::string printer_identifier_;
 
     node node_;
-    std::vector<std::shared_ptr<Tree_Node>> children_;
+    std::vector<std::shared_ptr<NodeTree>> children_;
 
 };
 

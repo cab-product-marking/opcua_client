@@ -1,8 +1,5 @@
 #pragma once 
 
-/* Class CAB_Client */
-/* ^^^^^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -30,6 +27,10 @@
 
 #define CAB_USER            FONT_LIGHT_BLUE << "cab" << FONT_RESET
 
+/**
+ * Class CAB_Client
+ * ^^^^^^^^^^^^^^^^
+*/
 class CAB_Client : public OPCUA_Client
 {
 public:
@@ -157,9 +158,11 @@ private:
     void
     print_job(std::shared_ptr<JOB> &job);
 
+    /* Include in Logger */
     // void
     // print_console_message(std::shared_ptr<JOB> &job,
     //                     std::string type);
+    /* Include in Logger */
     void
     print_console_message_data(std::shared_ptr<JOB> &job,
                         std::string type);
@@ -200,8 +203,10 @@ private:
     /* Data */
     client_arg client_arguments_;
     std::string client_url_;
+
     /* Current jobs */
     std::vector<std::shared_ptr<JOB>> job_buffer_;   
+
     /* New jobs */
     std::vector<std::shared_ptr<JOB>> new_jobs_; 
     

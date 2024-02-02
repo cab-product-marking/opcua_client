@@ -1,10 +1,10 @@
-#include "tree_node.h"
+#include "node_tree.h"
 
-Tree_Node::Tree_Node(std::string url) : printer_identifier_(url)
+NodeTree::NodeTree(std::string url) : printer_identifier_(url)
 {
 #ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
-                << "Tree_Node::Tree_Node(std::string url);" 
+                << "NodeTree::NodeTree(std::string url);" 
                 << FONT_RESET << std::endl;
 #endif // NDEBUG 
 
@@ -12,26 +12,26 @@ Tree_Node::Tree_Node(std::string url) : printer_identifier_(url)
     node_.display_name = {url};
 }
 
-Tree_Node::Tree_Node(node actual_node) : node_(actual_node)
+NodeTree::NodeTree(node actual_node) : node_(actual_node)
 {
 #ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
-                << "Tree_Node::Tree_Node(node actual_node);" 
+                << "NodeTree::NodeTree(node actual_node);" 
                 << FONT_RESET << std::endl;
 #endif // NDEBUG 
 }
 
-Tree_Node::~Tree_Node()
+NodeTree::~NodeTree()
 {
 #ifndef NDEBUG
     std::cout   << FONT_MAGENTA 
-                << "Tree_Node::~Tree_Node();" 
+                << "NodeTree::~NodeTree();" 
                 << FONT_RESET << std::endl;
 #endif // NDEBUG
 }
 
 node
-Tree_Node::init_node(void)
+NodeTree::init_node(void)
 {
     node init_node;
     init_node.namespace_index = {- 1};
@@ -44,7 +44,7 @@ Tree_Node::init_node(void)
 }
 
 void 
-Tree_Node::init_node(node &init_node)
+NodeTree::init_node(node &init_node)
 {
     init_node.namespace_index = {- 1};
     init_node.ident_type = {id_type::DEFAULT};
@@ -56,14 +56,14 @@ Tree_Node::init_node(node &init_node)
 }
 
 void 
-Tree_Node::add_child(std::shared_ptr<Tree_Node> shared)
+NodeTree::add_child(std::shared_ptr<NodeTree> shared)
 {
     children_.push_back(shared);
     return;
 }
 
 int
-Tree_Node::get_response_data(UA_ReferenceDescription *ref, 
+NodeTree::get_response_data(UA_ReferenceDescription *ref, 
                         node &current_node)
 {
     int state = {EXIT_FAILURE};
@@ -153,7 +153,7 @@ Tree_Node::get_response_data(UA_ReferenceDescription *ref,
 }
 
 void
-Tree_Node::set_node_job(std::shared_ptr<JOB> &job)
+NodeTree::set_node_job(std::shared_ptr<JOB> &job)
 {
     node_.namespace_index = job->namespace_index;
     node_.ident_type = job->type_id;
@@ -163,37 +163,37 @@ Tree_Node::set_node_job(std::shared_ptr<JOB> &job)
 }
 
 int
-Tree_Node::get_namespace(void)
+NodeTree::get_namespace(void)
 {
     return node_.namespace_index;
 }
 
 id_type
-Tree_Node::get_ident_type(void)
+NodeTree::get_ident_type(void)
 {
     return node_.ident_type;
 }
 
 std::string 
-Tree_Node::get_ident_string(void)
+NodeTree::get_ident_string(void)
 {
     return node_.identifier_string;
 }
 
 int
-Tree_Node::get_ident_numeric(void)
+NodeTree::get_ident_numeric(void)
 {
     return node_.identifier_int;
 }
 
 std::string
-Tree_Node::get_display_name(void)
+NodeTree::get_display_name(void)
 {
     return node_.display_name;
 }
 
 std::string
-Tree_Node::get_namespace_index(void)
+NodeTree::get_namespace_index(void)
 {
     std::string type = {""};
     if(node_.namespace_index < 0)
@@ -208,7 +208,7 @@ Tree_Node::get_namespace_index(void)
 }
 
 std::string
-Tree_Node::get_identifier(void)
+NodeTree::get_identifier(void)
 {
     std::string type = {""};
     if(node_.ident_type == id_type::string)
@@ -231,7 +231,7 @@ Tree_Node::get_identifier(void)
 }
 
 std::string
-Tree_Node::get_node_type(void)
+NodeTree::get_node_type(void)
 {
     std::string type = {""};
     if(node_.node_art == node_type::method)
@@ -258,7 +258,7 @@ Tree_Node::get_node_type(void)
 }
 
 std::string
-Tree_Node::get_identifier_type(void)
+NodeTree::get_identifier_type(void)
 {
     if(node_.ident_type == id_type::string)
     {
@@ -279,7 +279,7 @@ Tree_Node::get_identifier_type(void)
 }
 
 void
-Tree_Node::print_node(void)
+NodeTree::print_node(void)
 {
     std::cout   << FONT_GREEN
                 << "[ " << get_identifier_type() << " ]"
@@ -292,7 +292,7 @@ Tree_Node::print_node(void)
 }
 
 void
-Tree_Node::print_tree_console(void)
+NodeTree::print_tree_console(void)
 {
     std::cout   << FONT_BLUE
                 << "\n[Cab printer]     " 
@@ -308,7 +308,7 @@ Tree_Node::print_tree_console(void)
 }
 
 void
-Tree_Node::print_tree_console_(const std::string &prefix, bool is_last)
+NodeTree::print_tree_console_(const std::string &prefix, bool is_last)
 {
     std::cout << prefix;
     std::cout << (is_last ? "└── " : "├── ");
@@ -333,7 +333,7 @@ Tree_Node::print_tree_console_(const std::string &prefix, bool is_last)
 }
 
 void
-Tree_Node::print_tree_file(const std::string &filename)
+NodeTree::print_tree_file(const std::string &filename)
 {
     std::ofstream file(filename);
     if(!file.is_open())
@@ -370,7 +370,7 @@ Tree_Node::print_tree_file(const std::string &filename)
 }
 
 void
-Tree_Node::print_tree_file_(std::ofstream &file,
+NodeTree::print_tree_file_(std::ofstream &file,
                         const std::string &prefix,
                         bool is_last)
 {

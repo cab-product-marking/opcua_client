@@ -1,8 +1,5 @@
 #pragma once 
 
-/* Class Logger */
-/* ^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -16,8 +13,11 @@
 #include "data_types.h"
 // #include "job.h"
 
+#ifndef NDEBUG
 /* Classic log */
 #define cLOG(level, message)        Logger::get_instance().log(level, message)   
+#endif
+
 /* Job log */
 #define jLOG(level, message, ptr)   Logger::get_instance().log(level, message, ptr)
 /* Data log */
@@ -28,9 +28,14 @@ enum class Level
     INFO, 
     WARNING,
     ERROR,
-    JOB
+    JOB,
+    DATA
 };
 
+/**
+ * Class Logger
+ * ^^^^^^^^^^^^
+*/
 class Logger
 {
 public:
@@ -54,7 +59,8 @@ public:
 
     /* Basic log level parser */
     void 
-    log(Level level, const std::string& message, std::shared_ptr<JOB> sptr = nullptr);
+    log(Level level, const std::string& message, 
+            std::shared_ptr<JOB> sptr = nullptr);
 
     /* Time function */
     std::string 

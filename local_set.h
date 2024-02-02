@@ -1,7 +1,9 @@
 #pragma once
 
-/* Case Windows or Linux */
-/* ^^^^^^^^^^^^^^^^^^^^^ */
+/**
+ * Case Windows and Linux
+ * ^^^^^^^^^^^^^^^^^^^^^^
+*/
 
 #include <ctime>
 

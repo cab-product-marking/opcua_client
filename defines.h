@@ -1,10 +1,11 @@
 #pragma once
 
-/* Defines used in project */
-/* ^^^^^^^^^^^^^^^^^^^^^^^ */
+/**
+ * Defines used in project
+ * ^^^^^^^^^^^^^^^^^^^^^^^
+*/
 
 #include <iostream>
-#include <cstring>
 
 /* Color features */
 #define FONT_BLACK              "\033[0;30m"

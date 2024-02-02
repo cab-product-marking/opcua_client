@@ -35,13 +35,13 @@
     <ClCompile Include="cab_client.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="opcua_client.cpp" />
-    <ClCompile Include="tree_node.cpp" />
+    <ClCompile Include="NodeTree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cab_client.h" />
     <ClInclude Include="data_types.h" />
     <ClInclude Include="opcua_client.h" />
     <ClInclude Include="tools.h" />
-    <ClInclude Include="tree_node.h" />
+    <ClInclude Include="NodeTree.h" />
   </ItemGroup>
 </Project>

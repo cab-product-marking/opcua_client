@@ -1,8 +1,5 @@
 #pragma once 
 
-/* Class cab - console show */
-/* ^^^^^^^^^^^^^^^^^^^^^^^^ */
-
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -12,6 +9,10 @@
 
 #define CAB_TIME_MS             2000
 
+/** 
+ * Class CAB
+ * ^^^^^^^^^
+*/
 class CAB
 {
 public:

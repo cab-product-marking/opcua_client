@@ -582,12 +582,12 @@ OPCUA_Client::opcuac_browse_nodes(std::shared_ptr<JOB> &job,
         job->namespace_index = 0;
     }
     /* Create tree object with printer url */
-    std::shared_ptr<Tree_Node> tree = std::make_shared<Tree_Node>(url);
+    std::shared_ptr<NodeTree> tree = std::make_shared<NodeTree>(url);
     /* Basic settings from job*/
     tree->set_node_job(job);
 
     /* List for child nodes */
-    std::map<int, std::shared_ptr<Tree_Node>> browse_nodes_list;
+    std::map<int, std::shared_ptr<NodeTree>> browse_nodes_list;
     int base_index = {0};
     int start_index = base_index;
     browse_nodes_list.emplace(base_index, tree);
@@ -601,11 +601,11 @@ OPCUA_Client::opcuac_browse_nodes(std::shared_ptr<JOB> &job,
         UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                     "Elements in browse_node_list: %lu", 
                     browse_nodes_list.size());
-        std::map<int, std::shared_ptr<Tree_Node>> temporary;
+        std::map<int, std::shared_ptr<NodeTree>> temporary;
         
         for(auto it : browse_nodes_list)
         {
-            std::shared_ptr<Tree_Node> pointer = it.second;
+            std::shared_ptr<NodeTree> pointer = it.second;
             // pointer->print_node();
             UA_BrowseRequest request;
             UA_BrowseRequest_init(&request);
@@ -663,12 +663,12 @@ OPCUA_Client::opcuac_browse_nodes(std::shared_ptr<JOB> &job,
                     {
                         UA_ReferenceDescription *reference = &(response.results[i].references[j]);
 
-                        node current_node = Tree_Node::init_node();
+                        node current_node = NodeTree::init_node();
 
-                        if(Tree_Node::get_response_data(reference, current_node) == EXIT_SUCCESS)
+                        if(NodeTree::get_response_data(reference, current_node) == EXIT_SUCCESS)
                         {
-                            std::shared_ptr<Tree_Node> new_child = 
-                                    std::make_shared<Tree_Node>(current_node);
+                            std::shared_ptr<NodeTree> new_child = 
+                                    std::make_shared<NodeTree>(current_node);
 
                             if(reference->isForward == true)
                             {
