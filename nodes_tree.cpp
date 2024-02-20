@@ -1,24 +1,14 @@
-#include "node_tree.h"
+#include "nodes_tree.h"
 
 NodeTree::NodeTree(std::string url) : printer_identifier_(url)
 {
-#ifndef NDEBUG
-    std::cout   << FONT_MAGENTA 
-                << "NodeTree::NodeTree(std::string url);" 
-                << FONT_RESET << std::endl;
-#endif // NDEBUG 
-
     node_ = init_node();
     node_.display_name = {url};
 }
 
 NodeTree::NodeTree(node actual_node) : node_(actual_node)
 {
-#ifndef NDEBUG
-    std::cout   << FONT_MAGENTA 
-                << "NodeTree::NodeTree(node actual_node);" 
-                << FONT_RESET << std::endl;
-#endif // NDEBUG 
+
 }
 
 NodeTree::~NodeTree()

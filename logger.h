@@ -8,10 +8,8 @@
 #include <ctime>
 #include <memory>
  
-#include "defines.h"
-#include "local_set.h"
-#include "data_types.h"
-// #include "job.h"
+#include "common_defines.h"
+#include "os_wrappers.h"
 
 #ifndef NDEBUG
 /* Classic log */
@@ -31,6 +29,9 @@ enum class Level
     JOB,
     DATA
 };
+
+/* Forward declaration */
+class Job;
 
 /**
  * Class Logger
@@ -55,12 +56,12 @@ public:
     operator=(Logger&&) = delete;
 
     /* Return static logger instance */
-    static Logger& get_instance(void);
+    static Logger& 
+    get_instance(void);
 
     /* Basic log level parser */
     void 
-    log(Level level, const std::string& message, 
-            std::shared_ptr<JOB> sptr = nullptr);
+    log(Level level, const std::string& message, std::shared_ptr<Job> jsptr = nullptr);
 
     /* Time function */
     std::string 

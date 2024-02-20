@@ -1,13 +1,9 @@
 #pragma once
 
-/**
- * Defines used in project
- * ^^^^^^^^^^^^^^^^^^^^^^^
-*/
-
 #include <iostream>
 
 /* Color features */
+
 #define FONT_BLACK              "\033[0;30m"
 #define FONT_RED                "\033[0;31m"
 #define FONT_GREEN              "\033[0;32m"
@@ -36,6 +32,7 @@
 #define BACK_LIGHT_GREY         "\033[0;47m"
 
 /* Cursor features */
+
 #define CONSOLE_LINE(x)         std::cout << std::string(x, '-') << std::endl;
 #define CONSOLE_LINE_50         std::string(50, '-')
 #define CONSOLE_LINE_60         std::string(60, '-')
@@ -57,5 +54,20 @@
 #define CURSOR_ROW(y)           "\033[" << y << "d"
 #define CURSOR_OFF              "\033[?25l"
 #define CURSOR_ON               "\033[?25h"
+
+namespace open62541
+{
+    #define DEFAULT_IP                  "192.168.200.70"
+    #define DEFAULT_PORT                "4840"
+    #define DEFAULT_USER                "opcuser"
+    #define DEFAULT_PASS                "opcpass"
+    #define DEFAULT_URL                 "DEFAULT"
+    #define DEFAULT_SECURE_MODE         false
+};
+
+namespace freeopcua
+{
+
+};
 
 /* Eof */

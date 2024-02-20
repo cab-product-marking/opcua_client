@@ -2,18 +2,12 @@
 
 Logger::Logger()
 {
-#ifndef NDEBUG
-    std::cout   << FONT_YELLOW << "Logger::Logger()"
-                << FONT_RESET << std::endl;
-#endif // _DEBUG 
+
 }
 
 Logger::~Logger()
 {
-#ifndef NDEBUG
-    std::cout   << FONT_YELLOW << "Logger::~Logger()"
-                << FONT_RESET << std::endl;
-#endif // _DEBUG 
+
 }
 
 /* Return static logger instance */
@@ -26,7 +20,7 @@ Logger::get_instance(void)
 
 /* Basic log level parser */
 void 
-Logger::log(Level level, const std::string& message, std::shared_ptr<JOB> sptr) 
+Logger::log(Level level, const std::string& message, std::shared_ptr<Job> jsptr) 
 {
     std::string prefix = actual_time();
     
@@ -48,7 +42,7 @@ Logger::log(Level level, const std::string& message, std::shared_ptr<JOB> sptr)
             << message << std::endl;
             break;
         case Level::JOB:
-            if(sptr == nullptr)
+            if(jsptr == nullptr)
             {
                 std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
                 << std::setw(20) << std::left << " job/cab" << FONT_RESET
@@ -56,9 +50,10 @@ Logger::log(Level level, const std::string& message, std::shared_ptr<JOB> sptr)
             }
             else 
             {
-                std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
-                << std::setw(20) << std::left << " job/cab" << FONT_RESET
-                << sptr->init_string << " - " << message << std::endl;
+                // std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                // << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                // << jsptr->init_string << " - " << message << std::endl;
+                std::cout << "to do ..." << std::endl;
             }
             break;
         case Level::DATA:
@@ -77,7 +72,7 @@ Logger::actual_time(void)
     
     std::tm now_tm;
 
-    lset::wrapper_localtime(&now_as_time_t, &now_tm);
+    osw::wrapper_localtime(&now_as_time_t, &now_tm);
 
     std::ostringstream oss;
 

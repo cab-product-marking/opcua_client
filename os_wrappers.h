@@ -1,10 +1,5 @@
 #pragma once
 
-/**
- * Case Windows and Linux
- * ^^^^^^^^^^^^^^^^^^^^^^
-*/
-
 #include <ctime>
 
 #ifdef __linux__
@@ -15,16 +10,13 @@
 #define DIR_BUILD       "../../build/"    
 #endif
 
-namespace lset
+namespace osw
 {
     /* Work with time */
     void
     wrapper_localtime (const time_t* time_time_t, tm* time_tm);
 
-    /* More local cases */
-
-
-
+    /* More local cases ... */
 
 } // namespace lset
 

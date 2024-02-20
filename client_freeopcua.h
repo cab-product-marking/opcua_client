@@ -1,24 +1,27 @@
 #pragma once
 
-#include "Iclient.h"
+#include <iostream>
 
-#define DEFAULT_IP          "192.168.200.70"
-#define DEFAULT_PORT        "4840"
-#define DEFAULT_USER        "opcuser"
-#define DEFAULT_PASS        "opcpass"
+#include "Iclient_opcua.h"
+#include "job_freeopcua.h"
 
 namespace freeopcua
 {
+
+#define DEFAULT_IP                  "192.168.200.70"
+#define DEFAULT_PORT                "4840"
+#define DEFAULT_USER                "opcuser"
+#define DEFAULT_PASS                "opcpass"
+
     /**
      * Class Client 
-     * ^^^^^^^^^^^^
      */
-    class Client : public opcuac::IClient
+    class Client : public opcuac::Client
     {
     public:
         /* Basics */
 
-        using opcuac::IClient::IClient;
+        using opcuac::Client::Client;
 
         Client(const Client&) = delete;
 
@@ -31,7 +34,7 @@ namespace freeopcua
         operator=(Client&&) = delete;
 
         virtual
-        ~Client();
+        ~Client() = default;
 
         /* To do ... */
 

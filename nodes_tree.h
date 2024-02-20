@@ -6,10 +6,10 @@
 #include <memory>
 #include <fstream>
 
-#include "defines.h"
+#include "common_defines.h"
 #include "logger.h"
 
-#include "data_types.h"
+#include "common_types.h"
 
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>

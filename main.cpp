@@ -1,7 +1,7 @@
 #include <iostream>
 #include <signal.h>
 
-#include "cab_client.h"
+#include "client.h"
 
 bool running = {true};
 
@@ -18,29 +18,29 @@ int main(int argc, char *argv[])
     signal(SIGINT, stop_handler);
 
     /* New cab client */
-    CAB_Client *cab_client = new CAB_Client();
+    cab::Client *client = new cab::Client();
 
-    int state = cab_client->connect(argc, argv);
+    int state = client->connect(argc, argv);
     if(state != EXIT_SUCCESS)
     {
         /* Clean up */
-        delete cab_client;
-        cab_client = nullptr;
+        delete client;
+        client = nullptr;
         return EXIT_FAILURE;
     }
 
     while(running)
     {
         /* Workbench */
-        cab_client->run_iterate();
+        client->run_iterate();
 
     }
 
-    cab_client->disconnect();
+    client->disconnect();
 
     /* Clean up */
-    delete cab_client;
-    cab_client = nullptr;
+    delete client;
+    client = nullptr;
     return EXIT_SUCCESS;
 }
 
