@@ -10,13 +10,18 @@
 #include <chrono>
 #include <map>
 #include <filesystem>
+#include <set>
 
 #include "logger.h"
 #include "os_wrappers.h"
 #include "client_open62541.h"
 #include "common_types.h"
 
-#define TESTING 
+#include "job_open62541.h"
+#include "job_dec_jobtype.h"
+#include "job_dec_nodetype.h"
+
+#define FEATURES 
 
 namespace cab
 {
@@ -82,13 +87,33 @@ namespace cab
         void
         show_usage(void);
 
+        bool
+        file_finder(const std::string& dir, const std::string& file);
+
+        void
+        create_job(const std::string& input);
+
+        std::map<int, std::string>
+        parse_args(const std::string& input);
+
+        bool 
+        digits(const std::string& str);
+
+        void
+        print_jobs_(void);
+
+        void
+        print_job(open62541::jsptr);
+
         /* Variables */
 
         open62541::Client* client_;
 
+        std::set<open62541::jsptr> jobs_;
+
 
     };
 
-};
+} // namespace cab
 
 /* Eof */

@@ -135,7 +135,7 @@ Client::run_iterate(void)
 /* Printer services */
 
 void
-Client::add_monitored_item(jsptr job)
+Client::add_monitored_item(job_sptr job)
 {
     // if(actual_session_state_ != UA_SESSIONSTATE_ACTIVATED)
     // {
@@ -296,7 +296,7 @@ Client::add_monitored_item(jsptr job)
 }
 
 void
-Client::del_monitored_item(jsptr job)
+Client::del_monitored_item(job_sptr job)
 {
     // if(monitored_items_.empty())
     // {
@@ -409,7 +409,7 @@ Client::del_monitored_item(jsptr job)
 }
 
 void
-Client::read_node(jsptr job)
+Client::read_node(job_sptr job)
 {
     // UA_NodeId target;
     // UA_NodeId_init(&target);
@@ -462,7 +462,7 @@ Client::read_node(jsptr job)
 }
 
 int
-Client::write_node(jsptr job)
+Client::write_node(job_sptr job)
 {
     // UA_NodeId target;
     // UA_NodeId_init(&target);
@@ -513,7 +513,7 @@ Client::write_node(jsptr job)
 }
 
 void
-Client::browse(jsptr job)
+Client::browse(job_sptr job)
 {
     // /* Set default when there is no specific node */
     // if(job->init_string == "browse")
@@ -653,7 +653,7 @@ Client::browse(jsptr job)
 /* Printer methods */
 
 void 
-Client::file_upload(jsptr job)
+Client::file_upload(job_sptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;
@@ -779,7 +779,7 @@ Client::file_upload(jsptr job)
 }
 
 void
-Client::print_data(jsptr job)
+Client::print_data(job_sptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;
@@ -858,7 +858,7 @@ Client::print_data(jsptr job)
 /* Printer interpreter methods */
 
 void 
-Client::print_current_label(jsptr job)
+Client::print_current_label(job_sptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;

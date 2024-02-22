@@ -10,6 +10,9 @@ namespace opcuac
     {
     public:
 
+        virtual void
+        print(std::ostream& os) const = 0;
+        
         /* More pure virtual functions  */    
 
     };

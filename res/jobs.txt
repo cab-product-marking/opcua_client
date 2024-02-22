@@ -1,8 +1,8 @@
 ### Each line can be interpreted as a separate job 
 
 ### Add monitored items
-# mitem_add:ID_CLOCK_TIME:4 # Printer time
-# mitem_add:2258:0 # Server time
+mitem_add:ID_CLOCK_TIME:4 # Printer time
+mitem_add:2258:0 # Server time
 
 ### Delete monitored items only in cpp
 # mitem_delete:2258:0

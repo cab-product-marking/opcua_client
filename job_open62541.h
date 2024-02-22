@@ -2,13 +2,17 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "Ijob.h"
 
-#include <open62541/client.h>
-
 namespace open62541
 {
+    class Job;
+    typedef std::shared_ptr<open62541::Job> jsptr;
+
+    std::ostream&
+    operator<<(std::ostream& os, const Job& job);
 
     /* Class Job */
 
@@ -16,62 +20,26 @@ namespace open62541
     {
     public:
 
+        Job(const std::string&) noexcept;
+
         virtual 
         ~Job() = default;
 
-        virtual UA_NodeId&
-        nodeID(void) = 0;
+        virtual void
+        print(std::ostream& os) const override;
+
+        friend std::ostream&
+        operator<<(std::ostream& os, const Job& job);
 
     protected:
 
         Job() = default;
 
-    };
-
-    /* Class JobNumeric */
-
-    class JobNumeric : public Job
-    {
-    public:
-
-        JobNumeric(int id, int ns) noexcept;
-        
-        virtual
-        ~JobNumeric() override;
-
-        UA_NodeId&
-        nodeID(void) override;
-
-    private:
-
-        int id_;
-        int ns_;
-        UA_NodeId target_;
+        // std::string initial_str_ = "(*_*)";
+        std::string initial_str_;
 
     };
 
-    /* Class JobString */
-    
-    class JobString : public Job
-    {
-    public:
-
-        JobString(std::string str, int ns) noexcept;
-
-        virtual
-        ~JobString() override;
-
-        UA_NodeId&
-        nodeID(void) override;
-
-    private:
-
-        std::string str_;
-        int ns_;
-        UA_NodeId target_;
-
-    };
-
-};
+} // namespace open62541
 
 /* Eof */

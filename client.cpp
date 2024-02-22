@@ -17,11 +17,11 @@ Client::connect(int &argc, char *argv[])
 {
     int state = EXIT_FAILURE;
 
-    std::vector<std::string> local_service_buffer;
+    std::vector<std::string> job_buffer;
 
     open62541::server_arguments arg;
     
-    /****** Parse the input arguments ***************************************************/
+    /* Parse the input arguments */
     if(argc > 1)
     {   
         for(int argpos = 1; argpos < argc; argpos++) 
@@ -111,87 +111,89 @@ Client::connect(int &argc, char *argv[])
             if (strcmp(argv[argpos], "-j") == 0)
             {
                 argpos++;
-                local_service_buffer.push_back(argv[argpos]);
+                job_buffer.push_back(argv[argpos]);
                 continue;
             }
             if (strncmp(argv[argpos], "--job=", 6) == 0)
             {
-                local_service_buffer.push_back(argv[argpos] + 6);
+                job_buffer.push_back(argv[argpos] + 6);
                 continue;
             }
         }
     }
-#ifndef TESTING
+#ifndef FEATURES
     else
     {
-        cLOG(Level::INFO, "You entered less arguments.");
-        return state;
+        cLOG(Level::INFO, "You have not entered any arguments. Default? <Y/N>");
+        std::string str;
+        str.clear();
+        std::cin >> str;
+        if(str == "Y" || str == "y")
+        {
+            job_buffer.push_back("node_read:ID_HEAT_LEVEL:4");
+        }
+        else
+        {
+            return state;
+        }
     }
-#endif // !TESTING 
-    
-
-    /****** Build current url ***********************************************************/
+#endif // !FEATURES  
+#ifdef FEATURES 
+    else
+    {
+        cLOG(Level::INFO, "Insert jobs.txt as default.");
+        job_buffer.push_back("jobs.txt");
+    }
+#endif // FEATURES 
+   
+    /* Build current url */
     if(arg.server_url == "DEFAULT")
     {
         arg.server_url = "opc.tcp://"  + arg.server_ip + ":" + arg.server_port;
     }
     /* Secure connection only possible with secure function call, not with secure url */
 
-    /****** Connect client **************************************************************/
+    /* If file, check directory for more jobs */
+    for(auto &str : job_buffer)
+    {
+        if(file_finder(DIR_RES, str))
+        {
+            std::string file_path = DIR_RES + std::string(str);
 
-    std::cout << arg << std::endl;
+            cLOG(Level::INFO, "Use jobs from file: " + file_path);
+            std::ifstream file(file_path);
+            std::string line;
+            if(file.is_open())
+            {
+                while(std::getline(file, line))
+                {
+                    size_t pos = line.find('#');
+                    if(pos != std::string::npos)
+                    {
+                        line = line.substr(0, pos);
+                    }
+                    if(!line.empty())
+                    {
+                        create_job(line.c_str());
+                    }
+                }
+                file.close();
+            }
+            else
+            {
+                cLOG(Level::ERROR, "Can not open file: " + file_path);
+            }
+        }
+        else
+        {
+            create_job(str);
+        }
+    }
 
-    /* Argumente an client übergeben damit der sich verbinden kann, soll aber beidseitig 
-    noch zur verfügung stehen */
-
-
-
-
-    // /* Create all jobs from input */
-    // for(std::string &job_input : job_list_buffer)
-    // {
-    //     if(find_file_in_directory(DIR_RES, job_input))
-    //     {
-    //         std::string file_path = DIR_RES + std::string(job_input);
-
-    //         cLOG(Level::INFO, "Use jobs from file: " + file_path);
-    //         std::ifstream file(file_path);
-    //         std::string line;
-    //         if(file.is_open())
-    //         {
-    //             while(std::getline(file, line))
-    //             {
-    //                 size_t pos = line.find('#');
-    //                 if(pos != std::string::npos)
-    //                 {
-    //                     line = line.substr(0, pos);
-    //                 }
-    //                 if(!line.empty())
-    //                 {
-    //                     job_create(line.c_str());
-    //                 }
-    //             }
-    //             file.close();
-    //         }
-    //         else
-    //         {
-    //             cLOG(Level::ERROR, "Can not open file: " + file_path);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         job_create(job_input);
-    //     }
-    // }
-    
-    // /* Set default time job for test */
-    // if(job_buffer_.empty() == true)
-    // {
-    //     /* Insert default jobs for testing */
-    //     job_create("node_read:ID_HEAT_LEVEL:4");
-    // }
-
-    // print_job_list();
+    /* Connect client */
+#ifdef FEATURES
+    print_jobs_();
+#endif // FEATURES
     // opcuac_init();
     // return state = opcuac_connect(url, client_arguments_);
     return state;
@@ -291,186 +293,7 @@ Client::run_iterate()
     return;
 }
 
-// void
-// Client::job_create(const std::string input,
-//                         std::shared_ptr<DATA> shared_data)
-// {
-//     std::string input_string = input;
-//     if(input_string.empty())
-//     {
-//         cLOG(Level::INFO, "input_string empty.");
-//         return;
-//     }
 
-//     /* Find elements */
-//     std::map<int, std::string> input_map = parse_arguments(input_string);
-//     if(input_map.empty())
-//     {
-//         cLOG(Level::INFO, "input_map empty.");
-//         return;
-//     }
-
-//     std::shared_ptr<JOB> job = std::make_shared<JOB>(init_job());
-//     job->init_string = input_string;
-    
-//     auto element0 = *input_map.begin();
-//     job->type = get_job_type(element0.second);
-
-//     /* Node id, type_id and namespace settings */
-//     if(!(job->type == job_type::print || 
-//          job->type == job_type::replace))
-//     {
-//         if(input_map.size() > 1)
-//         {
-//             /* Id and type_id*/
-//             auto element1 = *input_map.find(1);
-//             if(CAB_Client::request_all_digits(element1.second))
-//             {
-//                 job->id_numeric = std::stoi(element1.second);
-//                 job->type_id = id_type::numeric;
-//             }
-//             else
-//             {
-//                 job->id_string = element1.second;
-//                 job->type_id = id_type::string;
-//             }
-
-//             /* Namespace */
-//             auto element2 = *input_map.find(2);
-//             job->namespace_index = std::stoi(element2.second);
-//         }
-//     }
-    
-//     /* Workflow depends on job type */
-//     if(job->type == job_type::node_write)
-//     {
-//         /* Data type */
-//         auto element3 = *input_map.find(3);
-//         job->intern_data->type_data = get_data_type(element3.second);
-//         if(job->intern_data->type_data == data_type::DEFAULT)
-//         {
-//             cLOG(Level::ERROR, "Invalid write input format found.");
-//             return;
-//         }
-        
-//         /* Data */
-//         std::string data;
-//         for(auto it = input_map.find(4); it != input_map.end(); ++it)
-//         {
-//             if(it != input_map.find(4))
-//             {
-//                 data += ":";
-//             }
-//             data += it->second;
-//         }
-//         set_data_value(data, job);
-//     }
-//     else if(job->type == job_type::print)
-//     {
-//         /* Find language type */
-//         job->intern_data->type_data = data_type::c_boolean;
-//         auto element1 = *input_map.find(1);
-//         if(element1.second == "zpl")
-//         {
-//             element1.second = "true";
-//         }
-//         else
-//         {
-//             element1.second = "false";
-//         }
-//         set_data_value(element1.second, job);
-    
-//         /* Find label content without validation */
-//         job->intern_data->type_data = data_type::c_string;
-//         auto element2 = *input_map.find(2);
-//         if(find_file_in_directory(DIR_RES, element2.second))
-//         {
-//             std::string temp_path = DIR_RES + element2.second;
-
-//             cLOG(Level::INFO, "Use label content from file " + temp_path);
-//             std::ifstream file(temp_path);
-//             if(file.is_open())
-//             {
-//                 std::stringstream string_stream;
-//                 string_stream << file.rdbuf();
-//                 job->intern_data->string_value = string_stream.str() + "\n";
-//                 file.close();
-//             }
-//             else
-//             {
-//                 cLOG(Level::ERROR, "Can not open file " + temp_path);
-//             }
-//         }
-//         else if(element2.second == "PrintNow")
-//         {
-//             job->intern_data->u16_value = 1;
-//         }
-//         else
-//         {
-//             job->intern_data->string_value = element2.second + "\n";
-//         }
-//         /* Find bitmap or more JScript */
-//         if(input_map.size() > 3)
-//         {
-//             auto element3 = *input_map.find(3);
-//             if(find_file_in_directory(DIR_RES, element3.second) == true)
-//             {
-//                 job->intern_data->file_name = DIR_RES + element3.second;
-//             }
-//             else
-//             {
-//                 std::string str;
-//                 for(auto it = input_map.find(2); it != input_map.end(); ++it)
-//                 {
-//                     if(!str.empty())
-//                     {
-//                         str += ":";
-//                     }
-//                     str += it->second;
-//                 }
-//                 job->intern_data->string_value = str + "\n";
-//             }
-//         }
-//     }
-//     else if(job->type == job_type::replace)
-//     {
-//         /* Get data for replacement */
-//         if(input_map.size() < 3 || !(input_map.size() % 2))
-//         {
-//             cLOG(Level::ERROR, "you entered replace with invalid arguments.");
-//             return;
-//         }
-//         /* Parse replacement data */
-//         std::map<std::string, std::string> replacements;
-//         for(auto it = input_map.find(1); it != input_map.end(); ++it)
-//         {
-//             std::string dummy = it->second;
-//             if (++it == input_map.end()) 
-//             {
-//                 break;
-//             }
-//             replacements.emplace(dummy, it->second);
-//         }
-//         job->intern_data->replace = replacements;
-//     }
-//     else if(job->type == job_type::DEFAULT)
-//     {
-//         cLOG(Level::INFO, "job_type is invalid. No job was create.");
-//         return;
-//     }
-
-//     /* Use extern DATA space? */
-//     if(shared_data != nullptr)
-//     {
-//         job->intern_data = shared_data;
-//         new_jobs_.push_back(job);
-//         return;
-//     }
-    
-//     /* Push back actual job configuration */
-//     job_buffer_.push_back(job);
-//     return;
-// }
 
 // void
 // Client::add_monitored_item(std::shared_ptr<JOB> job)
@@ -666,6 +489,347 @@ Client::show_usage(void)
     return;
 }
 
+bool
+Client::file_finder(const std::string& dir, const std::string& file)
+{
+    std::string str;
+    try 
+    {
+        if(dir == "current")
+        {
+            str = std::filesystem::current_path().string();
+        }
+        else
+        {
+            str = dir;
+        }
+
+        /* Check the directory */
+        if (!std::filesystem::exists(str) || !std::filesystem::is_directory(str)) 
+        {
+            cLOG(Level::ERROR, "directory invalid: " + str);
+            return false;
+        }
+        /* Iterate inside directory */
+        for (const auto& entry : std::filesystem::directory_iterator(str)) 
+        {
+            if (entry.is_regular_file() && entry.path().filename() == file) 
+            {
+                return true;
+            }
+        }
+    } 
+    catch(const std::filesystem::filesystem_error& e) 
+    {
+        cLOG(Level::ERROR, "system directory error");
+    }
+    return false;
+}
+
+void
+Client::create_job(const std::string& input)
+{
+    std::string input_string = input;
+    if(input_string.empty())
+    {
+        cLOG(Level::INFO, "input_string empty.");
+        return;
+    }
+
+    /* Parse input in job arguments */
+    std::map<int, std::string> input_map = parse_args(input_string);
+    if(input_map.empty())
+    {
+        cLOG(Level::INFO, "input_map empty.");
+        return;
+    }
+
+    /* Build job objects */
+    auto job = std::make_shared<open62541::Job>(input_string);
+    auto item0 = input_map.begin();
+    if(item0->second == "mitem_add")
+    {
+        /* Insert monitored item add */
+        auto job0 = std::make_shared<dec::MitemAdd>(job);
+        /* Insert numeric or string node id */
+        std::shared_ptr<open62541::Job> job1;
+        if(digits(input_map.find(1)->second))
+        {
+            job1 = std::make_shared<dec::JobNumeric>(job0, std::stoi(input_map.find(1)->second), 
+                                       std::stoi(input_map.find(2)->second));
+        }
+        else
+        {
+            job1 = std::make_shared<dec::JobString>(job0, input_map.find(1)->second, 
+                                      std::stoi(input_map.find(2)->second));
+        }
+        jobs_.insert(job1);
+    }
+    if(item0->second == "mitem_del")
+    {
+        
+    }
+    if(item0->second == "node_read")
+    {
+        
+    }
+    if(item0->second == "node_write")
+    {
+        
+    }
+    if(item0->second == "browse")
+    {
+        
+    }
+    if(item0->second == "print")
+    {
+       
+    }
+    if(item0->second == "replace")
+    {
+        
+    }
+
+    // jsptr job = std::make_shared<Job>();
+
+    // job->init_string = input_string;
+    
+    // auto element0 = *input_map.begin();
+    // job->type = get_job_type(element0.second);
+
+    // /* Node id, type_id and namespace settings */
+    // if(!(job->type == job_type::print || 
+    //      job->type == job_type::replace))
+    // {
+    //     if(input_map.size() > 1)
+    //     {
+    //         /* Id and type_id*/
+    //         auto element1 = *input_map.find(1);
+    //         if(CAB_Client::request_all_digits(element1.second))
+    //         {
+    //             job->id_numeric = std::stoi(element1.second);
+    //             job->type_id = id_type::numeric;
+    //         }
+    //         else
+    //         {
+    //             job->id_string = element1.second;
+    //             job->type_id = id_type::string;
+    //         }
+
+    //         /* Namespace */
+    //         auto element2 = *input_map.find(2);
+    //         job->namespace_index = std::stoi(element2.second);
+    //     }
+    // }
+    
+    // /* Workflow depends on job type */
+    // if(job->type == job_type::node_write)
+    // {
+    //     /* Data type */
+    //     auto element3 = *input_map.find(3);
+    //     job->intern_data->type_data = get_data_type(element3.second);
+    //     if(job->intern_data->type_data == data_type::DEFAULT)
+    //     {
+    //         cLOG(Level::ERROR, "Invalid write input format found.");
+    //         return;
+    //     }
+        
+    //     /* Data */
+    //     std::string data;
+    //     for(auto it = input_map.find(4); it != input_map.end(); ++it)
+    //     {
+    //         if(it != input_map.find(4))
+    //         {
+    //             data += ":";
+    //         }
+    //         data += it->second;
+    //     }
+    //     set_data_value(data, job);
+    // }
+    // else if(job->type == job_type::print)
+    // {
+    //     /* Find language type */
+    //     job->intern_data->type_data = data_type::c_boolean;
+    //     auto element1 = *input_map.find(1);
+    //     if(element1.second == "zpl")
+    //     {
+    //         element1.second = "true";
+    //     }
+    //     else
+    //     {
+    //         element1.second = "false";
+    //     }
+    //     set_data_value(element1.second, job);
+    
+    //     /* Find label content without validation */
+    //     job->intern_data->type_data = data_type::c_string;
+    //     auto element2 = *input_map.find(2);
+    //     if(find_file_in_directory(DIR_RES, element2.second))
+    //     {
+    //         std::string temp_path = DIR_RES + element2.second;
+
+    //         cLOG(Level::INFO, "Use label content from file " + temp_path);
+    //         std::ifstream file(temp_path);
+    //         if(file.is_open())
+    //         {
+    //             std::stringstream string_stream;
+    //             string_stream << file.rdbuf();
+    //             job->intern_data->string_value = string_stream.str() + "\n";
+    //             file.close();
+    //         }
+    //         else
+    //         {
+    //             cLOG(Level::ERROR, "Can not open file " + temp_path);
+    //         }
+    //     }
+    //     else if(element2.second == "PrintNow")
+    //     {
+    //         job->intern_data->u16_value = 1;
+    //     }
+    //     else
+    //     {
+    //         job->intern_data->string_value = element2.second + "\n";
+    //     }
+    //     /* Find bitmap or more JScript */
+    //     if(input_map.size() > 3)
+    //     {
+    //         auto element3 = *input_map.find(3);
+    //         if(find_file_in_directory(DIR_RES, element3.second) == true)
+    //         {
+    //             job->intern_data->file_name = DIR_RES + element3.second;
+    //         }
+    //         else
+    //         {
+    //             std::string str;
+    //             for(auto it = input_map.find(2); it != input_map.end(); ++it)
+    //             {
+    //                 if(!str.empty())
+    //                 {
+    //                     str += ":";
+    //                 }
+    //                 str += it->second;
+    //             }
+    //             job->intern_data->string_value = str + "\n";
+    //         }
+    //     }
+    // }
+    // else if(job->type == job_type::replace)
+    // {
+    //     /* Get data for replacement */
+    //     if(input_map.size() < 3 || !(input_map.size() % 2))
+    //     {
+    //         cLOG(Level::ERROR, "you entered replace with invalid arguments.");
+    //         return;
+    //     }
+    //     /* Parse replacement data */
+    //     std::map<std::string, std::string> replacements;
+    //     for(auto it = input_map.find(1); it != input_map.end(); ++it)
+    //     {
+    //         std::string dummy = it->second;
+    //         if (++it == input_map.end()) 
+    //         {
+    //             break;
+    //         }
+    //         replacements.emplace(dummy, it->second);
+    //     }
+    //     job->intern_data->replace = replacements;
+    // }
+    // else if(job->type == job_type::DEFAULT)
+    // {
+    //     cLOG(Level::INFO, "job_type is invalid. No job was create.");
+    //     return;
+    // }
+
+    // /* Use extern DATA space? */
+    // if(shared_data != nullptr)
+    // {
+    //     job->intern_data = shared_data;
+    //     new_jobs_.push_back(job);
+    //     return;
+    // }
+    
+    // /* Push back actual job configuration */
+    // job_buffer_.push_back(job);
+    return;
+}
+
+std::map<int, std::string>
+Client::parse_args(const std::string& input)
+{
+    std::string str = input;
+    std::map<int, std::string> result;
+    result.clear();
+
+    /* Erase empty elements in string */
+    size_t endpos = str.find_last_not_of(" \t");
+    str = str.substr(0, endpos + 1);
+
+    /* Last char is ':' */
+    if(str.back() == ':')
+    {
+        cLOG(Level::ERROR, "syntax error.");
+        return result;
+    }
+
+    std::stringstream ss(input);
+    std::string item;
+    int index = 0;
+    while(std::getline(ss, item, ':'))
+    {
+        if(item.empty())
+        {
+            cLOG(Level::ERROR, "single argument is empty.");
+            std::map<int, std::string> end;
+            return end;
+        }
+        result.emplace(index++, item);
+    }    
+    return result;
+}
+
+bool 
+Client::digits(const std::string& str) 
+{
+    for(char c : str) 
+    {
+        if(!std::isdigit(c)) 
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void
+Client::print_jobs_(void)
+{
+    if(jobs_.empty() == true)
+    {
+        cLOG(Level::INFO, "Job list empty.");
+        return;
+    }
+
+    cLOG(Level::INFO, "Print job list.\n" + CONSOLE_LINE_50);
+    for(auto &dummy : jobs_)
+    {
+        print_job(dummy);
+    }
+    return;
+}
+
+void
+Client::print_job(open62541::jsptr jsptr)
+{
+    if(jsptr == nullptr)
+    {
+        return;
+    }
+    std::cout << *jsptr << std::endl;
+    return;
+}
+
+
+
 // void
 // Client::upload_stream(std::shared_ptr<JOB> job)
 // {
@@ -711,91 +875,11 @@ Client::show_usage(void)
 //     }
 // }
 
-// bool
-// Client::find_file_in_directory(const std::string &directory, 
-//                         const std::string &file_name)
-// {
-//     std::string str;
-//     try 
-//     {
-//         if(directory == "current")
-//         {
-//             str = std::filesystem::current_path().string();
-//         }
-//         else
-//         {
-//             str = directory;
-//         }
 
-//         /* Check the directory */
-//         if (!std::filesystem::exists(str) || !std::filesystem::is_directory(str)) 
-//         {
-//             cLOG(Level::ERROR, "directory invalid: " + str);
-//             return false;
-//         }
-//         /* Iterate inside directory */
-//         for (const auto& entry : std::filesystem::directory_iterator(str)) 
-//         {
-//             if (entry.is_regular_file() && entry.path().filename() == file_name) 
-//             {
-//                 return true;
-//             }
-//         }
-//     } 
-//     catch(const std::filesystem::filesystem_error& e) 
-//     {
-//         cLOG(Level::ERROR, "system directory error");
-//     }
-//     return false;
-// }
 
-// std::map<int, std::string>
-// Client::parse_arguments(const std::string &input)
-// {
-//     std::string str = input;
-//     std::map<int, std::string> result;
-//     result.clear();
 
-//     /* Erase empty elements in string */
-//     size_t endpos = str.find_last_not_of(" \t");
-//     str = str.substr(0, endpos + 1);
 
-//     /* Last char is ':' */
-//     if(str.back() == ':')
-//     {
-//         cLOG(Level::ERROR, "syntax error.");
-//         return result;
-//     }
 
-//     std::stringstream ss(input);
-//     std::string item;
-//     int index = 0;
-//     while(std::getline(ss, item, ':'))
-//     {
-//         if(item.empty())
-//         {
-//             cLOG(Level::ERROR, "single argument is empty.");
-//             std::map<int, std::string> end;
-//             return end;
-//         }
-//         // result[index++] = item;
-//         result.emplace(index++, item);
-//     }    
-//     return result;
-// }
-
-// bool 
-// Client::request_all_digits(const std::string &str) 
-// {
-//     for(char c : str) 
-//     {
-//         if(!std::isdigit(c)) 
-//         {
-//             return false;
-//         }
-//     }
-//     return true;
-// }
 
 // job_type
 // Client::get_job_type(std::string &string)
@@ -1003,25 +1087,7 @@ Client::show_usage(void)
 //     return "DEFAULT";
 // }
 
-// void
-// Client::print_job_list(void)
-// {
-// #ifndef NDEBUG  
-//     cLOG(Level::INFO, "print job list.\n" + CONSOLE_LINE_80);
-//     if(job_buffer_.empty() == true)
-//     {
-//         cLOG(Level::INFO, "job list empty.");
-//     }
-//     else
-//     {
-//         for(std::shared_ptr<JOB> &dummy : job_buffer_)
-//         {
-//             print_job(dummy);
-//         }
-//     }
-// #endif // NDEBUG
-//     return;
-// }
+
 
 // void
 // Client::print_job(std::shared_ptr<JOB> &job)

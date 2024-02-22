@@ -63,11 +63,11 @@ namespace open62541
     #define DEFAULT_PASS                "opcpass"
     #define DEFAULT_URL                 "DEFAULT"
     #define DEFAULT_SECURE_MODE         false
-};
+} // namespace open62541
 
 namespace freeopcua
 {
 
-};
+} // namespace freeopcua
 
 /* Eof */

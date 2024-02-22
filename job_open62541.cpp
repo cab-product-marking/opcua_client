@@ -2,44 +2,22 @@
 
 using namespace open62541;
 
-/* Class JobNumeric */
-
-JobNumeric::JobNumeric(int id, int ns) noexcept : id_(id), ns_(ns)
+Job::Job(const std::string& str) noexcept : initial_str_(str)
 {
-    UA_NodeId_init(&target_);
-    target_ = UA_NODEID_NUMERIC(ns, id);
+
 }
 
-JobNumeric::~JobNumeric() 
+void
+Job::print(std::ostream& os) const
 {
-    UA_NodeId_clear(&this->target_);
+    return;
 }
 
-UA_NodeId&
-JobNumeric::nodeID(void)
+std::ostream&
+open62541::operator<<(std::ostream& os, const open62541::Job& job)
 {
-    return target_;
-}
-
-
-
-/* Class JobString */
-
-JobString::JobString(std::string str, int ns) noexcept : str_(str), ns_(ns)
-{
-    UA_NodeId_init(&target_);
-    target_ = UA_NODEID_STRING_ALLOC(ns, str.c_str());
-}
-
-JobString::~JobString() 
-{
-    UA_NodeId_clear(&this->target_);
-}
-
-UA_NodeId&
-JobString::nodeID(void)
-{
-    return target_;
+    job.print(os);
+    return os;
 }
 
 /* Eof */

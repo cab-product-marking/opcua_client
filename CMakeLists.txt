@@ -6,13 +6,15 @@ set(CMAKE_CXX_STANDARD 17)
 find_package(open62541 REQUIRED)
 
 add_executable(client
-                src/main.cpp
-               src/client_freeopcua.cpp
-               src/client_open62541.cpp
-               src/job_freeopcua.cpp
-               src/job_open62541.cpp
-               src/client.cpp
-               src/logger.cpp
-               src/os_wrappers.cpp)  
+               main.cpp
+               client_freeopcua.cpp
+               client_open62541.cpp
+               job_dec_jobtype.cpp
+               job_dec_nodetype.cpp
+               job_freeopcua.cpp
+               job_open62541.cpp
+               client.cpp
+               logger.cpp
+               os_wrappers.cpp)  
                
 target_link_libraries(client open62541::open62541)

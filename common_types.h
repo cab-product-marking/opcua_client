@@ -46,11 +46,11 @@ namespace open62541
         }
     };
 
-};
+} // namespace open62541
 
 namespace freeopcua
 {
 
-};
+} // namespace freeopcua
 
 /* Eof */

@@ -18,6 +18,6 @@ namespace osw
 
     /* More local cases ... */
 
-} // namespace lset
+} // namespace osw
 
 /* Eof */

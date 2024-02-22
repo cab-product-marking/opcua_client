@@ -66,32 +66,32 @@ namespace open62541
         /* Printer services */
 
         void
-        add_monitored_item(jsptr) override;
+        add_monitored_item(job_sptr) override;
 
         void
-        del_monitored_item(jsptr) override;
+        del_monitored_item(job_sptr) override;
 
         void
-        read_node(jsptr) override;
+        read_node(job_sptr) override;
 
         int
-        write_node(jsptr) override;
+        write_node(job_sptr) override;
 
         void
-        browse(jsptr) override;
+        browse(job_sptr) override;
 
         /* Printer methods */
 
         void 
-        file_upload(jsptr) override;
+        file_upload(job_sptr) override;
 
         void
-        print_data(jsptr) override;
+        print_data(job_sptr) override;
 
         /* Printer interpreter methods */
 
         void 
-        print_current_label(jsptr) override;
+        print_current_label(job_sptr) override;
 
         /* Callbacks */
 
