@@ -1,7 +1,9 @@
 Usage
 ^^^^^
-Check if OPC UA is enabled in the printer settings and check the rights.
-(Menu/Setup/Interfaces/Network services)
+To test or use the client make sure OPC UA is activated in printer settings and you set 
+permission rights for read and write. 
+(/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+(/Menu/Security/Anonymous OPC UA/ ...Read & Write permission)
 If there are no arguments the default values are used. 
 For non anonymus access its necessary to set the mode flag to user.
 
@@ -16,7 +18,7 @@ Options
    -P "<name>"
    --port="<name>"            = Enter server port. 
    -m "<name>" 
-   --mode="<name>"            = Enter "user" for secure connection, else is anonymus. 
+   --mode="<name>"            = Enter "secure" for secure connection, else is anonymus. 
 
 It's also possible to enter the complete url for connection. 
    --url="<name>"             = Enter connection url. 
@@ -26,7 +28,7 @@ It's also possible to enter the complete url for connection.
 
 Jobs
 ^^^^
-A standard job is stored in the code. This adds a monitored item with the server time.
+A standard job is stored in the code. In this case the client reads the actual heat level.
 You can add as many jobs as you want, provided that they are also available as a case
 in the code.
    -j "<name>" 
@@ -64,9 +66,9 @@ For printing use the following syntax;
 
 For replace use the following syntax. Note, there must always be a label with replace contents
 in the printer buffer, i.e. a label was previously printed or sent to the printer.
-   print:JScript:replace.txt* # Send the label replace.txt to the printing device
-   replace:REPLACE:Hello world! # Replace REPLACE variable with "Hello world!"
-   replace:REPLACE:Hello world!:CONTENTS:Any number of contents fields.
+   print:JScript:replace.txt # Send the label replace.txt to the printing device
+   "replace:REPLACE:Hello world!" # Replace REPLACE variable with "Hello world!"
+   "replace:REPLACE:Hello world!:CONTENTS:Any number of contents fields."
 You can add any number of replace variables with new content one after the other.
 The prerequisite is that these are also present on the previously printed or loaded label.
 
@@ -78,7 +80,7 @@ Call client anonymus and feed:
    ./client.py -I 192.168.200.70 --port=4840 -j print:JScript:f
    ./clinet.py -I 192.168.200.70 --port=4840 --job="print:JScript:f"
 Call client secure and feed:
-   ./client.py -I 192.168.200.70 --port=4840 -p opcpass -u opcuser --mode=user -j "print:JScript:f"
+   ./client.py -I 192.168.200.70 --port=4840 -p opcpass -u opcuser --mode=secure -j "print:JScript:f"
 
 
 

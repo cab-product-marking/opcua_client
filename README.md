@@ -31,7 +31,7 @@ Install the open62541 library:
     $ cd build/
     $ cmake -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Debug ..
     $ make -j4
-    $ make install
+    $ sudo make install
 
 Build and configure the client project:
 
@@ -41,8 +41,9 @@ Build and configure the client project:
     $ cmake -DCMAKE_BUILD_TYPE=Debug ..
     $ make
 
-To test or use the client make sure OPC UA is activated in printer settings. 
+To test or use the client make sure OPC UA is activated in printer settings and you set permission rights for read and write. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+(/Menu/Security/Anonymous OPC UA/ ...Read & Write permission)
 The client needs printer ip and port for connection. Change the defaults in cab_client.h or enter with arguments.
 
     $ cd <paths to>/opcua_client/build
@@ -68,8 +69,9 @@ For istalling the library use following syntax:
     $ sudo apt install python-opcua-tools
     # pip install opcua
 
-Make sure OPC UA is activated in printer settings. 
+To test or use the client make sure OPC UA is activated in printer settings and you set permission rights for read and write.  
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+(/Menu/Security/Anonymous OPC UA/ ...Read & Write permission)
 
     $ cd <paths to>/opcua_client
     $ chmod +x client.py
@@ -147,8 +149,9 @@ Same procedure for Release build.
 
 Use the client with VS or call the *.exe in <paths to>\opcua_client\x64\Debug or ..\Release.
 
-To test or use the client make sure OPC UA is activated in printer settings. 
+To test or use the client make sure OPC UA is activated in printer settings and you set permission rights for read and write.  
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+(/Menu/Security/Anonymous OPC UA/ ...Read & Write permission)
 The client needs printer ip and port for connection. Change the defaults in cab_client.h or enter with arguments.
 
     $ cd <paths to>\opcua_client\x64\Debug
@@ -172,8 +175,9 @@ For istalling the library use following syntax:
 
     $ pip install opcua
 
-Make sure OPC UA is activated in printer settings. 
+To test or use the client make sure OPC UA is activated in printer settings and you set permission rights for read and write. 
 (/Menu/Setup/Interfaces/Network services/ ...OPC UA)
+(/Menu/Security/Anonymous OPC UA/ ...Read & Write permission)
 
     $ cd <paths to>\opcua_client
     $ python .\client.py --help

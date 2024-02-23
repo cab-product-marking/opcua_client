@@ -92,7 +92,7 @@ Client::connect(int &argc, char *argv[])
             {
                 argpos++;
                 std::string str = argv[argpos];
-                if(strcmp(str.c_str(), "user") == 0)
+                if(strcmp(str.c_str(), "secure") == 0)
                 {
                     arg.server_secure_mode = true;
                 }
@@ -101,7 +101,7 @@ Client::connect(int &argc, char *argv[])
             if(strncmp(argv[argpos], "--mode=", 7) == 0)
             {
                 std::string str = argv[argpos] + 7;
-                if(strcmp(str.c_str(), "user") == 0)
+                if(strcmp(str.c_str(), "secure") == 0)
                 {
                     arg.server_secure_mode = true;
                 }
