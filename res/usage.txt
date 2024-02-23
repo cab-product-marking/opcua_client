@@ -36,7 +36,7 @@ Currently availible jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^
 There are different job types to give specific instructions to the client.
    mitem_add                 = Add monitored item.
-   mitem_delete              = Delete monitored item(not available in python example).
+   mitem_del                 = Delete monitored item(not available in python example).
    node_read                 = Read node.
    node_write                = Write node.
    browse                    = Browse nodes in printer or browse network.

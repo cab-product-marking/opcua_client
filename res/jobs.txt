@@ -5,12 +5,12 @@ mitem_add:ID_CLOCK_TIME:4 # Printer time
 mitem_add:2258:0 # Server time
 
 ### Delete monitored items only in cpp
-# mitem_delete:2258:0
+mitem_del:2258:0
 
 ### Read node
-# node_read:2258:0
-# node_read:ID_HEAT_LEVEL:4
-# node_read:10024:3 # JOBRDY
+node_read:2258:0
+node_read:ID_HEAT_LEVEL:4
+node_read:10024:3 # JOBRDY
 
 ### Write node
 # node_read:ID_HEAT_LEVEL:4

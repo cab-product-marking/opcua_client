@@ -2,47 +2,83 @@
 
 using namespace dec;
 
+/* Decorator class NodeType */
+
+NodeType::NodeType(open62541::jsptr other) noexcept : open62541::Job(std::move(other))
+{
+
+}
+
 void
 NodeType::print(std::ostream& os) const
 {
-    os << "Initial: " << this->initial_str_;
+    for(auto &it : this->info_)
+    {
+        os << std::setw(20) << std::left << it.first << ": " << it.second << "\n";
+    }
     return;
 }
 
-/* Class JobNumeric */
+/* Class Numeric */
 
-JobNumeric::JobNumeric(open62541::jsptr j, int id, int ns) noexcept : j_(j)
+Numeric::Numeric(open62541::jsptr other, int id, int ns) noexcept 
+        : dec::NodeType(std::move(other)), id_(id), ns_(ns)
 {
     UA_NodeId_init(&target_);
     target_ = UA_NODEID_NUMERIC(ns, id);
+
+    info_.emplace(PRAEFIX_ID, std::to_string(id));
+    info_.emplace(PRAEFIX_NAMESPACE, std::to_string(ns));
 }
 
-JobNumeric::~JobNumeric() 
+Numeric::Numeric(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
+{
+    auto local = dynamic_cast<Numeric*>(other.get());
+    /* Workflow */
+    this->id_ = local->id_;
+    this->ns_ = local->ns_;
+    this->target_ = local->target_;
+}   
+
+Numeric::~Numeric() 
 {
     UA_NodeId_clear(&this->target_);
 }
 
 UA_NodeId&
-JobNumeric::nodeID(void)
+Numeric::nodeID(void)
 {
     return target_;
 }
 
-/* Class JobString */
+/* Class String */
 
-JobString::JobString(open62541::jsptr j, std::string str, int ns) noexcept : j_(j)
+String::String(open62541::jsptr other, std::string id, int ns) noexcept 
+        : dec::NodeType(std::move(other)), id_(id), ns_(ns)
 {
     UA_NodeId_init(&target_);
-    target_ = UA_NODEID_STRING_ALLOC(ns, str.c_str());
+    target_ = UA_NODEID_STRING_ALLOC(ns, id.c_str());
+    
+    info_.emplace(PRAEFIX_ID, id);
+    info_.emplace(PRAEFIX_NAMESPACE, std::to_string(ns));
 }
 
-JobString::~JobString() 
+String::String(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
+{
+    auto local = dynamic_cast<String*>(other.get());
+    /* Workflow */
+    this->id_ = local->id_;
+    this->ns_ = local->ns_;
+    this->target_ = local->target_;
+}
+
+String::~String() 
 {
     UA_NodeId_clear(&this->target_);
 }
 
 UA_NodeId&
-JobString::nodeID(void)
+String::nodeID(void)
 {
     return target_;
 }

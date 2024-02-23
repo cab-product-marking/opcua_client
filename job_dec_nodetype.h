@@ -4,6 +4,9 @@
 
 #include <open62541/client.h>
 
+#define PRAEFIX_ID          "Id"
+#define PRAEFIX_NAMESPACE   "Namespace"
+
 namespace dec
 {
     /* Decorator for node type */
@@ -12,8 +15,7 @@ namespace dec
     {
     public:
 
-        virtual
-        ~NodeType() = default;
+        explicit NodeType(open62541::jsptr) noexcept;
 
         virtual UA_NodeId&
         nodeID(void) = 0;
@@ -25,24 +27,23 @@ namespace dec
 
     /* Useful types */
 
-    class JobNumeric : public NodeType
+    class Numeric : public NodeType
     {
     public:
 
-        JobNumeric() = delete;
+        Numeric() = delete;
 
-        JobNumeric(open62541::jsptr, int, int) noexcept;
-        
+        Numeric(open62541::jsptr, int, int) noexcept;
+
+        explicit Numeric(open62541::jsptr) noexcept;
+
         virtual
-        ~JobNumeric() override;
+        ~Numeric() override;
 
         UA_NodeId&
         nodeID(void);
 
     protected:
-        open62541::jsptr j_;
-
-    private:
 
         int id_;
         int ns_;
@@ -50,27 +51,25 @@ namespace dec
 
     };
     
-    class JobString : public NodeType
+    class String : public NodeType
     {
     public:
 
-        JobString() = delete;
+        String() = delete;
 
-        JobString(open62541::jsptr, std::string, int) noexcept;
+        String(open62541::jsptr, std::string, int) noexcept;
+
+        explicit String(open62541::jsptr) noexcept;
 
         virtual
-        ~JobString() override;
+        ~String() override;
 
         UA_NodeId&
         nodeID(void);
 
     protected:
-    
-        open62541::jsptr j_;
 
-    private:
-
-        std::string str_;
+        std::string id_;
         int ns_;
         UA_NodeId target_;
 

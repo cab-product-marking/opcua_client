@@ -21,7 +21,7 @@
 #include "job_dec_jobtype.h"
 #include "job_dec_nodetype.h"
 
-#define FEATURES 
+#define TESTING 
 
 namespace cab
 {
@@ -61,26 +61,26 @@ namespace cab
 
         /* Cab service / available jobs */
 
-        // void
-        // add_monitored_item(jsptr);
+        void
+        add_monitored_item(open62541::jsptr);
 
-        // void
-        // delete_monitored_item(jsptr);
+        void
+        delete_monitored_item(open62541::jsptr);
 
-        // void 
-        // read_node(jsptr);
+        void 
+        read_node(open62541::jsptr);
 
-        // void
-        // write_node(jsptr);
+        void
+        write_node(open62541::jsptr);
 
-        // void
-        // browse_nodes(jsptr);
+        void
+        browse_nodes(open62541::jsptr);
 
-        // void 
-        // print_label(jsptr);
+        void 
+        print_label(open62541::jsptr);
 
-        // void 
-        // replace_label(jsptr);
+        void 
+        replace_label(open62541::jsptr);
 
     private:
 
@@ -92,6 +92,9 @@ namespace cab
 
         void
         create_job(const std::string& input);
+
+        open62541::jsptr
+        node_type(const open62541::jsptr, const std::string&, const std::string&);
 
         std::map<int, std::string>
         parse_args(const std::string& input);

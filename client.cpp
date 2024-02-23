@@ -121,7 +121,7 @@ Client::connect(int &argc, char *argv[])
             }
         }
     }
-#ifndef FEATURES
+#ifndef TESTING
     else
     {
         cLOG(Level::INFO, "You have not entered any arguments. Default? <Y/N>");
@@ -137,14 +137,14 @@ Client::connect(int &argc, char *argv[])
             return state;
         }
     }
-#endif // !FEATURES  
-#ifdef FEATURES 
+#endif // !TESTING  
+#ifdef TESTING 
     else
     {
         cLOG(Level::INFO, "Insert jobs.txt as default.");
         job_buffer.push_back("jobs.txt");
     }
-#endif // FEATURES 
+#endif // TESTING 
    
     /* Build current url */
     if(arg.server_url == "DEFAULT")
@@ -191,12 +191,12 @@ Client::connect(int &argc, char *argv[])
     }
 
     /* Connect client */
-#ifdef FEATURES
+#ifdef TESTING
     print_jobs_();
-#endif // FEATURES
-    // opcuac_init();
-    // return state = opcuac_connect(url, client_arguments_);
-    return state;
+#endif // TESTING
+
+    client_->init();
+    return client_->connect(arg);
 }
 
 void
@@ -209,126 +209,103 @@ Client::disconnect()
 void
 Client::run_iterate()
 {
-//     if(opcuac_run_iterate() == EXIT_SUCCESS)
-//     {
-//         if(job_buffer_.empty() && new_jobs_.empty())
-//         {
-//             // struct timeval tv;
-//             // gettimeofday(&tv, nullptr);
-//             // if(tv.tv_usec % 2 == 0)
-//             // {
-//             //     std::cout.flush()   << CURSOR_COL(0) 
-//             //                         << "Iterate - job list empty."
-//             //                         << " \\";
-//             // }
-//             // else
-//             // {
-//             //     std::cout.flush()   << CURSOR_COL(0)
-//             //                         << "Iterate - job list empty."
-//             //                         << " /";
-//             // }
-//             cLOG(Level::INFO, "Iterate - job list empty.");
-//         }
-//         else
-//         {
-//             if(!new_jobs_.empty())
-//             {
-//                 cLOG(Level::INFO, "received new jobs.");
-//                 /* Iterate and insert new jobs */
-//                 for(auto it = new_jobs_.begin(); it != new_jobs_.end(); ++it)
-//                 {
-//                     job_buffer_.insert(job_buffer_.begin(), *it);
-//                 }
-//                 new_jobs_.clear();
-//             }
-//             /* Main iterate loop */
-//             cLOG(Level::INFO, "Iterate - working ... ");
-//             for(auto actual_job = job_buffer_.begin(); 
-//                 actual_job < job_buffer_.end(); /* ++actual_job */)
-//             {
-//                 switch ((*actual_job)->type)
-//                 {
-//                 case job_type::mitem_add:
-//                     add_monitored_item(*actual_job);
-//                     break;
-//                 case job_type::mitem_delete:
-//                     delete_monitored_item(*actual_job);
-//                     break;
-//                 case job_type::node_read:
-//                     read_node(*actual_job);
-//                     break;
-//                 case job_type::node_write:
-//                     write_node(*actual_job);
-//                     break;
-//                 case job_type::browse:
-//                     browse_nodes(*actual_job);
-//                     break;
-//                 case job_type::print:
-//                     print_label(*actual_job);
-//                     break;
-//                 case job_type::replace:
-//                     replace_label(*actual_job);
-//                     break;
-//                 case job_type::DEFAULT:
-//                     break;
-//                 default:
-//                     break;
-//                 }
+    if(client_->run_iterate() == EXIT_SUCCESS)
+    {
+        if(this->jobs_.empty())
+        {
+            cLOG(Level::INFO, "Iterate - no jobs available.");
+        }
+        else
+        {
+            /* Main iterate loop */
+            cLOG(Level::INFO, "Iterate - working with jobs ... ");
+            for(auto job : jobs_)
+            {
+                if(dynamic_cast<dec::MitemAdd*>(job.get()) == nullptr)
+                {
+                    add_monitored_item(job);
+                }
+                if(dynamic_cast<dec::MitemDel*>(job.get()) == nullptr)
+                {
+                    delete_monitored_item(job);
+                }
+                if(dynamic_cast<dec::ReadNode*>(job.get()) == nullptr)
+                {
+                    read_node(job);
+                }
+                if(dynamic_cast<dec::WriteNode*>(job.get()) == nullptr)
+                {
+                    write_node(job);
+                }
+                if(dynamic_cast<dec::Browse*>(job.get()) == nullptr)
+                {
+                    browse_nodes(job);
+                }
+                if(dynamic_cast<dec::Print*>(job.get()) == nullptr)
+                {
+                    print_label(job);
+                }
+                if(dynamic_cast<dec::Replace*>(job.get()) == nullptr)
+                {
+                    replace_label(job);
+                }
                 
-//                 /* Delete actual job and iterate when delete */
-//                 if((*actual_job)->erase == true)
-//                 {
-//                     cLOG(Level::INFO, "delete job.");
-//                     actual_job = job_buffer_.erase(actual_job);
-//                 }
-//                 else
-//                 {
-//                     /* Increment manualy when job persists */
-//                     ++actual_job;
-//                 }
-//             }
-//             cLOG(Level::INFO, "end iterate loop.");
-//         }
-//     }
+                
+                
+                // /* Delete actual job and iterate when delete */
+                // if((*actual_job)->erase == true)
+                // {
+                //     cLOG(Level::INFO, "delete job.");
+                //     actual_job = job_buffer_.erase(actual_job);
+                // }
+                // else
+                // {
+                //     /* Increment manualy when job persists */
+                //     ++actual_job;
+                // }
+            }
+            cLOG(Level::INFO, "end iterate loop.");
+        }
+    }
     return;
 }
 
 
 
-// void
-// Client::add_monitored_item(std::shared_ptr<JOB> job)
-// {
+void
+Client::add_monitored_item(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "add monitored item", job);
 //     opcuac_add_monitored_item(job);
 //     /* Erase from job list */
 //     job->erase = true;
-//     return;
-// }
+    return;
+}
 
-// void
-// Client::delete_monitored_item(std::shared_ptr<JOB> job)
-// {
+void
+Client::delete_monitored_item(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "delete monitored item", job);
 //     opcuac_delete_monitored_item(job);
 //     /* Erase from job list */
 //     job->erase = true;
 //     return;
-// }
+}
 
-// void 
-// Client::read_node(std::shared_ptr<JOB> job)
-// {
+void 
+Client::read_node(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "read_node", job);
 //     opcuac_read_node(job);
 //     print_console_message_data(job, "read response");
 //     /* Erase from job list */
 //     job->erase = true;
 //     return;
-// }
+}
 
-// void
-// Client::write_node(std::shared_ptr<JOB> job)
-// {
+void
+Client::write_node(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "write_node", job);
 //     std::shared_ptr<DATA> store_job_data = job->intern_data;
 //     opcuac_read_node(job);
@@ -345,21 +322,21 @@ Client::run_iterate()
 //     /* Erase from job list */
 //     job->erase = true;
 //     return;
-// }
+}
 
-// void
-// Client::browse_nodes(std::shared_ptr<JOB> job)
-// {
+void
+Client::browse_nodes(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "browse nodes with NodeTree objects", job);
 //     opcuac_browse_nodes(job, client_url_);
 //     /* Erase from job list */
 //     job->erase = true;
 //     return;
-// }
+}
 
-// void 
-// Client::print_label(std::shared_ptr<JOB> job)
-// {
+void 
+Client::print_label(open62541::jsptr job)
+{
 //     jLOG(Level::JOB, "print label with JScript/zpl", job);
 //     if(job->intern_data->u16_value == 1)
 //     {
@@ -380,11 +357,11 @@ Client::run_iterate()
 //     /* Erase from job list */
 //     job->erase = true;
 //     return;
-// }
+}
 
-// void 
-// Client::replace_label(std::shared_ptr<JOB> job)
-// {
+void 
+Client::replace_label(open62541::jsptr job)
+{
 //     /* Label with replace contents needs to load or print before */
 //     if(job->intern_data->u32_value == 0)
 //     {
@@ -423,7 +400,7 @@ Client::run_iterate()
 //         job->erase = true;
 //         return;
 //     }
-// }
+}
 
 // JOB
 // Client::init_job(void)
@@ -551,43 +528,39 @@ Client::create_job(const std::string& input)
     {
         /* Insert monitored item add */
         auto job0 = std::make_shared<dec::MitemAdd>(job);
-        /* Insert numeric or string node id */
-        std::shared_ptr<open62541::Job> job1;
-        if(digits(input_map.find(1)->second))
-        {
-            job1 = std::make_shared<dec::JobNumeric>(job0, std::stoi(input_map.find(1)->second), 
-                                       std::stoi(input_map.find(2)->second));
-        }
-        else
-        {
-            job1 = std::make_shared<dec::JobString>(job0, input_map.find(1)->second, 
-                                      std::stoi(input_map.find(2)->second));
-        }
+        /* Check the node type for numeric and string type and insert */
+        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
         jobs_.insert(job1);
     }
     if(item0->second == "mitem_del")
     {
-        
+        auto job0 = std::make_shared<dec::MitemDel>(job);
+
+        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
+        jobs_.insert(job1);
     }
     if(item0->second == "node_read")
     {
+        auto job0 = std::make_shared<dec::ReadNode>(job);
         
+        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
+        jobs_.insert(job1);
     }
     if(item0->second == "node_write")
     {
-        
+        auto job0 = std::make_shared<dec::WriteNode>(job);
     }
     if(item0->second == "browse")
     {
-        
+        auto job0 = std::make_shared<dec::Browse>(job);
     }
     if(item0->second == "print")
     {
-       
+        auto job0 = std::make_shared<dec::Print>(job);
     }
     if(item0->second == "replace")
     {
-        
+        auto job0 = std::make_shared<dec::Replace>(job);
     }
 
     // jsptr job = std::make_shared<Job>();
@@ -753,6 +726,23 @@ Client::create_job(const std::string& input)
     return;
 }
 
+open62541::jsptr
+Client::node_type(const open62541::jsptr j, const std::string& id, const std::string& ns)
+{
+    open62541::jsptr job;
+    if(digits(id))
+    {
+        job = std::make_shared<dec::Numeric>(j, std::stoi(id), 
+                                                 std::stoi(ns));
+    }
+    else
+    {
+        job = std::make_shared<dec::String>(j, id, 
+                                                std::stoi(ns));
+    }
+    return job;
+}
+
 std::map<int, std::string>
 Client::parse_args(const std::string& input)
 {
@@ -813,6 +803,7 @@ Client::print_jobs_(void)
     for(auto &dummy : jobs_)
     {
         print_job(dummy);
+        std::cout << CONSOLE_LINE_50 << std::endl;
     }
     return;
 }
@@ -824,7 +815,7 @@ Client::print_job(open62541::jsptr jsptr)
     {
         return;
     }
-    std::cout << *jsptr << std::endl;
+    std::cout << *jsptr;
     return;
 }
 

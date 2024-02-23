@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <memory>
+#include <map>
 
 #include "Ijob.h"
 
@@ -31,8 +32,9 @@ namespace freeopcua
         friend std::ostream&
         operator<<(std::ostream& os, const Job& job);
 
-        /* Variables */
-        std::string initial_str_ = "(*_*)";
+    protected: 
+
+        std::map<std::string, std::string> info_;
 
     };
 
