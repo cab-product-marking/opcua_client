@@ -20,7 +20,7 @@ Logger::get_instance(void)
 
 /* Basic log level parser */
 void 
-Logger::log(Level level, const std::string& message, std::shared_ptr<Job> jsptr) 
+Logger::log(Level level, const std::string& message, open62541::jsptr job) 
 {
     std::string prefix = actual_time();
     
@@ -42,7 +42,7 @@ Logger::log(Level level, const std::string& message, std::shared_ptr<Job> jsptr)
             << message << std::endl;
             break;
         case Level::JOB:
-            if(jsptr == nullptr)
+            if(job == nullptr)
             {
                 std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
                 << std::setw(20) << std::left << " job/cab" << FONT_RESET
@@ -57,7 +57,19 @@ Logger::log(Level level, const std::string& message, std::shared_ptr<Job> jsptr)
             }
             break;
         case Level::DATA:
-            /* to do */
+            if(job == nullptr)
+            {
+                std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                << "nullptr!" << " - " << message << std::endl;
+            }
+            else 
+            {
+                // std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                // << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                // << jsptr->init_string << " - " << message << std::endl;
+                std::cout << "to do ..." << std::endl;
+            }
             break;
     }
 }

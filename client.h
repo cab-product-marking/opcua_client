@@ -21,7 +21,7 @@
 #include "job_dec_jobtype.h"
 #include "job_dec_nodetype.h"
 
-#define TESTING 
+// #define TESTING 
 
 namespace cab
 {

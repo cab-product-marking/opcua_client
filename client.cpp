@@ -218,7 +218,11 @@ Client::run_iterate()
         else
         {
             /* Main iterate loop */
-            cLOG(Level::INFO, "Iterate - working with jobs ... ");
+#ifdef TESTING
+            cLOG(Level::INFO, "Iterate - working with " 
+                    + std::to_string(jobs_.size()) + " jobs ... ");
+#endif // TESTING
+
             for(auto job : jobs_)
             {
                 if(dynamic_cast<dec::MitemAdd*>(job.get()) == nullptr)
@@ -249,22 +253,10 @@ Client::run_iterate()
                 {
                     replace_label(job);
                 }
-                
-                
-                
-                // /* Delete actual job and iterate when delete */
-                // if((*actual_job)->erase == true)
-                // {
-                //     cLOG(Level::INFO, "delete job.");
-                //     actual_job = job_buffer_.erase(actual_job);
-                // }
-                // else
-                // {
-                //     /* Increment manualy when job persists */
-                //     ++actual_job;
-                // }
             }
+#ifdef TESTING
             cLOG(Level::INFO, "end iterate loop.");
+#endif // TESTING
         }
     }
     return;
@@ -275,7 +267,7 @@ Client::run_iterate()
 void
 Client::add_monitored_item(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "add monitored item", job);
+    jLOG(Level::JOB, "Add monitored item", job);
 //     opcuac_add_monitored_item(job);
 //     /* Erase from job list */
 //     job->erase = true;
@@ -285,7 +277,7 @@ Client::add_monitored_item(open62541::jsptr job)
 void
 Client::delete_monitored_item(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "delete monitored item", job);
+    jLOG(Level::JOB, "Delete monitored item", job);
 //     opcuac_delete_monitored_item(job);
 //     /* Erase from job list */
 //     job->erase = true;
@@ -295,7 +287,7 @@ Client::delete_monitored_item(open62541::jsptr job)
 void 
 Client::read_node(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "read_node", job);
+    jLOG(Level::JOB, "Read node", job);
 //     opcuac_read_node(job);
 //     print_console_message_data(job, "read response");
 //     /* Erase from job list */
@@ -306,7 +298,7 @@ Client::read_node(open62541::jsptr job)
 void
 Client::write_node(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "write_node", job);
+    jLOG(Level::JOB, "Write node", job);
 //     std::shared_ptr<DATA> store_job_data = job->intern_data;
 //     opcuac_read_node(job);
 //     if(job->intern_data->type_data == store_job_data->type_data)
@@ -327,7 +319,7 @@ Client::write_node(open62541::jsptr job)
 void
 Client::browse_nodes(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "browse nodes with NodeTree objects", job);
+    jLOG(Level::JOB, "Browse nodes with NodeTree objects", job);
 //     opcuac_browse_nodes(job, client_url_);
 //     /* Erase from job list */
 //     job->erase = true;
@@ -337,7 +329,7 @@ Client::browse_nodes(open62541::jsptr job)
 void 
 Client::print_label(open62541::jsptr job)
 {
-//     jLOG(Level::JOB, "print label with JScript/zpl", job);
+    jLOG(Level::JOB, "Print label with JScript/zpl", job);
 //     if(job->intern_data->u16_value == 1)
 //     {
 //         /* Print */
@@ -362,10 +354,11 @@ Client::print_label(open62541::jsptr job)
 void 
 Client::replace_label(open62541::jsptr job)
 {
+    jLOG(Level::JOB, "Start replace items in label procedure", job);
 //     /* Label with replace contents needs to load or print before */
 //     if(job->intern_data->u32_value == 0)
 //     {
-//         jLOG(Level::JOB, "start replace items in label procedure", job);
+//         
 //         /* Need to know then contents item you want to replace */
 //         std::shared_ptr<JOB> node = std::make_shared<JOB>(init_job());
 //         for(auto it = job->intern_data->replace.begin(); 
