@@ -18,9 +18,9 @@
 #endif
 
 /* Job log */
-#define jLOG(level, message, jsptr)     Logger::get_instance().log(level, message, jsptr)
+#define jLOG(level, message, jsptr)     Logger::get_instance().log_job(level, message, jsptr)
 /* Data log */
-#define dLOG(level, message, jsptr)     Logger::get_instance().log(level, message, jsptr)
+#define dLOG(level, message, jsptr)     Logger::get_instance().log_data(level, message, jsptr)
 
 enum class Level
 {
@@ -62,7 +62,13 @@ public:
 
     /* Basic log level parser */
     void 
-    log(Level level, const std::string&, open62541::jsptr = nullptr);
+    log(Level level, const std::string&);
+
+    void
+    log_job(Level level, const std::string&, open62541::jsptr);
+
+    void
+    log_data(Level level, const std::string&, open62541::jsptr);
 
     /* Time function */
     std::string 

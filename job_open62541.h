@@ -26,13 +26,25 @@ namespace open62541
 
         Job(const std::string&) noexcept;
 
+        explicit Job(open62541::jsptr) noexcept;
+
         virtual 
         ~Job() = default;
 
-        explicit Job(open62541::jsptr) noexcept;
-
         virtual void
         print(std::ostream& os) const override;
+
+        virtual void
+        get_info(std::string, std::string&);
+
+        virtual std::string
+        get_info(std::string);
+
+        virtual void
+        erase(void);
+
+        virtual bool
+        status(void) const;
 
         friend std::ostream&
         operator<<(std::ostream& os, const Job& job);
@@ -40,6 +52,7 @@ namespace open62541
     protected: 
 
         std::map<std::string, std::string> info_;
+        bool active_ = true;
 
     };
 

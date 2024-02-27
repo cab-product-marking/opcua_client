@@ -7,11 +7,10 @@ find_package(open62541 REQUIRED)
 
 add_executable(client
                main.cpp
-               client_freeopcua.cpp
                client_open62541.cpp
                job_dec_jobtype.cpp
                job_dec_nodetype.cpp
-               job_freeopcua.cpp
+               job_dec_datatype.cpp
                job_open62541.cpp
                client.cpp
                logger.cpp

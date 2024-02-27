@@ -6,6 +6,9 @@
 
 #include "Iclient_opcua.h"
 #include "job_open62541.h"
+#include "job_dec_datatype.h"
+// #include "job_dec_jobtype.h"
+#include "job_dec_nodetype.h"
 #include "common_types.h"
 
 #include <open62541/client_config_default.h>
@@ -66,32 +69,32 @@ namespace open62541
         /* Printer services */
 
         void
-        add_monitored_item(job_sptr) override;
+        add_monitored_item(opcuac::jsptr) override;
 
         void
-        del_monitored_item(job_sptr) override;
+        del_monitored_item(opcuac::jsptr) override;
 
         void
-        read_node(job_sptr) override;
+        read_node(opcuac::jsptr) override;
 
         int
-        write_node(job_sptr) override;
+        write_node(opcuac::jsptr) override;
 
         void
-        browse(job_sptr) override;
+        browse(opcuac::jsptr) override;
 
         /* Printer methods */
 
         void 
-        file_upload(job_sptr) override;
+        file_upload(opcuac::jsptr) override;
 
         void
-        print_data(job_sptr) override;
+        print_data(opcuac::jsptr) override;
 
         /* Printer interpreter methods */
 
         void 
-        print_current_label(job_sptr) override;
+        print_current_label(opcuac::jsptr) override;
 
         /* Callbacks */
 
@@ -129,6 +132,9 @@ namespace open62541
                             UA_DataValue *value);
 
     private:
+
+        void
+        data_handler_read(UA_Variant&, opcuac::jsptr);
 
         UA_Client* opcuac_;
         UA_ClientConfig* opcuac_c_;

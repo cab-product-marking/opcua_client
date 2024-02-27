@@ -135,7 +135,7 @@ Client::run_iterate(void)
 /* Printer services */
 
 void
-Client::add_monitored_item(job_sptr job)
+Client::add_monitored_item(opcuac::jsptr job)
 {
     // if(actual_session_state_ != UA_SESSIONSTATE_ACTIVATED)
     // {
@@ -296,7 +296,7 @@ Client::add_monitored_item(job_sptr job)
 }
 
 void
-Client::del_monitored_item(job_sptr job)
+Client::del_monitored_item(opcuac::jsptr job)
 {
     // if(monitored_items_.empty())
     // {
@@ -409,60 +409,41 @@ Client::del_monitored_item(job_sptr job)
 }
 
 void
-Client::read_node(job_sptr job)
+Client::read_node(opcuac::jsptr job)
 {
-    // UA_NodeId target;
-    // UA_NodeId_init(&target);
-    // if(job->type_id == id_type::string)
-    // {
-    //     target = UA_NODEID_STRING_ALLOC(job->namespace_index, 
-    //                                     job->id_string.c_str());
-    // }
-    // else if(job->type_id == id_type::numeric)
-    // {
-    //     target = UA_NODEID_NUMERIC(job->namespace_index, 
-    //                                job->id_numeric);
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, while generating node id.");
-    //     UA_NodeId_clear(&target);
-    //     return;
-    // }
+    auto local = dynamic_cast<dec::NodeType*>(job.get());
 
-    // UA_Variant variant;
-    // UA_Variant_init(&variant);
+    UA_Variant variant;
+    UA_Variant_init(&variant);
 
-    // UA_StatusCode state = UA_Client_readValueAttribute(opcuac_,
-    //                                                    target,
-    //                                                    &variant);
+    UA_StatusCode state = UA_Client_readValueAttribute(opcuac_,
+                                                       local->nodeID(),
+                                                       &variant);
 
-    // if(state == UA_STATUSCODE_GOOD)
-    // {
-    //     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                 "Read node successfully.");
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, sending read node request. Statuscode: Statuscode: 0x%X - %s",
-    //                  state, UA_StatusCode_name(state));
-    //     UA_NodeId_clear(&target);
-    //     UA_Variant_clear(&variant);
-    //     return;
-    // }
+    if(state == UA_STATUSCODE_GOOD)
+    {
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "Read node successfully.");
+    }
+    else
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, sending read node request. Statuscode: Statuscode: 0x%X - %s",
+                     state, UA_StatusCode_name(state));
 
-    // data_handler_read(variant, job);                                               
+        UA_Variant_clear(&variant);
+        return;
+    }
 
-    // /* Clean up */
-    // UA_NodeId_clear(&target);
-    // UA_Variant_clear(&variant);
+    data_handler_read(variant, job);                                               
+
+    /* Clean up */
+    UA_Variant_clear(&variant);
     return;
 }
 
 int
-Client::write_node(job_sptr job)
+Client::write_node(opcuac::jsptr job)
 {
     // UA_NodeId target;
     // UA_NodeId_init(&target);
@@ -513,7 +494,7 @@ Client::write_node(job_sptr job)
 }
 
 void
-Client::browse(job_sptr job)
+Client::browse(opcuac::jsptr job)
 {
     // /* Set default when there is no specific node */
     // if(job->init_string == "browse")
@@ -653,7 +634,7 @@ Client::browse(job_sptr job)
 /* Printer methods */
 
 void 
-Client::file_upload(job_sptr job)
+Client::file_upload(opcuac::jsptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;
@@ -779,7 +760,7 @@ Client::file_upload(job_sptr job)
 }
 
 void
-Client::print_data(job_sptr job)
+Client::print_data(opcuac::jsptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;
@@ -858,7 +839,7 @@ Client::print_data(job_sptr job)
 /* Printer interpreter methods */
 
 void 
-Client::print_current_label(job_sptr job)
+Client::print_current_label(opcuac::jsptr job)
 {
     // /* Set start settings */
     // job->type_id = id_type::numeric;
@@ -1028,12 +1009,20 @@ Client::handler_monitored_item(UA_Client *opcuac_,
     return;
 }
 
-// void
-// Client::data_handler_read(UA_Variant &target, jsptr job)
-// {
+void
+Client::data_handler_read(UA_Variant &target, opcuac::jsptr job)
+{
+    // auto local = std::make_shared<dec::DBoolean>(job, true);
+    std::cout << "In data_handler_read" << std::endl;
+    return;
     // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_DATETIME])) 
     // {
     //     /* To date time struct */
+    //     auto local = std::make_shared<dec::DateTime>(job);
+
+
+
+        
     //     UA_DateTimeStruct dts = UA_DateTime_toStruct(*(UA_DateTime *)target.data);
     //     job->intern_data->type_data = data_type::c_datetime;
     //     /* Time */
@@ -1047,78 +1036,116 @@ Client::handler_monitored_item(UA_Client *opcuac_,
     //     job->intern_data->time.tm_year = dts.year - 1900;
     //     /* Timezone */
     //     /* ... */
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_BOOLEAN]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_BOOLEAN]))
     // {
     //     /* To boolean */
-    //     job->intern_data->type_data = data_type::c_boolean;
-    //     job->intern_data->b_value = *(UA_Boolean *)target.data;
+    //     auto local = std::make_shared<dec::DBoolean>(job, *(UA_Boolean *)target.data);
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT16]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT16]))
     // {
     //     /* To int16 */
+    //     auto local = std::make_shared<dec::Int16>(job);
+
+
+        
     //     job->intern_data->type_data = data_type::c_int16;
     //     job->intern_data->s16_value = *(UA_Int16 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT16]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT16]))
     // {
     //     /* To uint16 */
+    //     auto local = std::make_shared<dec::UInt16>(job);
+
+
     //     job->intern_data->type_data = data_type::c_uint16;
     //     job->intern_data->u16_value = *(UA_UInt16 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT32]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT32]))
     // {
     //     /* To int32 */
+    //     auto local = std::make_shared<dec::Int32>(job);
+
+
     //     job->intern_data->type_data = data_type::c_int32;
     //     job->intern_data->s32_value = *(UA_Int32 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT32]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT32]))
     // {
     //     /* To uint32*/
+    //     auto local = std::make_shared<dec::UInt32>(job);
+
+
     //     job->intern_data->type_data = data_type::c_uint32;
     //     job->intern_data->u32_value = *(UA_UInt32 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT64]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_INT64]))
     // {
     //     /* To int64 */
+    //     auto local = std::make_shared<dec::Int64>(job);
+
+
     //     job->intern_data->type_data = data_type::c_int64;
     //     job->intern_data->s64_value = *(UA_Int64 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT64]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_UINT64]))
     // {
     //     /* To uint64 */
+    //     auto local = std::make_shared<dec::UInt64>(job);
+
+
     //     job->intern_data->type_data = data_type::c_uint64;
     //     job->intern_data->u64_value = *(UA_UInt64 *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_FLOAT]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_FLOAT]))
     // {
     //     /* To float */
+    //     auto local = std::make_shared<dec::F32>(job);
+
+
     //     job->intern_data->type_data = data_type::c_f32;
     //     job->intern_data->f32_value = *(UA_Float *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_DOUBLE]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_DOUBLE]))
     // {
     //     /* To double */
+    //     auto local = std::make_shared<dec::F64>(job);
+
+
     //     job->intern_data->type_data = data_type::c_f64;
     //     job->intern_data->f64_value = *(UA_Double *)target.data;
+    //     return;
     // }
-    // else if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_STRING]))
+    // if(UA_Variant_hasScalarType(&target, &UA_TYPES[UA_TYPES_STRING]))
     // {
     //     /* To string */
+    //     auto local = std::make_shared<dec::String>(job);
+
+
     //     job->intern_data->type_data = data_type::c_string;
     //     UA_String ua_string = *(UA_String *)target.data;
     //     job->intern_data->string_value = std::string(reinterpret_cast<char*>(ua_string.data), ua_string.length);
+    //     return;
     // }
-    // else
+    // if(true)
     // {
     //     /* Implement more types ... */
     //     /* types_generated.h */
     //     job->intern_data->type_data = data_type::DEFAULT;
     //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
     //                  "Error, node datatype in UA_Variant not known.");
+    //     return;
     // }
-//     return;
-// }
+}
 
 // void
 // Client::data_handler_write(UA_Variant &target, jsptr job)

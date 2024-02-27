@@ -46,6 +46,61 @@ namespace open62541
         }
     };
 
+    /************************************************************************/
+
+    /* Used data types */
+
+    enum class data_type : int
+    {
+        datetime = 0,
+        boolean,
+        int16,
+        uint16,
+        int32,
+        uint32,
+        int64,
+        uint64,
+        f32,
+        f64,
+        string,
+        DEFAULT
+    };
+
+    /************************************************************************/
+
+    class StringType
+    {
+    public:
+
+        static std::string 
+        type(open62541::data_type type)
+        {
+            std::string str = "";
+            switch(type)
+            {
+                case data_type::datetime: str = "datetime";
+                case data_type::boolean: str = "boolean";
+                case data_type::int16: str = "int16";
+                case data_type::uint16: str = "uint16";
+                case data_type::int32: str = "int32";
+                case data_type::uint32: str = "uint32";
+                case data_type::int64: str = "int64";
+                case data_type::uint64: str = "uint64";
+                case data_type::f32: str = "f32";
+                case data_type::f64: str = "f64";
+                case data_type::string: str = "string";
+                case data_type::DEFAULT: str = "DEFAULT";
+            }
+            return str;
+        }
+
+        // static std::string
+        // type(open62541::...)
+
+    };
+
+    /************************************************************************/
+
 } // namespace open62541
 
 namespace freeopcua

@@ -222,38 +222,55 @@ Client::run_iterate()
             cLOG(Level::INFO, "Iterate - working with " 
                     + std::to_string(jobs_.size()) + " jobs ... ");
 #endif // TESTING
-
+            std::vector<open62541::jsptr> trash;
+            
             for(auto job : jobs_)
             {
-                if(dynamic_cast<dec::MitemAdd*>(job.get()) == nullptr)
-                {
-                    add_monitored_item(job);
-                }
-                if(dynamic_cast<dec::MitemDel*>(job.get()) == nullptr)
-                {
-                    delete_monitored_item(job);
-                }
-                if(dynamic_cast<dec::ReadNode*>(job.get()) == nullptr)
-                {
-                    read_node(job);
-                }
-                if(dynamic_cast<dec::WriteNode*>(job.get()) == nullptr)
-                {
-                    write_node(job);
-                }
-                if(dynamic_cast<dec::Browse*>(job.get()) == nullptr)
-                {
-                    browse_nodes(job);
-                }
-                if(dynamic_cast<dec::Print*>(job.get()) == nullptr)
-                {
-                    print_label(job);
-                }
-                if(dynamic_cast<dec::Replace*>(job.get()) == nullptr)
-                {
-                    replace_label(job);
-                }
+                auto local = dynamic_cast<dec::ReadNode*>(job.get());
+                std::string dummy = local->iam();
+                std::cout << dummy << std::endl;
+
+                // if(dynamic_cast<dec::MitemAdd*>(job.get()) != nullptr)
+                // {
+                //     add_monitored_item(job);
+                // }
+                // if(dynamic_cast<dec::MitemDel*>(job.get()) != nullptr)
+                // {
+                //     delete_monitored_item(job);
+                // }
+                // if(dynamic_cast<dec::ReadNode*>(job.get()) != nullptr)
+                // {
+                //     read_node(job);
+                // }
+                // if(dynamic_cast<dec::WriteNode*>(job.get()) != nullptr)
+                // {
+                //     write_node(job);
+                // }
+                // if(dynamic_cast<dec::Browse*>(job.get()) != nullptr)
+                // {
+                //     browse_nodes(job);
+                // }
+                // if(dynamic_cast<dec::Print*>(job.get()) != nullptr)
+                // {
+                //     print_label(job);
+                // }
+                // if(dynamic_cast<dec::Replace*>(job.get()) != nullptr)
+                // {
+                //     replace_label(job);
+                // }
+                
+                // /* Erase? */
+                // if(job->status() == false)
+                // {
+                //     trash.push_back(job);
+                // }
             }
+
+            for(auto element : trash)
+            {
+                jobs_.erase(element);
+            }
+
 #ifdef TESTING
             cLOG(Level::INFO, "end iterate loop.");
 #endif // TESTING
@@ -287,12 +304,30 @@ Client::delete_monitored_item(open62541::jsptr job)
 void 
 Client::read_node(open62541::jsptr job)
 {
-    jLOG(Level::JOB, "Read node", job);
-//     opcuac_read_node(job);
-//     print_console_message_data(job, "read response");
-//     /* Erase from job list */
-//     job->erase = true;
-//     return;
+    // auto local = std::dynamic_pointer_cast<open62541::Job>(job);
+
+    // jLOG(Level::JOB, "Read node", job);
+    cLOG(Level::JOB, "Read node ********************************");
+
+    // client_->read_node(job);
+
+
+
+
+
+
+
+
+
+
+    // std::cout << local << std::endl;
+    // /* Ausgabe über den Logger oder die Console */
+
+    // std::cout << "test0" << std::endl;
+
+    // local->erase();
+
+    return;
 }
 
 void
@@ -516,45 +551,56 @@ Client::create_job(const std::string& input)
 
     /* Build job objects */
     auto job = std::make_shared<open62541::Job>(input_string);
-    auto item0 = input_map.begin();
-    if(item0->second == "mitem_add")
-    {
-        /* Insert monitored item add */
-        auto job0 = std::make_shared<dec::MitemAdd>(job);
-        /* Check the node type for numeric and string type and insert */
-        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
-        jobs_.insert(job1);
-    }
-    if(item0->second == "mitem_del")
-    {
-        auto job0 = std::make_shared<dec::MitemDel>(job);
 
-        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
-        jobs_.insert(job1);
-    }
+    auto item0 = input_map.begin();
+    // if(item0->second == "mitem_add")
+    // {
+    //     /* Insert monitored item add */
+    //     auto job0 = std::make_shared<dec::MitemAdd>(job);
+    //     /* Check the node type for numeric and string type and insert */
+    //     auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
+    //     jobs_.insert(job1);
+    // }
+    // if(item0->second == "mitem_del")
+    // {
+    //     auto job0 = std::make_shared<dec::MitemDel>(job);
+
+    //     auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
+    //     jobs_.insert(job1);
+    // }
     if(item0->second == "node_read")
     {
         auto job0 = std::make_shared<dec::ReadNode>(job);
+        // jobs_.insert(job0);
+
+
+
+
+
+
+
+
+
         
         auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
         jobs_.insert(job1);
     }
-    if(item0->second == "node_write")
-    {
-        auto job0 = std::make_shared<dec::WriteNode>(job);
-    }
-    if(item0->second == "browse")
-    {
-        auto job0 = std::make_shared<dec::Browse>(job);
-    }
-    if(item0->second == "print")
-    {
-        auto job0 = std::make_shared<dec::Print>(job);
-    }
-    if(item0->second == "replace")
-    {
-        auto job0 = std::make_shared<dec::Replace>(job);
-    }
+    // if(item0->second == "node_write")
+    // {
+    //     auto job0 = std::make_shared<dec::WriteNode>(job);
+    // }
+    // if(item0->second == "browse")
+    // {
+    //     auto job0 = std::make_shared<dec::Browse>(job);
+    // }
+    // if(item0->second == "print")
+    // {
+    //     auto job0 = std::make_shared<dec::Print>(job);
+    // }
+    // if(item0->second == "replace")
+    // {
+    //     auto job0 = std::make_shared<dec::Replace>(job);
+    // }
 
     // jsptr job = std::make_shared<Job>();
 
@@ -717,20 +763,21 @@ Client::create_job(const std::string& input)
     // /* Push back actual job configuration */
     // job_buffer_.push_back(job);
     return;
-}
+} 
 
 open62541::jsptr
-Client::node_type(const open62541::jsptr j, const std::string& id, const std::string& ns)
+Client::node_type(const open62541::jsptr j, 
+        const std::string& id, const std::string& ns)
 {
     open62541::jsptr job;
     if(digits(id))
     {
-        job = std::make_shared<dec::Numeric>(j, std::stoi(id), 
+        job = std::make_shared<dec::JNumeric>(j, std::stoi(id), 
                                                  std::stoi(ns));
     }
     else
     {
-        job = std::make_shared<dec::String>(j, id, 
+        job = std::make_shared<dec::JString>(j, id, 
                                                 std::stoi(ns));
     }
     return job;
@@ -802,16 +849,15 @@ Client::print_jobs_(void)
 }
 
 void
-Client::print_job(open62541::jsptr jsptr)
+Client::print_job(open62541::jsptr job)
 {
-    if(jsptr == nullptr)
+    if(job == nullptr)
     {
         return;
     }
-    std::cout << *jsptr;
+    std::cout << *job;
     return;
 }
-
 
 
 // void

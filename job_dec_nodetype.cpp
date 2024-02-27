@@ -9,19 +9,9 @@ NodeType::NodeType(open62541::jsptr other) noexcept : open62541::Job(std::move(o
 
 }
 
-void
-NodeType::print(std::ostream& os) const
-{
-    for(auto &it : this->info_)
-    {
-        os << std::setw(20) << std::left << it.first << ": " << it.second << "\n";
-    }
-    return;
-}
+/* Class JNumeric */
 
-/* Class Numeric */
-
-Numeric::Numeric(open62541::jsptr other, int id, int ns) noexcept 
+JNumeric::JNumeric(open62541::jsptr other, int id, int ns) noexcept 
         : dec::NodeType(std::move(other)), id_(id), ns_(ns)
 {
     UA_NodeId_init(&target_);
@@ -31,29 +21,29 @@ Numeric::Numeric(open62541::jsptr other, int id, int ns) noexcept
     info_.emplace(PRAEFIX_NAMESPACE, std::to_string(ns));
 }
 
-Numeric::Numeric(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
+JNumeric::JNumeric(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
 {
-    auto local = dynamic_cast<Numeric*>(other.get());
+    auto local = dynamic_cast<JNumeric*>(other.get());
     /* Workflow */
     this->id_ = local->id_;
     this->ns_ = local->ns_;
     this->target_ = local->target_;
 }   
 
-Numeric::~Numeric() 
+JNumeric::~JNumeric() 
 {
     UA_NodeId_clear(&this->target_);
 }
 
 UA_NodeId&
-Numeric::nodeID(void)
+JNumeric::nodeID(void)
 {
     return target_;
 }
 
-/* Class String */
+/* Class JString */
 
-String::String(open62541::jsptr other, std::string id, int ns) noexcept 
+JString::JString(open62541::jsptr other, std::string id, int ns) noexcept 
         : dec::NodeType(std::move(other)), id_(id), ns_(ns)
 {
     UA_NodeId_init(&target_);
@@ -63,22 +53,22 @@ String::String(open62541::jsptr other, std::string id, int ns) noexcept
     info_.emplace(PRAEFIX_NAMESPACE, std::to_string(ns));
 }
 
-String::String(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
+JString::JString(open62541::jsptr other) noexcept : dec::NodeType(std::move(other))
 {
-    auto local = dynamic_cast<String*>(other.get());
+    auto local = dynamic_cast<JString*>(other.get());
     /* Workflow */
     this->id_ = local->id_;
     this->ns_ = local->ns_;
     this->target_ = local->target_;
 }
 
-String::~String() 
+JString::~JString() 
 {
     UA_NodeId_clear(&this->target_);
 }
 
 UA_NodeId&
-String::nodeID(void)
+JString::nodeID(void)
 {
     return target_;
 }

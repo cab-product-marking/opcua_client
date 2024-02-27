@@ -6,7 +6,7 @@
 
 namespace dec
 {
-    /* Decorator for job type  */
+    /* Decorator job types  */
 
     class JobType : public open62541::Job
     {
@@ -19,8 +19,8 @@ namespace dec
         virtual
         ~JobType() = default;
 
-        virtual void
-        print(std::ostream& os) const override;
+        virtual std::string
+        iam(void) const = 0;
 
     };
 
@@ -30,7 +30,15 @@ namespace dec
     {
     public:
 
+        MitemAdd() = delete;
+
         explicit MitemAdd(open62541::jsptr) noexcept;
+
+        virtual
+        ~MitemAdd() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -38,7 +46,15 @@ namespace dec
     {
     public:
 
+        MitemDel() = delete;
+
         explicit MitemDel(open62541::jsptr) noexcept;
+
+        virtual
+        ~MitemDel() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -46,7 +62,15 @@ namespace dec
     {
     public:
 
+        ReadNode() = delete;
+
         explicit ReadNode(open62541::jsptr) noexcept;
+
+        virtual
+        ~ReadNode() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -54,7 +78,15 @@ namespace dec
     {
     public:
 
+        WriteNode() = delete;
+
         explicit WriteNode(open62541::jsptr) noexcept;
+
+        virtual
+        ~WriteNode() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -62,7 +94,15 @@ namespace dec
     {
     public:
 
+        Browse() = delete;
+
         explicit Browse(open62541::jsptr) noexcept;
+
+        virtual
+        ~Browse() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -70,7 +110,15 @@ namespace dec
     {
     public:
 
+        Print() = delete;
+
         explicit Print(open62541::jsptr) noexcept;
+
+        virtual
+        ~Print() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 
@@ -78,7 +126,15 @@ namespace dec
     {
     public:
 
+        Replace() = delete;
+
         explicit Replace(open62541::jsptr) noexcept;
+
+        virtual
+        ~Replace() = default;
+
+        virtual std::string
+        iam(void) const;
 
     };
 

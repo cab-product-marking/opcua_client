@@ -4,8 +4,6 @@
 
 #include "Ijob.h"
 
-typedef std::shared_ptr<opcuac::Job> job_sptr;
-
 namespace opcuac
 {
     /**
@@ -49,23 +47,23 @@ namespace opcuac
 
         /* Monitors the node and reports if the status or value changes. */
         virtual void
-        add_monitored_item(job_sptr) = 0;
+        add_monitored_item(jsptr) = 0;
 
         /* Remove monitored item. */
         virtual void
-        del_monitored_item(job_sptr) = 0;
+        del_monitored_item(jsptr) = 0;
 
         /* Read node attributes. */
         virtual void 
-        read_node(job_sptr) = 0;
+        read_node(jsptr) = 0;
 
         /* Write node attributes. */
         virtual int
-        write_node(job_sptr) = 0;
+        write_node(jsptr) = 0;
 
         /* Browse nodes structure. */
         virtual void
-        browse(job_sptr) = 0;
+        browse(jsptr) = 0;
 
         /**
          * Printer methods
@@ -78,94 +76,94 @@ namespace opcuac
 
         /* Returns the last printed label in PNG format as processed by the printengine. */
         virtual void
-        bitmap(job_sptr) {};
+        bitmap(jsptr) {};
 
         /* Cancels the current print job. */
         virtual void
-        cancel_job(job_sptr) {};
+        cancel_job(jsptr) {};
 
         /* Exports the printer's configuration in XML format. */
         virtual void
-        export_settings(job_sptr) {};
+        export_settings(jsptr) {};
 
         /* Delete given file on a printer's storage device. */
         virtual void
-        file_delete(job_sptr) {};
+        file_delete(jsptr) {};
 
         /* Download e.g. a label format or image file from a printer's storage device. */
         virtual void
-        file_download(job_sptr) {};
+        file_download(jsptr) {};
 
         /* List files on given storage device. */
         virtual void
-        file_list(job_sptr) {};
+        file_list(jsptr) {};
 
         /* Upload e.g. a label format or image file to a printer's storage device. */
         virtual void
-        file_upload(job_sptr) {};
+        file_upload(jsptr) {};
 
         /* Query for available fonts. */
         virtual void
-        font_list(job_sptr) {};
+        font_list(jsptr) {};
 
         /**
          * Imports a custom TLS certificate in PEM format. This will override the supplied 
          * self-signed certificate. */
         virtual void
-        import_certificateTLS(job_sptr) {};
+        import_certificateTLS(jsptr) {};
 
         /* Imports an XML printer configuration. */
         virtual void
-        import_settings(job_sptr) {};
+        import_settings(jsptr) {};
 
         /* Returns the last printed label in PNG format with viewport adopted to job settings. */
         virtual void
-        label_bitmap(job_sptr) {};
+        label_bitmap(jsptr) {};
 
         /* Loads a label from any attached printer storage device. */
         virtual void
-        load_label(job_sptr) {};
+        load_label(jsptr) {};
 
         /**
          * Prints given JScript or ZPL data directly on the printer. The method expects UTF-8 
          * content encoding. */
         virtual void
-        print_data(job_sptr) {};
+        print_data(jsptr) {};
 
         /* Query for object availability. */
         virtual void
-        query_object(job_sptr) {};
+        query_object(jsptr) {};
 
         /* Resets passwords to factory defaults. */
         virtual void
-        reset_passwords(job_sptr) {};
+        reset_passwords(jsptr) {};
 
         /* Resets to factory defaults. */
         virtual void
-        reset_settings(job_sptr) {};
+        reset_settings(jsptr) {};
 
         /* Returns a screenshot of the printer's display in PNG format. */
         virtual void
-        screen(job_sptr) {};
+        screen(jsptr) {};
 
         /* Set or unset an I/O input, mostly adequate with PAUSE and LBLROT. */
         virtual void
-        set_input(job_sptr) {};
+        set_input(jsptr) {};
 
         /* Sets an OPC UA servers URL for data retrieval in standalone mode. */
         virtual void
-        set_opcua_client_url(job_sptr) {};
+        set_opcua_client_url(jsptr) {};
 
         /* Cancels all print jobs scheduled or currently printed by the printer. */
         virtual void
-        total_cancel(job_sptr) {};
+        total_cancel(jsptr) {};
 
         /**
          * Triggers an I/O input, one of FSTLBL, REPRINT, START, LBLREM, JOBDEL, RSTERR, 
          * STOP or LBLFEED. PAUSE and LBLROT is not implemented as trigger, use SetInput 
          * instead. */
         virtual void
-        trigger_input(job_sptr) {};
+        trigger_input(jsptr) {};
 
         /** 
          * Printer interpreter methods
@@ -176,7 +174,7 @@ namespace opcuac
 
         /* Make given number of copies from current label. */
         virtual void
-        print_current_label(job_sptr) {};
+        print_current_label(jsptr) {};
 
     };
 

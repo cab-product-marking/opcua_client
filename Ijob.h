@@ -28,6 +28,8 @@ namespace opcuac
 
     };
 
+typedef std::shared_ptr<opcuac::Job> jsptr;
+
 } // namespace opcuac
 
 /* Eof */

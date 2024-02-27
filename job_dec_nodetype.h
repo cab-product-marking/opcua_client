@@ -20,25 +20,25 @@ namespace dec
         virtual UA_NodeId&
         nodeID(void) = 0;
 
-        virtual void
-        print(std::ostream& os) const override;
+        virtual
+        ~NodeType() = default;
 
     };
 
     /* Useful types */
 
-    class Numeric : public NodeType
+    class JNumeric : public NodeType
     {
     public:
 
-        Numeric() = delete;
+        JNumeric() = delete;
 
-        Numeric(open62541::jsptr, int, int) noexcept;
+        JNumeric(open62541::jsptr, int, int) noexcept;
 
-        explicit Numeric(open62541::jsptr) noexcept;
+        explicit JNumeric(open62541::jsptr) noexcept;
 
         virtual
-        ~Numeric() override;
+        ~JNumeric() override;
 
         UA_NodeId&
         nodeID(void);
@@ -51,18 +51,18 @@ namespace dec
 
     };
     
-    class String : public NodeType
+    class JString : public NodeType
     {
     public:
 
-        String() = delete;
+        JString() = delete;
 
-        String(open62541::jsptr, std::string, int) noexcept;
+        JString(open62541::jsptr, std::string, int) noexcept;
 
-        explicit String(open62541::jsptr) noexcept;
+        explicit JString(open62541::jsptr) noexcept;
 
         virtual
-        ~String() override;
+        ~JString() override;
 
         UA_NodeId&
         nodeID(void);
