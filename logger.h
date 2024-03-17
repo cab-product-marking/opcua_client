@@ -10,17 +10,17 @@
  
 #include "common_defines.h"
 #include "os_wrappers.h"
-#include "job_open62541.h"
+#include "job_open62541_node.h"
+#include "data_open62541.h"
 
-#ifndef NDEBUG
 /* Classic log */
 #define cLOG(level, message)            Logger::get_instance().log(level, message)   
-#endif
 
 /* Job log */
-#define jLOG(level, message, jsptr)     Logger::get_instance().log_job(level, message, jsptr)
+#define jLOG(level, message, jsptr)     Logger::get_instance().log(level, message, jsptr)
+
 /* Data log */
-#define dLOG(level, message, jsptr)     Logger::get_instance().log_data(level, message, jsptr)
+#define dLOG(level, message, jsptr)     Logger::get_instance().log(level, message, jsptr)
 
 enum class Level
 {
@@ -62,13 +62,7 @@ public:
 
     /* Basic log level parser */
     void 
-    log(Level level, const std::string&);
-
-    void
-    log_job(Level level, const std::string&, open62541::jsptr);
-
-    void
-    log_data(Level level, const std::string&, open62541::jsptr);
+    log(Level level, const std::string&, opcuac::jobsptr = nullptr);
 
     /* Time function */
     std::string 

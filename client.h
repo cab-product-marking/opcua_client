@@ -11,26 +11,23 @@
 #include <map>
 #include <filesystem>
 #include <set>
+#include <list>
 
 #include "logger.h"
 #include "os_wrappers.h"
 #include "client_open62541.h"
 #include "common_types.h"
-
-#include "job_open62541.h"
-#include "job_dec_jobtype.h"
-#include "job_dec_nodetype.h"
-
-#define TESTING 
+#include "common_defines.h"
+#include "job_open62541_node.h"
 
 namespace cab
 {
 
-    #define MAX_JOB_LENGTH      100
+#define MAX_JOB_LENGTH      100
 
     /* Class Client */
 
-    class Client //: private open62541::Client
+    class Client
     {
     public:
 
@@ -62,25 +59,25 @@ namespace cab
         /* Cab service / available jobs */
 
         void
-        add_monitored_item(open62541::jsptr);
+        add_monitored_item(opcuac::jobsptr);
 
         void
-        delete_monitored_item(open62541::jsptr);
+        delete_monitored_item(opcuac::jobsptr);
 
         void 
-        read_node(open62541::jsptr);
+        read_node(opcuac::jobsptr);
 
         void
-        write_node(open62541::jsptr);
+        write_node(opcuac::jobsptr);
 
         void
-        browse_nodes(open62541::jsptr);
+        browse_nodes(opcuac::jobsptr);
 
         void 
-        print_label(open62541::jsptr);
+        print_label(opcuac::jobsptr);
 
         void 
-        replace_label(open62541::jsptr);
+        replace_label(opcuac::jobsptr);
 
     private:
 
@@ -93,26 +90,32 @@ namespace cab
         void
         create_job(const std::string& input);
 
-        open62541::jsptr
-        node_type(const open62541::jsptr, const std::string&, const std::string&);
-
         std::map<int, std::string>
         parse_args(const std::string& input);
 
         bool 
         digits(const std::string& str);
 
+        opcuac::jobsptr
+        nodeID_type(opcuac::jobsptr, const std::string&, const std::string&);
+
         void
         print_jobs_(void);
 
         void
-        print_job(open62541::jsptr);
+        print_job(opcuac::jobsptr);
+
+        opcuac::datasptr  
+        init_data(std::map<int, std::string>&) const;
+
+        opc_time_t
+        system_time(void) const;
 
         /* Variables */
 
         open62541::Client* client_;
 
-        std::set<open62541::jsptr> jobs_;
+        std::list<opcuac::jobsptr> jobs_;
 
 
     };

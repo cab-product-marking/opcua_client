@@ -6,53 +6,74 @@
 #include <memory>
 #include <map>
 
-#include "Ijob.h"
+#include "Ijob_opcua.h"
+#include "data_open62541.h"
 
-#define PRAEFIX_INIT    "Initial"
+#define PRAEFIX_INIT        "Initial"
+#define PRAEFIX_TYPE        "Type"
+
+#define DATA_INTERN         "Intern"
+#define DATA_EXTERN         "Extern"
+#define DATA_READ           "Read"
+#define DATA_WRITE          "Write"
+
+#define STATUS_ACTIVE       2
+#define STATUS_WORK         1
+#define STATUS_DEAD         0
 
 namespace open62541
 {
+    /* Fd Job */
     class Job;
-    typedef std::shared_ptr<open62541::Job> jsptr;
 
     std::ostream&
     operator<<(std::ostream& os, const Job& job);
 
     /* Class Job */
 
-    class Job : public opcuac::Job
+    class Job : public opcuac::IJob
     {
     public:
 
-        Job(const std::string&) noexcept;
-
-        explicit Job(open62541::jsptr) noexcept;
+        Job(const std::string&, std::string) noexcept;
 
         virtual 
         ~Job() = default;
 
-        virtual void
+        void
         print(std::ostream& os) const override;
 
-        virtual void
-        get_info(std::string, std::string&);
+        void
+        get_info(std::string, std::string&) override;
 
-        virtual std::string
-        get_info(std::string);
+        std::string
+        get_info(std::string) override;
 
-        virtual void
-        erase(void);
+        void
+        add_info(std::string, std::string) override;
 
-        virtual bool
-        status(void) const;
+        opcuac::datasptr
+        get_data(std::string) override;
+
+        void
+        add_data(std::string, opcuac::datasptr) override;
+
+        void
+        erase_data(std::string) override;
+
+        void
+        status(int) override;
+
+        int
+        status(void) const override;
 
         friend std::ostream&
-        operator<<(std::ostream& os, const Job& job);
+        operator<<(std::ostream&, const Job&);
 
-    protected: 
+    protected:
 
-        std::map<std::string, std::string> info_;
-        bool active_ = true;
+        explicit 
+        Job(opcuac::jobsptr) noexcept;
 
     };
 

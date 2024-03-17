@@ -4,16 +4,18 @@ using namespace open62541;
 
 /* Class Job */
 
-Job::Job(const std::string& str) noexcept 
+Job::Job(const std::string& init, std::string type) noexcept 
 {
-    info_.emplace(PRAEFIX_INIT, str);
+    info_.emplace(PRAEFIX_INIT, init);
+    info_.emplace(PRAEFIX_TYPE, type);
 }
 
-Job::Job(jsptr other) noexcept
+Job::Job(opcuac::jobsptr old) noexcept 
 {
-    auto local = dynamic_cast<open62541::Job*>(other.get());
-    this->info_ = local->info_;
-    this->active_ = local->active_;
+    auto job = std::dynamic_pointer_cast<open62541::Job>(old);
+    this->info_ = job->info_;
+    this->data_ = job->data_;
+    this->active_ = job->active_;
 }
 
 void
@@ -29,7 +31,7 @@ Job::print(std::ostream& os) const
 void
 Job::get_info(std::string key, std::string& value)
 {
-    value = info_[key];
+    value = this->info_[key];
     return;
 }
 
@@ -40,13 +42,40 @@ Job::get_info(std::string key)
 }
 
 void
-Job::erase(void)
+Job::add_info(std::string type, std::string des)
 {
-    this->active_ = false;
+    this->info_.emplace(type, des);
     return;
 }
 
-bool
+opcuac::datasptr
+Job::get_data(std::string key)
+{
+    return data_[key];
+}
+
+void
+Job::add_data(std::string type, opcuac::datasptr data)
+{
+    this->data_.emplace(type, data);
+    return;
+}
+
+void
+Job::erase_data(std::string type)
+{
+    this->data_.erase(type);
+    return;
+}
+
+void
+Job::status(int status)
+{
+    this->active_ = status;
+    return;
+}
+
+int
 Job::status(void) const
 {
     return this->active_;

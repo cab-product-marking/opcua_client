@@ -5,20 +5,21 @@
 # mitem_add:2258:0 # Server time
 
 ### Delete monitored items only in cpp
+# mitem_del:ID_CLOCK_TIME:4
 # mitem_del:2258:0
 
 ### Read node
-node_read:2258:0
+# node_read:2258:0
 # node_read:ID_HEAT_LEVEL:4
 # node_read:10024:3 # JOBRDY
 
 ### Write node
 # node_read:ID_HEAT_LEVEL:4
-# node_write:ID_HEAT_LEVEL:4:int32_t:6
+# node_write:ID_HEAT_LEVEL:4:int32_t:10
 # node_read:ID_HEAT_LEVEL:4
 # node_read:ID_CLOCK_TIME:4
-# node_write:ID_CLOCK_TIME:4:datetime:10:11:2023:10:10:10:10
-# node_write:ID_CLOCK_TIME:4:datetime:actual
+# node_write:ID_CLOCK_TIME:4:opc_time_t:10:11:2023:10:10:10:10
+# node_write:ID_CLOCK_TIME:4:opc_time_t:actual
 # node_read:ID_CLOCK_TIME:4
 
 ### Browse nodes

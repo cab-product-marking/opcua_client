@@ -10,11 +10,13 @@
 #define DIR_BUILD       "../../build/"    
 #endif
 
-namespace osw
+namespace oswrapper
 {
+    /* Operating system wrappers */
+    
     /* Work with time */
     void
-    wrapper_localtime (const time_t* time_time_t, tm* time_tm);
+    localtime(const time_t* time_time_t, tm* time_tm);
 
     /* More local cases ... */
 

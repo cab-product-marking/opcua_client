@@ -20,8 +20,9 @@ Logger::get_instance(void)
 
 /* Basic log level parser */
 void 
-Logger::log(Level level, const std::string& message) 
+Logger::log(Level level, const std::string& message, opcuac::jobsptr job) 
 {
+    auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
     std::string prefix = actual_time();
     
     switch(level) 
@@ -29,41 +30,79 @@ Logger::log(Level level, const std::string& message)
         case Level::INFO:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_GREEN 
             << std::setw(20) << std::left << " info/cab" << FONT_RESET 
-            << message << std::endl;
+            << message 
+            << std::endl;
             break;
         case Level::WARNING:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_YELLOW 
             << std::setw(20) << std::left << " warn/cab" << FONT_RESET 
-            << message << std::endl;
+            << message 
+            << std::endl;
             break;
         case Level::ERROR:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_RED 
             << std::setw(20) << std::left << " error/cab" << FONT_RESET 
-            << message << std::endl;
+            << message 
+            << std::endl;
             break;
         case Level::JOB:
-            std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
-            << std::setw(20) << std::left << " job/cab" << FONT_RESET
-            << message << std::endl;
+            if(local == nullptr)
+            {
+                std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                << message 
+                << " | " 
+                << "job nullptr!"
+                << std::endl;
+            }
+            else
+            {
+                std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                << message 
+                << " | " 
+                << local->get_info(PRAEFIX_INIT) 
+                << std::endl;
+            }
             break;
         case Level::DATA:
-            std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
-            << std::setw(20) << std::left << " data/cab" << FONT_RESET
-            << message << std::endl;
+            if(local == nullptr)
+            {
+                std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                << message 
+                << " | " 
+                << "job nullptr!"
+                << std::endl;
+            }
+            else
+            {
+                auto obj = local->get_data(DATA_READ);
+                auto data = static_cast<open62541::Data*>(obj.get());
+
+                if(obj == nullptr)
+                {
+                    std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                    << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                    << message 
+                    << " | " 
+                    << "data nullptr!"
+                    << std::endl;
+                }
+                else
+                {
+                    std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
+                    << std::setw(20) << std::left << " job/cab" << FONT_RESET
+                    << message 
+                    << " | " 
+                    << data->type() 
+                    << " - "
+                    << *data
+                    << std::endl;
+                }
+            }
             break;
     }
-}
-
-void
-Logger::log_job(Level level, const std::string& message, open62541::jsptr job)
-{
-    return;
-}
-
-void
-Logger::log_data(Level level, const std::string& message, open62541::jsptr job)
-{
-    return;
 }
 
 /* Time function */
@@ -76,7 +115,7 @@ Logger::actual_time(void)
     
     std::tm now_tm;
 
-    osw::wrapper_localtime(&now_as_time_t, &now_tm);
+    oswrapper::localtime(&now_as_time_t, &now_tm);
 
     std::ostringstream oss;
 

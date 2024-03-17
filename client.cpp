@@ -4,12 +4,16 @@ using namespace cab;
 
 Client::Client()
 {
+#ifndef FEATURE_CLIENT_OFF
     client_ = new open62541::Client();
+#endif // !FEATURE_CLIENT_OFF
 }
 
 Client::~Client()
 {
+#ifndef FEATURE_CLIENT_OFF
     delete client_;
+#endif // !FEATURE_CLIENT_OFF
 }
 
 int 
@@ -121,7 +125,7 @@ Client::connect(int &argc, char *argv[])
             }
         }
     }
-#ifndef TESTING
+#ifndef FEATURE_TESTING
     else
     {
         cLOG(Level::INFO, "You have not entered any arguments. Default? <Y/N>");
@@ -137,14 +141,13 @@ Client::connect(int &argc, char *argv[])
             return state;
         }
     }
-#endif // !TESTING  
-#ifdef TESTING 
+#else
     else
     {
         cLOG(Level::INFO, "Insert jobs.txt as default.");
         job_buffer.push_back("jobs.txt");
     }
-#endif // TESTING 
+#endif // FEATURE_TESTING 
    
     /* Build current url */
     if(arg.server_url == "DEFAULT")
@@ -191,178 +194,209 @@ Client::connect(int &argc, char *argv[])
     }
 
     /* Connect client */
-#ifdef TESTING
+#ifdef FEATURE_CLIENT_OFF
+    state = EXIT_SUCCESS;
+#else
+#ifdef FEATURE_TESTING
     print_jobs_();
-#endif // TESTING
-
+#endif // FEATURE_TESTING
     client_->init();
-    return client_->connect(arg);
+    state = client_->connect(arg);
+#endif // FEATURE_CLIENT_OFF
+
+return state;
 }
 
 void
 Client::disconnect()
 {
+#ifndef FEATURE_CLIENT_OFF
     client_->disconnect();
+#endif // !FEATURE_CLIENT_OFF
     return;
 }
 
 void
 Client::run_iterate()
 {
+#ifndef FEATURE_CLIENT_OFF
     if(client_->run_iterate() == EXIT_SUCCESS)
     {
         if(this->jobs_.empty())
         {
-            cLOG(Level::INFO, "Iterate - no jobs available.");
+            cLOG(Level::INFO, "Iterate - No jobs available.");
         }
         else
         {
             /* Main iterate loop */
-#ifdef TESTING
-            cLOG(Level::INFO, "Iterate - working with " 
+#ifdef FEATURE_TESTING
+            cLOG(Level::INFO, "Iterate - Working with " 
                     + std::to_string(jobs_.size()) + " jobs ... ");
-#endif // TESTING
-            std::vector<open62541::jsptr> trash;
+#endif // FEATURE_TESTING
+            std::vector<opcuac::jobsptr> trash;
             
             for(auto job : jobs_)
             {
-                auto local = dynamic_cast<dec::ReadNode*>(job.get());
-                std::string dummy = local->iam();
-                std::cout << dummy << std::endl;
-
-                // if(dynamic_cast<dec::MitemAdd*>(job.get()) != nullptr)
-                // {
-                //     add_monitored_item(job);
-                // }
-                // if(dynamic_cast<dec::MitemDel*>(job.get()) != nullptr)
-                // {
-                //     delete_monitored_item(job);
-                // }
-                // if(dynamic_cast<dec::ReadNode*>(job.get()) != nullptr)
-                // {
-                //     read_node(job);
-                // }
-                // if(dynamic_cast<dec::WriteNode*>(job.get()) != nullptr)
-                // {
-                //     write_node(job);
-                // }
-                // if(dynamic_cast<dec::Browse*>(job.get()) != nullptr)
-                // {
-                //     browse_nodes(job);
-                // }
-                // if(dynamic_cast<dec::Print*>(job.get()) != nullptr)
-                // {
-                //     print_label(job);
-                // }
-                // if(dynamic_cast<dec::Replace*>(job.get()) != nullptr)
-                // {
-                //     replace_label(job);
-                // }
+                auto local = std::dynamic_pointer_cast<open62541::Job>(job);
+                if(local->get_info(PRAEFIX_TYPE) == "MitemAdd")
+                {
+                    add_monitored_item(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "MitemDel")
+                {
+                    delete_monitored_item(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "NodeRead")
+                {
+                    read_node(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "NodeWrite")
+                {
+                    write_node(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "Browse")
+                {
+                    browse_nodes(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "Print")
+                {
+                    print_label(job);
+                }
+                if(local->get_info(PRAEFIX_TYPE) == "Replace")
+                {
+                    replace_label(job);
+                }
                 
-                // /* Erase? */
-                // if(job->status() == false)
-                // {
-                //     trash.push_back(job);
-                // }
+                /* Erase? */
+                if(local->status() == STATUS_DEAD)
+                {
+                    trash.push_back(job);
+                }
             }
 
             for(auto element : trash)
             {
-                jobs_.erase(element);
+                jobs_.remove(element);
             }
 
-#ifdef TESTING
+#ifdef FEATURE_TESTING
             cLOG(Level::INFO, "end iterate loop.");
-#endif // TESTING
+#endif // FEATURE_TESTING
         }
+    }
+#else
+    if(this->jobs_.empty())
+    {
+        return;
+    }
+    else
+    {
+        cLOG(Level::INFO, "Working with " 
+                + std::to_string(jobs_.size()) + " jobs ... ");
+
+        print_jobs_();
+
+        std::vector<opcuac::jobsptr> trash;
+        for(auto &job : jobs_)
+        {
+            job->status(STATUS_DEAD);
+            /* Erase? */
+            if(job->status() == STATUS_DEAD)
+            {
+                trash.push_back(job);
+            }
+        }
+        for(auto element : trash)
+        {
+            jobs_.remove(element);
+        }
+    }
+#endif // !FEATURE_CLIENT_OFF
+    return;
+}
+
+void
+Client::add_monitored_item(opcuac::jobsptr job)
+{
+    /* First add monitored item */
+    if(job->status() == STATUS_ACTIVE)
+    {
+        jLOG(Level::JOB, "Add monitored item", job);
+
+        /**
+         * It is not possible to let the monitored item callback create the data object as 
+         * its done in read_node method. Therefore the read_node method is used to attach 
+         * a data packet of the correct type to the job.
+        */
+        client_->read_node(job);
+
+        client_->add_monitored_item(job);
+
+        job->status(STATUS_WORK);
+    }
+    /* First workbench to use the monitored data */
+    /* No timestamps for data values are implemented */
+    if(job->status() == STATUS_WORK)
+    {
+        dLOG(Level::DATA, "First space use monitored data. ", job);
     }
     return;
 }
 
-
-
 void
-Client::add_monitored_item(open62541::jsptr job)
+Client::delete_monitored_item(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Add monitored item", job);
-//     opcuac_add_monitored_item(job);
-//     /* Erase from job list */
-//     job->erase = true;
+    static int number = 0;
+    /* The number is used to delay the deletion of the monitored item. */
+    if(number++ == 25)
+    {
+        jLOG(Level::JOB, "Delete monitored item", job);
+
+        client_->del_monitored_item(job);
+
+        job->status(STATUS_DEAD);
+    }
+
     return;
-}
-
-void
-Client::delete_monitored_item(open62541::jsptr job)
-{
-    jLOG(Level::JOB, "Delete monitored item", job);
-//     opcuac_delete_monitored_item(job);
-//     /* Erase from job list */
-//     job->erase = true;
-//     return;
 }
 
 void 
-Client::read_node(open62541::jsptr job)
+Client::read_node(opcuac::jobsptr job)
 {
-    // auto local = std::dynamic_pointer_cast<open62541::Job>(job);
+    jLOG(Level::JOB, "Read node", job);
 
-    // jLOG(Level::JOB, "Read node", job);
-    cLOG(Level::JOB, "Read node ********************************");
+    client_->read_node(job);
 
-    // client_->read_node(job);
-
-
-
-
-
-
-
-
-
-
-    // std::cout << local << std::endl;
-    // /* Ausgabe über den Logger oder die Console */
-
-    // std::cout << "test0" << std::endl;
-
-    // local->erase();
-
+    dLOG(Level::DATA, "Read node", job);
+    
+    job->status(STATUS_DEAD);
     return;
 }
 
 void
-Client::write_node(open62541::jsptr job)
+Client::write_node(opcuac::jobsptr job)
 {
     jLOG(Level::JOB, "Write node", job);
-//     std::shared_ptr<DATA> store_job_data = job->intern_data;
-//     opcuac_read_node(job);
-//     if(job->intern_data->type_data == store_job_data->type_data)
-//     {
-//         job->intern_data = store_job_data;
-//         opcuac_write_node(job);
-//         print_console_message_data(job, "write request");
-//     }
-//     else
-//     {
-//         cLOG(Level::ERROR, "entered wrong data type.");
-//     }
-//     /* Erase from job list */
-//     job->erase = true;
-//     return;
+
+    client_->write_node(job);
+
+    job->status(STATUS_DEAD);
+    return;
 }
 
 void
-Client::browse_nodes(open62541::jsptr job)
+Client::browse_nodes(opcuac::jobsptr job)
 {
     jLOG(Level::JOB, "Browse nodes with NodeTree objects", job);
-//     opcuac_browse_nodes(job, client_url_);
-//     /* Erase from job list */
-//     job->erase = true;
-//     return;
+
+    client_->browse(job);
+
+    job->status(STATUS_DEAD);
+    return;
 }
 
 void 
-Client::print_label(open62541::jsptr job)
+Client::print_label(opcuac::jobsptr job)
 {
     jLOG(Level::JOB, "Print label with JScript/zpl", job);
 //     if(job->intern_data->u16_value == 1)
@@ -387,7 +421,7 @@ Client::print_label(open62541::jsptr job)
 }
 
 void 
-Client::replace_label(open62541::jsptr job)
+Client::replace_label(opcuac::jobsptr job)
 {
     jLOG(Level::JOB, "Start replace items in label procedure", job);
 //     /* Label with replace contents needs to load or print before */
@@ -429,47 +463,6 @@ Client::replace_label(open62541::jsptr job)
 //         return;
 //     }
 }
-
-// JOB
-// Client::init_job(void)
-// {
-//     JOB j;
-//     /* JOB init */
-//     j.type = job_type::DEFAULT;        
-//     j.type_id = id_type::DEFAULT;      
-//     j.id_string = "DEFAULT";                  
-//     j.id_numeric = - 1;                   
-//     j.namespace_index = - 1;
-//     j.init_string = "DEFAULT";
-//     j.erase = false;
-//     /* Data */
-//     j.intern_data = init_data();
-//     /* Extern data */
-//     j.extern_data = init_data();
-//     return j;
-// }   
-
-// std::shared_ptr<DATA>
-// Client::init_data(void)
-// {
-//     std::shared_ptr<DATA> j = std::make_shared<DATA>();
-//     /* DATA init */
-//     j->type_data = data_type::DEFAULT;
-//     j->time = {0, 0, 0, 0, 0, 0, 70, 0, 0, 0, 0, nullptr};  /* Unix as default */
-//     j->b_value = false;
-//     j->s16_value = 0;
-//     j->u16_value = 0;
-//     j->s32_value = 0;
-//     j->u32_value = 0;
-//     j->s64_value = 0;
-//     j->u64_value = 0;
-//     j->f32_value = 0.0f;
-//     j->f64_value = 0.0;
-//     j->string_value.clear();
-//     j->file_name.clear();
-//     j->replace.clear();
-//     return j;
-// }
 
 void
 Client::show_usage(void)
@@ -534,73 +527,91 @@ Client::file_finder(const std::string& dir, const std::string& file)
 void
 Client::create_job(const std::string& input)
 {
-    std::string input_string = input;
-    if(input_string.empty())
+    if(input.empty())
     {
         cLOG(Level::INFO, "input_string empty.");
         return;
     }
 
     /* Parse input in job arguments */
-    std::map<int, std::string> input_map = parse_args(input_string);
+    std::map<int, std::string> input_map = parse_args(input);
     if(input_map.empty())
     {
         cLOG(Level::INFO, "input_map empty.");
         return;
     }
 
-    /* Build job objects */
-    auto job = std::make_shared<open62541::Job>(input_string);
-
     auto item0 = input_map.begin();
-    // if(item0->second == "mitem_add")
-    // {
-    //     /* Insert monitored item add */
-    //     auto job0 = std::make_shared<dec::MitemAdd>(job);
-    //     /* Check the node type for numeric and string type and insert */
-    //     auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
-    //     jobs_.insert(job1);
-    // }
-    // if(item0->second == "mitem_del")
-    // {
-    //     auto job0 = std::make_shared<dec::MitemDel>(job);
 
-    //     auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
-    //     jobs_.insert(job1);
-    // }
+    if(item0->second == "mitem_add")
+    {
+        auto joba = std::make_shared<open62541::Job>(input, "MitemAdd");
+        auto jobb = nodeID_type(joba, input_map.find(1)->second,
+                input_map.find(2)->second);
+        
+        jobs_.push_back(jobb);
+    }
+    if(item0->second == "mitem_del")
+    {
+        auto joba = std::make_shared<open62541::Job>(input, "MitemDel");
+        auto jobb = nodeID_type(joba, input_map.find(1)->second,
+                input_map.find(2)->second);
+
+        jobs_.push_back(jobb);
+    }
     if(item0->second == "node_read")
     {
-        auto job0 = std::make_shared<dec::ReadNode>(job);
-        // jobs_.insert(job0);
+        /* Read node */
+        auto joba = std::make_shared<open62541::Job>(input, "NodeRead");
+        auto jobb = nodeID_type(joba, input_map.find(1)->second,
+                input_map.find(2)->second);
 
-
-
-
-
-
-
-
-
-        
-        auto job1 = node_type(job0, input_map.find(1)->second, input_map.find(2)->second);
-        jobs_.insert(job1);
+        jobs_.push_back(jobb);
     }
-    // if(item0->second == "node_write")
-    // {
-    //     auto job0 = std::make_shared<dec::WriteNode>(job);
-    // }
-    // if(item0->second == "browse")
-    // {
-    //     auto job0 = std::make_shared<dec::Browse>(job);
-    // }
-    // if(item0->second == "print")
-    // {
-    //     auto job0 = std::make_shared<dec::Print>(job);
-    // }
-    // if(item0->second == "replace")
-    // {
-    //     auto job0 = std::make_shared<dec::Replace>(job);
-    // }
+    if(item0->second == "node_write")
+    {
+        /* Write node */
+        auto joba = std::make_shared<open62541::Job>(input, "NodeWrite");
+        auto jobb = nodeID_type(joba, input_map.find(1)->second,
+                input_map.find(2)->second);
+
+        jobb->add_data(DATA_WRITE, init_data(input_map));
+                
+        jobs_.push_back(jobb);
+    }
+    if(item0->second == "browse")
+    {
+        /* Browse */
+        auto joba = std::make_shared<open62541::Job>(input, "Browse");
+        if(input_map.size() == 1)
+        {
+            auto jobb = nodeID_type(joba, std::to_string(UA_NS0ID_OBJECTSFOLDER), 
+                    std::to_string(0));
+
+            jobs_.push_back(jobb);
+        }
+        else
+        {
+            auto jobb = nodeID_type(joba, input_map.find(1)->second,
+                    input_map.find(2)->second);
+
+            jobs_.push_back(jobb);
+        }
+    }
+    if(item0->second == "print")
+    {
+        auto joba = std::make_shared<open62541::Job>(input, "Print");
+        // auto jobb = nodeID_type(joba, input_map.find(1)->second,
+        //         input_map.find(2)->second);
+
+    }
+    if(item0->second == "replace")
+    {
+        // auto joba = std::make_shared<open62541::Job>(input, "Replace");
+        // auto jobb = nodeID_type(joba, input_map.find(1)->second,
+        //         input_map.find(2)->second);
+
+    }
 
     // jsptr job = std::make_shared<Job>();
 
@@ -634,30 +645,7 @@ Client::create_job(const std::string& input)
     //     }
     // }
     
-    // /* Workflow depends on job type */
-    // if(job->type == job_type::node_write)
-    // {
-    //     /* Data type */
-    //     auto element3 = *input_map.find(3);
-    //     job->intern_data->type_data = get_data_type(element3.second);
-    //     if(job->intern_data->type_data == data_type::DEFAULT)
-    //     {
-    //         cLOG(Level::ERROR, "Invalid write input format found.");
-    //         return;
-    //     }
-        
-    //     /* Data */
-    //     std::string data;
-    //     for(auto it = input_map.find(4); it != input_map.end(); ++it)
-    //     {
-    //         if(it != input_map.find(4))
-    //         {
-    //             data += ":";
-    //         }
-    //         data += it->second;
-    //     }
-    //     set_data_value(data, job);
-    // }
+    
     // else if(job->type == job_type::print)
     // {
     //     /* Find language type */
@@ -765,24 +753,6 @@ Client::create_job(const std::string& input)
     return;
 } 
 
-open62541::jsptr
-Client::node_type(const open62541::jsptr j, 
-        const std::string& id, const std::string& ns)
-{
-    open62541::jsptr job;
-    if(digits(id))
-    {
-        job = std::make_shared<dec::JNumeric>(j, std::stoi(id), 
-                                                 std::stoi(ns));
-    }
-    else
-    {
-        job = std::make_shared<dec::JString>(j, id, 
-                                                std::stoi(ns));
-    }
-    return job;
-}
-
 std::map<int, std::string>
 Client::parse_args(const std::string& input)
 {
@@ -830,6 +800,19 @@ Client::digits(const std::string& str)
     return true;
 }
 
+opcuac::jobsptr
+Client::nodeID_type(opcuac::jobsptr job, const std::string& id, const std::string& ns)
+{
+    if(digits(id))
+    {
+        return std::make_shared<open62541::JNumeric>(job, std::stoi(id), std::stoi(ns));
+    }
+    else
+    {
+        return std::make_shared<open62541::JString>(job, id, std::stoi(ns));
+    }
+}
+
 void
 Client::print_jobs_(void)
 {
@@ -840,7 +823,7 @@ Client::print_jobs_(void)
     }
 
     cLOG(Level::INFO, "Print job list.\n" + CONSOLE_LINE_50);
-    for(auto &dummy : jobs_)
+    for(auto dummy : jobs_)
     {
         print_job(dummy);
         std::cout << CONSOLE_LINE_50 << std::endl;
@@ -849,15 +832,234 @@ Client::print_jobs_(void)
 }
 
 void
-Client::print_job(open62541::jsptr job)
+Client::print_job(opcuac::jobsptr job)
 {
-    if(job == nullptr)
+    auto local = dynamic_cast<open62541::Job*>(job.get());
+
+    if(local == nullptr)
     {
+        cLOG(Level::INFO, "Job is nullptr!");
         return;
     }
-    std::cout << *job;
-    return;
+    else
+    {
+        std::cout << *local;
+        return;
+    }
 }
+
+opcuac::datasptr 
+Client::init_data(std::map<int, std::string>& input) const
+{
+    /* Check size */
+    if(input.size() < 5)
+        throw std::runtime_error("Not enough values in job init_string.");
+
+    std::string type = input.find(3)->second;
+    if(type == "opc_time_t")
+    {
+        if(input.find(4)->second == "actual")
+        {
+            return std::make_shared<open62541::DDateTime>(system_time());
+        }
+        else if(input.size() < 10)
+            throw std::runtime_error("Not enough values in job init_string.");
+        else
+        {
+            opc_time_t time;
+            time.day = std::stoi(input.find(4)->second);
+            time.mon = std::stoi(input.find(5)->second);
+            time.year = std::stoi(input.find(6)->second);
+            time.hour = std::stoi(input.find(7)->second);
+            time.min = std::stoi(input.find(8)->second);
+            time.sec = std::stoi(input.find(9)->second);
+            time.msec = std::stoi(input.find(10)->second);
+
+            return std::make_shared<open62541::DDateTime>(time);
+        }
+    }
+    if(type == "bool_t")
+    {
+        return std::make_shared<open62541::DBoolean>(std::stoi(input.find(4)->second));
+    }
+    if(type == "int16_t")
+    {
+        return std::make_shared<open62541::DInt16>(std::stoi(input.find(4)->second));
+    }
+    if(type == "uint16_t")
+    {
+        int dummy = std::stoi(input.find(4)->second);
+        if(dummy < 0)
+            throw std::out_of_range("Negative value detected for uint16_t");
+        else
+        {
+            return std::make_shared<open62541::DUInt16>(dummy);
+        }
+    }
+    if(type == "int32_t")
+    {
+        return std::make_shared<open62541::DInt32>(std::stoi(input.find(4)->second));
+    }
+    if(type == "uint32_t")
+    {
+        int dummy = std::stoi(input.find(4)->second);
+        if(dummy < 0)
+            throw std::out_of_range("Negative value detected for uint32_t");
+        else
+        {
+            return std::make_shared<open62541::DUInt16>(dummy);
+        }
+    }
+    if(type == "int64_t")
+    {
+        return std::make_shared<open62541::DInt64>(std::stoi(input.find(4)->second));
+    }
+    if(type == "uint64_t")
+    {
+        int dummy = std::stoi(input.find(4)->second);
+        if(dummy < 0)
+            throw std::out_of_range("Negative value detected for uint64_t");
+        else
+        {
+            return std::make_shared<open62541::DUInt16>(dummy);
+        }
+    }
+    if(type == "f32_t")
+    {
+        return std::make_shared<open62541::DFloat>(std::stoi(input.find(4)->second));
+    }
+    if(type == "f64_t")
+    {
+        return std::make_shared<open62541::DDouble>(std::stoi(input.find(4)->second));
+    }
+    if(type == "string")
+    {
+        return std::make_shared<open62541::DString>(input.find(4)->second);
+    }
+
+    throw std::invalid_argument("Invalid data type specified");
+}
+
+// opcuac::datasptr
+// Client::init_data(std::string type) const 
+// {
+//     if(type == "opc_time_t")
+//     {
+//         opc_time_t time;
+//         time.day = 0;
+//         time.mon = 0;
+//         time.year = 0;
+//         time.hour = 0;
+//         time.min = 0;
+//         time.sec = 0;
+//         time.msec = 0;
+//         return std::make_shared<open62541::DDateTime>(time);
+//     }
+//     if(type == "bool_t")
+//     {
+//         return std::make_shared<open62541::DBoolean>(0);
+//     }
+//     if(type == "int16_t")
+//     {
+//         return std::make_shared<open62541::DInt16>(0);
+//     }
+//     if(type == "uint16_t")
+//     {
+//         return std::make_shared<open62541::DUInt16>(0);
+//     }
+//     if(type == "int32_t")
+//     {
+//         return std::make_shared<open62541::DInt32>(0);
+//     }
+//     if(type == "uint32_t")
+//     {
+//         return std::make_shared<open62541::DUInt16>(0);
+//     }
+//     if(type == "int64_t")
+//     {
+//         return std::make_shared<open62541::DInt64>(0);
+//     }
+//     if(type == "uint64_t")
+//     {
+//         return std::make_shared<open62541::DUInt16>(0);
+//     }
+//     if(type == "f32_t")
+//     {
+//         return std::make_shared<open62541::DFloat>(0);
+//     }
+//     if(type == "f64_t")
+//     {
+//         return std::make_shared<open62541::DDouble>(0);
+//     }
+//     if(type == "string")
+//     {
+//         return std::make_shared<open62541::DString>(0);
+//     }
+
+//     throw std::invalid_argument("Invalid data type specified");
+// }
+
+opc_time_t
+Client::system_time(void) const
+{
+    auto now = std::chrono::system_clock::now();
+    auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+
+    time_t time = std::chrono::system_clock::to_time_t(now);
+    struct tm time_now;
+
+    oswrapper::localtime(&time, &time_now);
+
+    opc_time_t actual;
+    actual.msec = static_cast<int>(msec.count() % 1000);
+    actual.sec = time_now.tm_sec;
+    actual.min = time_now.tm_min;
+    actual.hour = time_now.tm_hour;
+    actual.day = time_now.tm_mday;
+    actual.mon = time_now.tm_mon + 1;
+    actual.year = time_now.tm_year + 1900;
+
+    cLOG(Level::INFO, "Time: "
+        + std::to_string(actual.day) + '.'
+        + std::to_string(actual.mon) + '.'
+        + std::to_string(actual.year) + " | "
+        + std::to_string(actual.hour) + ':'
+        + std::to_string(actual.min) + ':'
+        + std::to_string(actual.sec) + ':'
+        + std::to_string(actual.msec));
+
+    return actual;
+}
+
+// data_time Client::get_system_time(void) 
+// {
+//     auto now = std::chrono::system_clock::now();
+//     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
+
+//     time_t t = std::chrono::system_clock::to_time_t(now);
+//     struct tm now_tm;
+
+//     lset::wrapper_localtime(&t, &now_tm);
+
+//     data_time dt;
+//     dt.tm_msec = static_cast<int>(milliseconds.count() % 1000);
+//     dt.tm_sec = now_tm.tm_sec;
+//     dt.tm_min = now_tm.tm_min;
+//     dt.tm_hour = now_tm.tm_hour;
+//     dt.tm_mday = now_tm.tm_mday;
+//     dt.tm_mon = now_tm.tm_mon + 1;
+//     dt.tm_year = now_tm.tm_year + 1900;
+
+//     cLOG(Level::INFO, "Time: "
+//             + std::to_string(dt.tm_mday) + '.'
+//             + std::to_string(dt.tm_mon) + '.'
+//             + std::to_string(dt.tm_year) + " | "
+//             + std::to_string(dt.tm_hour) + ':'
+//             + std::to_string(dt.tm_min) + ':'
+//             + std::to_string(dt.tm_sec) + ':'
+//             + std::to_string(dt.tm_msec));
+//     return dt;
+// }
 
 
 // void
@@ -1410,35 +1612,7 @@ Client::print_job(open62541::jsptr job)
 //     }
 // }
 
-// data_time Client::get_system_time(void) 
-// {
-//     auto now = std::chrono::system_clock::now();
-//     auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch());
 
-//     time_t t = std::chrono::system_clock::to_time_t(now);
-//     struct tm now_tm;
-
-//     lset::wrapper_localtime(&t, &now_tm);
-
-//     data_time dt;
-//     dt.tm_msec = static_cast<int>(milliseconds.count() % 1000);
-//     dt.tm_sec = now_tm.tm_sec;
-//     dt.tm_min = now_tm.tm_min;
-//     dt.tm_hour = now_tm.tm_hour;
-//     dt.tm_mday = now_tm.tm_mday;
-//     dt.tm_mon = now_tm.tm_mon + 1;
-//     dt.tm_year = now_tm.tm_year + 1900;
-
-//     cLOG(Level::INFO, "Time: "
-//             + std::to_string(dt.tm_mday) + '.'
-//             + std::to_string(dt.tm_mon) + '.'
-//             + std::to_string(dt.tm_year) + " | "
-//             + std::to_string(dt.tm_hour) + ':'
-//             + std::to_string(dt.tm_min) + ':'
-//             + std::to_string(dt.tm_sec) + ':'
-//             + std::to_string(dt.tm_msec));
-//     return dt;
-// }
 
 //data_time 
 //Client::get_system_time(void) 

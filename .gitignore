@@ -401,6 +401,7 @@ FodyWeavers.xsd
 open62541/
 open62541_lib/
 build/
+files/
 old_files/
 .vscode/
 

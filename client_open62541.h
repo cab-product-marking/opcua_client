@@ -5,11 +5,10 @@
 #include <cstring>
 
 #include "Iclient_opcua.h"
-#include "job_open62541.h"
-#include "job_dec_datatype.h"
-// #include "job_dec_jobtype.h"
-#include "job_dec_nodetype.h"
+#include "job_open62541_node.h" 
+#include "data_open62541.h"
 #include "common_types.h"
+#include "node_tree.h"
 
 #include <open62541/client_config_default.h>
 #include <open62541/client_highlevel.h>
@@ -33,13 +32,13 @@ namespace open62541
     /**
      * Class Client 
      */
-    class Client : public opcuac::Client
+    class Client : public opcuac::IClient
     {
     public:
     
         /* Basics */
 
-        using opcuac::Client::Client;
+        Client() = default;
 
         Client(const Client&) = delete;
 
@@ -69,32 +68,32 @@ namespace open62541
         /* Printer services */
 
         void
-        add_monitored_item(opcuac::jsptr) override;
+        add_monitored_item(opcuac::jobsptr) override;
 
         void
-        del_monitored_item(opcuac::jsptr) override;
+        del_monitored_item(opcuac::jobsptr) override;
 
         void
-        read_node(opcuac::jsptr) override;
-
-        int
-        write_node(opcuac::jsptr) override;
+        read_node(opcuac::jobsptr) override;
 
         void
-        browse(opcuac::jsptr) override;
+        write_node(opcuac::jobsptr) override;
+
+        void
+        browse(opcuac::jobsptr) override;
 
         /* Printer methods */
 
         void 
-        file_upload(opcuac::jsptr) override;
+        file_upload(opcuac::jobsptr) override;
 
         void
-        print_data(opcuac::jsptr) override;
+        print_data(opcuac::jobsptr) override;
 
         /* Printer interpreter methods */
 
         void 
-        print_current_label(opcuac::jsptr) override;
+        print_current_label(opcuac::jobsptr) override;
 
         /* Callbacks */
 
@@ -133,11 +132,15 @@ namespace open62541
 
     private:
 
-        void
-        data_handler_read(UA_Variant&, opcuac::jsptr);
+        static void
+        data_handler_read(UA_Variant&, opcuac::jobsptr);
+
+        static void
+        data_handler_write(UA_Variant&, opcuac::jobsptr);
 
         UA_Client* opcuac_;
         UA_ClientConfig* opcuac_c_;
+        std::map<opcuac::jobsptr, open62541::mitem_t> items_;
 
         static UA_SessionState actual_session_state_;
 
