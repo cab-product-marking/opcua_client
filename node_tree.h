@@ -13,9 +13,6 @@
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
 
-namespace open62541
-{
-
 #define NODE_IDENT          "Ident"
 #define NODE_ID             "Id"
 #define NODE_NS             "Ns"
@@ -26,6 +23,8 @@ namespace open62541
 #define NODE_EMPTY          "    "
 #define NODE_DOWN           "│   "
 
+namespace open62541
+{
     /* Fd */
     class NodeTree;
     class Node;

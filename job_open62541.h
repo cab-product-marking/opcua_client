@@ -9,18 +9,6 @@
 #include "Ijob_opcua.h"
 #include "data_open62541.h"
 
-#define PRAEFIX_INIT        "Initial"
-#define PRAEFIX_TYPE        "Type"
-
-#define DATA_INTERN         "Intern"
-#define DATA_EXTERN         "Extern"
-#define DATA_READ           "Read"
-#define DATA_WRITE          "Write"
-
-#define STATUS_ACTIVE       2
-#define STATUS_WORK         1
-#define STATUS_DEAD         0
-
 namespace open62541
 {
     /* Fd Job */

@@ -17,9 +17,6 @@
 #include <open62541/server_config_default.h>
 #include <open62541/client.h>
 
-namespace open62541
-{
-
 #define TIMEOUT                     1000
 #define CONNECTION_ATTEMPTS         4
 #define CONNECTION_WAITING_TIME     100
@@ -29,6 +26,8 @@ namespace open62541
 
 #define START_LAYER                 1
 
+namespace open62541
+{
     /**
      * Class Client 
      */
@@ -138,8 +137,15 @@ namespace open62541
         static void
         data_handler_write(UA_Variant&, opcuac::jobsptr);
 
+        std::string
+        to_string(const UA_String*);
+
+        void
+        to_uabytestring(const std::string&, UA_ByteString*);
+
         UA_Client* opcuac_;
         UA_ClientConfig* opcuac_c_;
+
         std::map<opcuac::jobsptr, open62541::mitem_t> items_;
 
         static UA_SessionState actual_session_state_;

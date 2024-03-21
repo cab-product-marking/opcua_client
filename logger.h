@@ -41,10 +41,10 @@ class Job;
 class Logger
 {
 public:
-    Logger();
+    Logger() = default;
 
     virtual 
-    ~Logger();
+    ~Logger() = default;
 
     Logger(const Logger&) = delete;
 

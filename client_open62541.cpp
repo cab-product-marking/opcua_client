@@ -413,203 +413,183 @@ Client::browse(opcuac::jobsptr job)
 void 
 Client::file_upload(opcuac::jobsptr job)
 {
-    // /* Set start settings */
-    // job->type_id = id_type::numeric;
-    // job->namespace_index = 3;
-    // job->id_numeric = 20006;
+    auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
 
-    // /* Generate method id */
-    // UA_NodeId method_id;
-    // UA_NodeId_init(&method_id);
-    // /* Method id  */
-    // method_id = UA_NODEID_NUMERIC(job->namespace_index, 
-    //                               job->id_numeric);
+    auto data = local->get_data(DATA_PRINT);
+    auto value = std::dynamic_pointer_cast<open62541::DString>(data);
     
-    // /* Node id object MethodSet node */
-    // UA_NodeId object_id;
-    // UA_NodeId_init(&object_id);
-    // /* Object MethodSet */
-    // object_id = UA_NODEID_NUMERIC(3, 10012);
+    /* Node id object MethodSet node */
+    UA_NodeId object_id;
+    UA_NodeId_init(&object_id);
+    /* Object MethodSet */
+    object_id = UA_NODEID_NUMERIC(3, 10012);
 
-    // /* 1. Storage device */
-    // // UA_UInt32 storage_device = 0; /* Default storage */
-    // UA_Int32 storage_device = 1; /* IFFS */
+    /* 1. Storage device */
+    // UA_UInt32 storage_device = 0; /* Default storage */
+    UA_Int32 storage_device = 1; /* IFFS */
 
-    // /* Convert */
-    // std::string fname = job->intern_data->file_name;
-    // size_t pos = fname.find_last_of('/');
-    // std::string identifier;
-    // if(pos != std::string::npos)
-    // {
-    //     identifier = fname.substr(pos + 1);
-    // }
-    // else
-    // {
-    //     identifier = fname;
-    // }
-    // /* 2. Filename */
-    // UA_String filename;
-    // UA_String_init(&filename);
-    // filename = UA_String_fromChars(identifier.c_str());
+    /* Convert */
+    std::string fname = value->get();
+    size_t pos = fname.find_last_of('/');
+    std::string identifier;
+    if(pos != std::string::npos)
+    {
+        identifier = fname.substr(pos + 1);
+    }
+    else
+    {
+        identifier = fname;
+    }
+    /* 2. Filename */
+    UA_String filename;
+    UA_String_init(&filename);
+    filename = UA_String_fromChars(identifier.c_str());
     
-    // /* 3. File contents */
-    // UA_ByteString byte_string;
-    // UA_ByteString_init(&byte_string);
-    // std::ifstream file(job->intern_data->file_name, std::ios::binary | std::ios::ate);
-    // if(!file)
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, %s is not available.",
-    //                  job->intern_data->file_name.c_str());
-    //     UA_ByteString_clear(&byte_string);
-    //     UA_String_clear(&filename);
-    //     UA_NodeId_clear(&object_id);
-    //     UA_NodeId_clear(&method_id);
-    //     return;
-    // }
-    // std::streamsize size = file.tellg();
-    // file.seekg(0, std::ios::beg);
-    // /* Read in string */
-    // std::string buffer(size, '\0');
-    // if(file.read(&buffer[0], size))
-    // {
-    //     stdstring_to_ua_bytestring(buffer, &byte_string);
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, convert %s to string failed.",
-    //                  job->intern_data->file_name.c_str());
-    //     UA_ByteString_clear(&byte_string);
-    //     UA_String_clear(&filename);
-    //     UA_NodeId_clear(&object_id);
-    //     UA_NodeId_clear(&method_id);
-    //     return;
-    // }
+    /* 3. File contents */
+    UA_ByteString byte_string;
+    UA_ByteString_init(&byte_string);
+    std::ifstream file(value->get(), std::ios::binary | std::ios::ate);
+    if(!file)
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, %s is not available.",
+                     value->get().c_str());
+        UA_ByteString_clear(&byte_string);
+        UA_String_clear(&filename);
+        UA_NodeId_clear(&object_id);
+        return;
+    }
+    std::streamsize size = file.tellg();
+    file.seekg(0, std::ios::beg);
+    /* Read in string */
+    std::string buffer(size, '\0');
+    if(file.read(&buffer[0], size))
+    {
+        to_uabytestring(buffer, &byte_string);
+    }
+    else
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, convert %s to string failed.",
+                     value->get().c_str());
+        UA_ByteString_clear(&byte_string);
+        UA_String_clear(&filename);
+        UA_NodeId_clear(&object_id);
+        return;
+    }
     
-    // /* Array with language type at first position and data at second*/
-    // size_t array_size = {3};
-    // UA_Variant *array = (UA_Variant*)UA_Array_new(array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    // if(!array)
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, nullptr!");
-    //     UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    //     UA_ByteString_clear(&byte_string);
-    //     UA_String_clear(&filename);
-    //     UA_NodeId_clear(&object_id);
-    //     UA_NodeId_clear(&method_id);
-    //     return;
-    // }
-    // for(size_t i = 0; i < array_size; ++i)
-    // {
-    //     UA_Variant_init(&array[i]);
-    // }
-    // UA_Variant_setScalarCopy(&array[0], &storage_device, &UA_TYPES[UA_TYPES_INT32]);
-    // UA_Variant_setScalarCopy(&array[1], &filename, &UA_TYPES[UA_TYPES_STRING]);
-    // UA_Variant_setScalarCopy(&array[2], &byte_string , &UA_TYPES[UA_TYPES_BYTESTRING]);
+    /* Array with language type at first position and data at second*/
+    size_t array_size = {3};
+    UA_Variant *array = (UA_Variant*)UA_Array_new(array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+    if(!array)
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, nullptr!");
+        UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+        UA_ByteString_clear(&byte_string);
+        UA_String_clear(&filename);
+        UA_NodeId_clear(&object_id);
+        return;
+    }
+    for(size_t i = 0; i < array_size; ++i)
+    {
+        UA_Variant_init(&array[i]);
+    }
+    UA_Variant_setScalarCopy(&array[0], &storage_device, &UA_TYPES[UA_TYPES_INT32]);
+    UA_Variant_setScalarCopy(&array[1], &filename, &UA_TYPES[UA_TYPES_STRING]);
+    UA_Variant_setScalarCopy(&array[2], &byte_string , &UA_TYPES[UA_TYPES_BYTESTRING]);
 
-    // UA_StatusCode state = UA_Client_call(opcuac_,
-    //                                      object_id,
-    //                                      method_id,
-    //                                      array_size,
-    //                                      array,
-    //                                      nullptr,
-    //                                      nullptr);
+    UA_StatusCode state = UA_Client_call(opcuac_,
+                                         object_id,
+                                         local->nodeID(),
+                                         array_size,
+                                         array,
+                                         nullptr,
+                                         nullptr);
 
-    // if(state == UA_STATUSCODE_GOOD)
-    // {
-    //     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                 "Call method FileUpload successfully.");
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, call method FileUpload request. Statuscode: 0x%X - %s",
-    //                  state, UA_StatusCode_name(state));
-    // }
-    // UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    // UA_ByteString_clear(&byte_string);
-    // UA_String_clear(&filename);
-    // UA_NodeId_clear(&object_id);
-    // UA_NodeId_clear(&method_id);
+    if(state == UA_STATUSCODE_GOOD)
+    {
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "Call method FileUpload successfully.");
+    }
+    else
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, call method FileUpload request. Statuscode: 0x%X - %s",
+                     state, UA_StatusCode_name(state));
+    }
+    UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+    UA_ByteString_clear(&byte_string);
+    UA_String_clear(&filename);
+    UA_NodeId_clear(&object_id);
     return;
 }
 
 void
 Client::print_data(opcuac::jobsptr job)
 {
-    // /* Set start settings */
-    // job->type_id = id_type::numeric;
-    // job->namespace_index = 3;
-    // job->id_numeric = 6008;
+    auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
 
-    // /* Generate method id */
-    // UA_NodeId method_id;
-    // UA_NodeId_init(&method_id);
-    // /* Method id*/
-    // method_id = UA_NODEID_NUMERIC(job->namespace_index, 
-    //                               job->id_numeric);
+    auto data = local->get_data(DATA_PRINT);
+    auto value = std::dynamic_pointer_cast<open62541::DString>(data);
+
+    /* Node id object MethodSet node */
+    UA_NodeId object_id;
+    UA_NodeId_init(&object_id);
+    /* Object MethodSet */
+    object_id = UA_NODEID_NUMERIC(3, 10012);
+
+    /* Language */
+    UA_Int32 language;
+    // UA_Boolean language; /* Works */
+    language = local->get_info(PRAEFIX_LANGUAGE) == "js" ? 1 : 0;
+
+    /* Data */
+    UA_ByteString byte_string;
+    UA_ByteString_init(&byte_string);
+    to_uabytestring(value->get(), &byte_string);
     
-    // /* Node id object MethodSet node */
-    // UA_NodeId object_id;
-    // UA_NodeId_init(&object_id);
-    // /* Object MethodSet */
-    // object_id = UA_NODEID_NUMERIC(3, 10012);
+    /* 1. Array with language type at first position and data at second*/
+    size_t array_size = {2};
+    UA_Variant *array = (UA_Variant*)UA_Array_new(array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+    if(!array)
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, nullptr!");
+        UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+        UA_ByteString_clear(&byte_string);
+        UA_NodeId_clear(&object_id);
+        return;
+    }
+    for(size_t i = 0; i < array_size; ++i)
+    {
+        UA_Variant_init(&array[i]);
+    }
+    UA_Variant_setScalarCopy(&array[0], &language, &UA_TYPES[UA_TYPES_INT32]);
+    UA_Variant_setScalarCopy(&array[1], &byte_string, &UA_TYPES[UA_TYPES_BYTESTRING]);
 
-    // /* Language */
-    // UA_Int32 language;
-    // // UA_Boolean language; /* Works */
-    // language = job->intern_data->b_value ? 1 : 0;
+    UA_StatusCode state = UA_Client_call(opcuac_,
+                                         object_id,
+                                         local->nodeID(),
+                                         array_size,
+                                         array,
+                                         nullptr,
+                                         nullptr);
 
-    // /* Data */
-    // UA_ByteString byte_string;
-    // UA_ByteString_init(&byte_string);
-    // stdstring_to_ua_bytestring(job->intern_data->string_value, &byte_string);
-    
-    // /* 1. Array with language type at first position and data at second*/
-    // size_t array_size = {2};
-    // UA_Variant *array = (UA_Variant*)UA_Array_new(array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    // if(!array)
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, nullptr!");
-    //     UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    //     UA_ByteString_clear(&byte_string);
-    //     UA_NodeId_clear(&object_id);
-    //     UA_NodeId_clear(&method_id);
-    //     return;
-    // }
-    // for(size_t i = 0; i < array_size; ++i)
-    // {
-    //     UA_Variant_init(&array[i]);
-    // }
-    // UA_Variant_setScalarCopy(&array[0], &language, &UA_TYPES[UA_TYPES_INT32]);
-    // UA_Variant_setScalarCopy(&array[1], &byte_string, &UA_TYPES[UA_TYPES_BYTESTRING]);
-
-    // UA_StatusCode state = UA_Client_call(opcuac_,
-    //                                      object_id,
-    //                                      method_id,
-    //                                      array_size,
-    //                                      array,
-    //                                      nullptr,
-    //                                      nullptr);
-
-    // if(state == UA_STATUSCODE_GOOD)
-    // {
-    //     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                 "Call method PrintData successfully.");
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, call method PrintData request. Statuscode: 0x%X - %s",
-    //                  state, UA_StatusCode_name(state));
-    // }
-    // UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
-    // UA_ByteString_clear(&byte_string);
-    // UA_NodeId_clear(&object_id);
-    // UA_NodeId_clear(&method_id);
+    if(state == UA_STATUSCODE_GOOD)
+    {
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "Call method PrintData successfully.");
+    }
+    else
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, call method PrintData request. Statuscode: 0x%X - %s",
+                     state, UA_StatusCode_name(state));
+    }
+    UA_Array_delete(array, array_size, &UA_TYPES[UA_TYPES_VARIANT]);
+    UA_ByteString_clear(&byte_string);
+    UA_NodeId_clear(&object_id);
     return;
 }
 
@@ -618,55 +598,44 @@ Client::print_data(opcuac::jobsptr job)
 void 
 Client::print_current_label(opcuac::jobsptr job)
 {
-    // /* Set start settings */
-    // job->type_id = id_type::numeric;
-    // job->namespace_index = 3;
-    // job->id_numeric = 10098;
+    auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
 
-    // /* Generate method id */
-    // UA_NodeId method_id;
-    // UA_NodeId_init(&method_id);
-    // /* Method id  */
-    // method_id = UA_NODEID_NUMERIC(job->namespace_index, 
-    //                               job->id_numeric);
+    /* Node id object MethodSet node */
+    UA_NodeId object_id;
+    UA_NodeId_init(&object_id);
+    /* Object MethodSet */
+    object_id = UA_NODEID_NUMERIC(3, 10012);
+
+    /* Storage device - default is one */
+    UA_UInt32 amount_labels = (UA_UInt32)(1U); 
+
+    UA_Variant variant;
+    UA_Variant_init(&variant);
     
-    // /* Node id object MethodSet node */
-    // UA_NodeId object_id;
-    // UA_NodeId_init(&object_id);
-    // /* Object MethodSet */
-    // object_id = UA_NODEID_NUMERIC(3, 10012);
-
-    // /* Storage device */
-    // UA_UInt32 amount_labels = (UA_UInt32)job->intern_data->u16_value; 
-
-    // UA_Variant variant;
-    // UA_Variant_init(&variant);
-    
-    // UA_Variant_setScalarCopy(&variant, &amount_labels, &UA_TYPES[UA_TYPES_UINT32]);
+    UA_Variant_setScalarCopy(&variant, &amount_labels, &UA_TYPES[UA_TYPES_UINT32]);
     
 
-    // UA_StatusCode state = UA_Client_call(opcuac_,
-    //                                      object_id,
-    //                                      method_id,
-    //                                      1,
-    //                                      &variant,
-    //                                      nullptr,
-    //                                      nullptr);
+    UA_StatusCode state = UA_Client_call(opcuac_,
+                                         object_id,
+                                         local->nodeID(),
+                                         1,
+                                         &variant,
+                                         nullptr,
+                                         nullptr);
 
-    // if(state == UA_STATUSCODE_GOOD)
-    // {
-    //     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                 "Call method PrintCurrentLabel successfully.");
-    // }
-    // else
-    // {
-    //     UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
-    //                  "Error, call method PrintCurrentLabel request. Statuscode: 0x%X - %s",
-    //                  state, UA_StatusCode_name(state));
-    // }
-    // UA_Variant_clear(&variant);
-    // UA_NodeId_clear(&object_id);
-    // UA_NodeId_clear(&method_id);
+    if(state == UA_STATUSCODE_GOOD)
+    {
+        UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                    "Call method PrintCurrentLabel successfully.");
+    }
+    else
+    {
+        UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
+                     "Error, call method PrintCurrentLabel request. Statuscode: 0x%X - %s",
+                     state, UA_StatusCode_name(state));
+    }
+    UA_Variant_clear(&variant);
+    UA_NodeId_clear(&object_id);
     return;
 }
 
@@ -1007,37 +976,36 @@ Client::data_handler_write(UA_Variant &target, opcuac::jobsptr job)
     return;
 }
 
-// std::string 
-// Client::ua_string_to_stdstring(const UA_String *uaString) 
-// {
-//     if (!uaString || uaString->length == 0 || uaString->data == nullptr) 
-//     {
-//         /* Returns empty string when UA_String is invalid */
-//         return std::string();  
-//     }
-//     /* New string and copy data inside */
-//     std::string str;
-//     str.reserve(uaString->length);  /* Reserve memory */
-//     std::copy(uaString->data, uaString->data + uaString->length, std::back_inserter(str));
-//     return str;
-// }
+std::string 
+Client::to_string(const UA_String *uaString) 
+{
+    if (!uaString || uaString->length == 0 || uaString->data == nullptr) 
+    {
+        /* Returns empty string when UA_String is invalid */
+        return std::string();  
+    }
+    /* New string and copy data inside */
+    std::string str;
+    str.reserve(uaString->length);  /* Reserve memory */
+    std::copy(uaString->data, uaString->data + uaString->length, std::back_inserter(str));
+    return str;
+}
 
-// void
-// Client::stdstring_to_ua_bytestring(const std::string &str,
-//                         UA_ByteString *uaStr)
-// {
-//     if(str.empty())
-//     {
-//         return;
-//     }
-//     uaStr->length = str.size();
-//     uaStr->data = reinterpret_cast<UA_Byte*>(UA_malloc(uaStr->length));
-//     if (!uaStr->data) 
-//     {
-//         throw std::bad_alloc();
-//     }
-//     std::memcpy(uaStr->data, str.data(), uaStr->length);
-//     return;
-// }
+void
+Client::to_uabytestring(const std::string &str, UA_ByteString *uaStr)
+{
+    if(str.empty())
+    {
+        return;
+    }
+    uaStr->length = str.size();
+    uaStr->data = reinterpret_cast<UA_Byte*>(UA_malloc(uaStr->length));
+    if (!uaStr->data) 
+    {
+        throw std::bad_alloc();
+    }
+    std::memcpy(uaStr->data, str.data(), uaStr->length);
+    return;
+}
 
 /* Eof */

@@ -20,11 +20,10 @@
 #include "common_defines.h"
 #include "job_open62541_node.h"
 
-namespace cab
-{
-
 #define MAX_JOB_LENGTH      100
 
+namespace cab
+{
     /* Class Client */
 
     class Client

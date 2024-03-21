@@ -6,10 +6,6 @@
 
 #include <open62541/client.h>
 
-#define PRAEFIX_ID          "Id"
-#define PRAEFIX_NS          "Namespace"
-#define PRAEFIX_NODE        "Node"
-
 namespace open62541
 {
     /* Class JobDecNode */

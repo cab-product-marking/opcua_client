@@ -3,12 +3,10 @@
 #include <iostream>
 
 /* Features */
-
 #define FEATURE_TESTING
 // #define FEATURE_CLIENT_OFF
 
 /* Color features */
-
 #define FONT_BLACK              "\033[0;30m"
 #define FONT_RED                "\033[0;31m"
 #define FONT_GREEN              "\033[0;32m"
@@ -37,7 +35,6 @@
 #define BACK_LIGHT_GREY         "\033[0;47m"
 
 /* Cursor features */
-
 #define CONSOLE_LINE(x)         std::cout << std::string(x, '-') << std::endl;
 #define CONSOLE_LINE_50         std::string(50, '-')
 #define CONSOLE_LINE_60         std::string(60, '-')
@@ -60,19 +57,38 @@
 #define CURSOR_OFF              "\033[?25l"
 #define CURSOR_ON               "\033[?25h"
 
-namespace open62541
-{
-    #define DEFAULT_IP                  "192.168.200.70"
-    #define DEFAULT_PORT                "4840"
-    #define DEFAULT_USER                "opcuser"
-    #define DEFAULT_PASS                "opcpass"
-    #define DEFAULT_URL                 "DEFAULT"
-    #define DEFAULT_SECURE_MODE         false
-} // namespace open62541
+/* Init client */
+#define DEFAULT_IP              "192.168.200.70"
+#define DEFAULT_PORT            "4840"
+#define DEFAULT_USER            "opcuser"
+#define DEFAULT_PASS            "opcpass"
+#define DEFAULT_URL             "DEFAULT"
+#define DEFAULT_SECURE_MODE     false
 
-namespace freeopcua
-{
+/* Job handling */
+#define JOB_MITEMADD            "MitemAdd"
+#define JOB_MITEMDEL            "MitemDel"
+#define JOB_NODEREAD            "NodeRead"
+#define JOB_NODEWRITE           "NodeWrite"
+#define JOB_BROWSE              "Browse"
+#define JOB_PRINT               "Print"
+#define JOB_REPLACE             "Replace" 
 
-} // namespace freeopcua
+#define PRAEFIX_INIT            "Initial"
+#define PRAEFIX_TYPE            "Type"
+#define PRAEFIX_ID              "Id"
+#define PRAEFIX_NS              "Namespace"
+#define PRAEFIX_NODE            "Node"
+#define PRAEFIX_LANGUAGE        "Language"
+#define PRAEFIX_JOBTYPE         "Jobtype"
+
+#define DATA_READ               "Read"
+#define DATA_WRITE              "Write"  
+#define DATA_PRINT              "Print"
+#define DATA_UPLOAD             "Upload"
+
+#define STATUS_ACTIVE           2
+#define STATUS_WORK             1
+#define STATUS_DEAD             0
 
 /* Eof */

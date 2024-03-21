@@ -18,7 +18,14 @@ namespace oswrapper
     void
     localtime(const time_t* time_time_t, tm* time_tm);
 
+
+
+
+
     /* More local cases ... */
+
+
+    
 
 } // namespace osw
 

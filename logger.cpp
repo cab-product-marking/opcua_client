@@ -1,15 +1,5 @@
 #include "logger.h"
 
-Logger::Logger()
-{
-
-}
-
-Logger::~Logger()
-{
-
-}
-
 /* Return static logger instance */
 Logger& 
 Logger::get_instance(void)

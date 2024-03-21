@@ -7,13 +7,16 @@ find_package(open62541 REQUIRED)
 
 add_executable(client
                main.cpp
+               client.cpp
                client_open62541.cpp
+               client_freeopcua.cpp
                job_open62541.cpp
+               job_freeopcua.cpp
                job_open62541_node.cpp
                data_open62541.cpp
-               client.cpp
+               data_freeopcua.cpp
                logger.cpp
-               os_wrappers.cpp
-               node_tree.cpp)  
+               node_tree.cpp
+               os_wrappers.cpp)  
                
 target_link_libraries(client open62541::open62541)

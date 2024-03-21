@@ -3,7 +3,6 @@
 #include <ctime>
 
 #include "Idata_opcua.h"
-
 #include "common_types.h"
 
 #include <open62541/client.h>
