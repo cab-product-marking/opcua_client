@@ -415,7 +415,7 @@ Client::file_upload(opcuac::jobsptr job)
 {
     auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
 
-    auto data = local->get_data(DATA_PRINT);
+    auto data = local->get_data(DATA_UPLOAD);
     auto value = std::dynamic_pointer_cast<open62541::DString>(data);
     
     /* Node id object MethodSet node */
@@ -448,6 +448,7 @@ Client::file_upload(opcuac::jobsptr job)
     /* 3. File contents */
     UA_ByteString byte_string;
     UA_ByteString_init(&byte_string);
+
     std::ifstream file(value->get(), std::ios::binary | std::ios::ate);
     if(!file)
     {
@@ -542,7 +543,7 @@ Client::print_data(opcuac::jobsptr job)
     /* Language */
     UA_Int32 language;
     // UA_Boolean language; /* Works */
-    language = local->get_info(PRAEFIX_LANGUAGE) == "js" ? 1 : 0;
+    language = local->get_info(PRAEFIX_LANGUAGE) == "js" ? 0 : 1;
 
     /* Data */
     UA_ByteString byte_string;
@@ -762,7 +763,6 @@ Client::data_handler_read(UA_Variant &target, opcuac::jobsptr job)
     {
         /* To date time struct */
         UA_DateTimeStruct dts = UA_DateTime_toStruct(*(UA_DateTime *)target.data);
-
         /* Time */
         opc_time_t dummy;
         dummy.msec = dts.milliSec;

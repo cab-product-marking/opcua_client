@@ -78,6 +78,9 @@ namespace cab
         void 
         replace_label(opcuac::jobsptr);
 
+        void
+        upload_stream(opcuac::jobsptr);
+
     private:
 
         void
@@ -115,7 +118,6 @@ namespace cab
         open62541::Client* client_;
 
         std::list<opcuac::jobsptr> jobs_;
-
 
     };
 

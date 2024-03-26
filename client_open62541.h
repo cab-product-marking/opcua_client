@@ -24,8 +24,6 @@
 
 #define ITERATIE_TIME               100
 
-#define START_LAYER                 1
-
 namespace open62541
 {
     /**

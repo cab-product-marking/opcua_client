@@ -280,7 +280,7 @@ Client::run_iterate()
             }
 
 #ifdef FEATURE_TESTING
-            cLOG(Level::INFO, "end iterate loop.");
+            cLOG(Level::INFO, "End iterate loop.");
 #endif // FEATURE_TESTING
         }
     }
@@ -402,8 +402,9 @@ Client::print_label(opcuac::jobsptr job)
 
     if(job->get_info(PRAEFIX_JOBTYPE) == "FileUpload")
     {
-        cLOG(Level::JOB, "Upload your insert file, bitmap or picture.");
+        cLOG(Level::INFO, "Upload your insert file, bitmap or picture.");
 
+        /* Finish upload before working with other methods */
         client_->file_upload(job);
 
         job->status(STATUS_DEAD);
@@ -412,7 +413,7 @@ Client::print_label(opcuac::jobsptr job)
 
     if(job->get_info(PRAEFIX_JOBTYPE) == "PrintNow")
     {
-        cLOG(Level::JOB, "Print current label.");
+        cLOG(Level::INFO, "Print current label.");
 
         client_->print_current_label(job);
 
@@ -420,9 +421,9 @@ Client::print_label(opcuac::jobsptr job)
         return;
     }
 
-    cLOG(Level::JOB, "Print contents from job input or file.");
+    cLOG(Level::INFO, "Print contents from job input or file.");
 
-    client_->print_data(job);
+    Client::upload_stream(job);
 
     job->status(STATUS_DEAD);
     return;
@@ -432,44 +433,65 @@ void
 Client::replace_label(opcuac::jobsptr job)
 {
     jLOG(Level::JOB, "Start replace items in label procedure", job);
-//     /* Label with replace contents needs to load or print before */
-//     if(job->intern_data->u32_value == 0)
-//     {
-//         
-//         /* Need to know then contents item you want to replace */
-//         std::shared_ptr<JOB> node = std::make_shared<JOB>(init_job());
-//         for(auto it = job->intern_data->replace.begin(); 
-//             it != job->intern_data->replace.end(); ++it)
-//         {
-//             /* Node settings */
-//             node->type_id = id_type::string;
-//             node->id_string = it->first;
-//             node->namespace_index = 5;
-//             /* Data settings */
-//             node->intern_data->type_data = data_type::c_string;
-//             node->intern_data->string_value = it->second;
-            
-//             if(opcuac_write_node(node) != EXIT_SUCCESS)
-//             {
-//                 cLOG(Level::INFO, "write replace contents failed.");
-//                 job->erase = true;
-//                 return;
-//             }
-//         }
-//         job->intern_data->u32_value++;
-//         return;
-//     }
-//     if(job->intern_data->u32_value == 1)
-//     {
-//         /* Also possible with print:JScript:PrintNow */
-//         /* Amount of labels */
-//         job->intern_data->u16_value = 1;
-//         opcuac_call_method_PrintCurrentLabel(job);
+    
+    client_->write_node(job);
 
-//         /* Erase from job list */
-//         job->erase = true;
-//         return;
-//     }
+    job->status(STATUS_DEAD);
+    return; 
+}
+
+void
+Client::upload_stream(opcuac::jobsptr job)
+{
+    /* Guarantees that labels or files has been uploaded completely */
+    /* Check upload status - Current Label Definition Completion Sequence */
+    /* Depends on job syntax, no handling for zpl implemented */
+    /* Current Label Definition Completion Sequence = CLDCS */
+    auto joba = std::make_shared<open62541::Job>("CLDCS", JOB_NODEREAD);
+    auto jobb = nodeID_type(joba, "10086", "3");
+
+    /* feed? */
+    auto print = job->get_data(DATA_PRINT);
+    if(print != nullptr)
+    {
+        auto value = std::dynamic_pointer_cast<open62541::DString>(print);
+        if(value->get() == "f\n")
+        {
+            /* Method call without monitoring in case feed */
+            client_->file_upload(job);
+            return;
+        }
+        else
+        {
+            client_->read_node(jobb);
+            auto data = jobb->get_data(DATA_READ);
+            auto value = std::static_pointer_cast<open62541::DUInt32>(data);
+            int start = value->get();
+            int end = start;
+
+            cLOG(Level::INFO, "Start data upload.");
+            /* Method call print data */
+            client_->print_data(job);
+
+            int breaker = 0;
+            do
+            {
+                breaker++;
+                client_->read_node(jobb);
+                auto tempd = jobb->get_data(DATA_READ);
+                auto tempv = std::static_pointer_cast<open62541::DUInt32>(tempd);
+                end = tempv->get();
+            } while (end == start && breaker < 100);
+
+            if(breaker == 100)
+            {
+                cLOG(Level::ERROR, "Data upload stopped! Check code!");
+                return;
+            }
+            cLOG(Level::INFO, "Finish data upload.");
+            return;
+        }
+    }
 }
 
 void
@@ -513,7 +535,7 @@ Client::file_finder(const std::string& dir, const std::string& file)
         /* Check the directory */
         if (!std::filesystem::exists(str) || !std::filesystem::is_directory(str)) 
         {
-            cLOG(Level::ERROR, "directory invalid: " + str);
+            cLOG(Level::ERROR, "Directory invalid: " + str);
             return false;
         }
         /* Iterate inside directory */
@@ -527,7 +549,7 @@ Client::file_finder(const std::string& dir, const std::string& file)
     } 
     catch(const std::filesystem::filesystem_error& e) 
     {
-        cLOG(Level::ERROR, "system directory error");
+        cLOG(Level::ERROR, "System directory error");
     }
     return false;
 }
@@ -537,7 +559,7 @@ Client::create_job(const std::string& input)
 {
     if(input.empty())
     {
-        cLOG(Level::INFO, "input_string empty.");
+        cLOG(Level::INFO, "Input_string empty.");
         return;
     }
 
@@ -545,7 +567,7 @@ Client::create_job(const std::string& input)
     std::map<int, std::string> input_map = parse_args(input);
     if(input_map.empty())
     {
-        cLOG(Level::INFO, "input_map empty.");
+        cLOG(Level::INFO, "Input_map empty.");
         return;
     }
 
@@ -624,13 +646,26 @@ Client::create_job(const std::string& input)
         {
             joba->add_info(PRAEFIX_LANGUAGE, "zpl");
         }
+        /* Data upload used */
+        if(input_map.size() == 4 && file_finder(DIR_RES, input_map.find(3)->second))
+        {
+            /* Extra File : ns = 3 : id = 20006 */
+            auto jobb = nodeID_type(joba, "20006", "3");
+            jobb->add_info(PRAEFIX_JOBTYPE, "FileUpload");
+            /* Data */
+            jobb->add_data(DATA_UPLOAD,
+                    std::make_shared<open62541::DString>(DIR_RES + input_map.find(3)->second));
+
+            jobs_.push_front(jobb);
+        }
         /* Contents as file or string */
         if(input_map.find(2)->second == "PrintNow")
         {
             /* Print current label : ns = 4 : id = 10098 */
-            auto jobb = nodeID_type(joba, "10098", "4");
-            jobb->add_info(PRAEFIX_JOBTYPE, "PrintCurrentLabel");
+            auto jobb = nodeID_type(joba, "10098", "3");
+            jobb->add_info(PRAEFIX_JOBTYPE, "PrintNow");
             /* Nothing to do */
+
             jobs_.push_back(jobb);
             return;
         }
@@ -651,6 +686,7 @@ Client::create_job(const std::string& input)
 
                 jobb->add_data(DATA_PRINT, 
                         std::make_shared<open62541::DString>(string_stream.str() + "\n"));
+
                 jobs_.push_back(jobb);
                 return;
             }
@@ -666,69 +702,37 @@ Client::create_job(const std::string& input)
             auto jobb = nodeID_type(joba, "6008", "3");
             jobb->add_info(PRAEFIX_JOBTYPE, "ContentsInput");
             /* Data */
-
             jobb->add_data(DATA_PRINT,
                     std::make_shared<open62541::DString>(input_map.find(2)->second + "\n"));
-            jobs_.push_back(jobb);
-        }
-        /* Data upload used */
-        if(input_map.size() == 4 && file_finder(DIR_RES, input_map.find(3)->second))
-        {
-            /* Extra File : ns = 3 : id = 20006 */
-            auto jobb = nodeID_type(joba, "20006", "3");
-            jobb->add_info(PRAEFIX_JOBTYPE, "FileUpload");
-            /* Data */
 
-            jobb->add_data(DATA_UPLOAD,
-                    std::make_shared<open62541::DString>(DIR_RES + input_map.find(3)->second + "\n"));
-            jobs_.push_front(jobb);
+            jobs_.push_back(jobb);
         }
     }
     if(item0->second == "replace")
     {
-        // auto joba = std::make_shared<open62541::Job>(input, job_replace);
-        // auto jobb = nodeID_type(joba, input_map.find(1)->second,
-        //         input_map.find(2)->second);
+        /* Get data for replacement */
+        if(input_map.size() < 3 || !(input_map.size() % 2))
+        {
+            cLOG(Level::ERROR, "You entered replace contents with invalid arguments.");
+            return;
+        }
+        /* Create replacement jobs  */
+        std::map<std::string, std::string> replacements;
+        for(auto it = input_map.find(1); it != input_map.end(); ++it)
+        {
+            auto joba = std::make_shared<open62541::Job>(input, JOB_REPLACE);
+            std::string dummy = it->second;
+            if (++it == input_map.end()) 
+            {
+                break;
+            }
+            auto jobb = nodeID_type(joba, dummy, "5");
+            jobb->add_data(DATA_WRITE,
+                    std::make_shared<open62541::DString>(it->second + "\n"));
 
+            jobs_.push_back(jobb);
+        }
     }
-    
-    // else if(job->type == job_type::replace)
-    // {
-    //     /* Get data for replacement */
-    //     if(input_map.size() < 3 || !(input_map.size() % 2))
-    //     {
-    //         cLOG(Level::ERROR, "you entered replace with invalid arguments.");
-    //         return;
-    //     }
-    //     /* Parse replacement data */
-    //     std::map<std::string, std::string> replacements;
-    //     for(auto it = input_map.find(1); it != input_map.end(); ++it)
-    //     {
-    //         std::string dummy = it->second;
-    //         if (++it == input_map.end()) 
-    //         {
-    //             break;
-    //         }
-    //         replacements.emplace(dummy, it->second);
-    //     }
-    //     job->intern_data->replace = replacements;
-    // }
-    // else if(job->type == job_type::DEFAULT)
-    // {
-    //     cLOG(Level::INFO, "job_type is invalid. No job was create.");
-    //     return;
-    // }
-
-    // /* Use extern DATA space? */
-    // if(shared_data != nullptr)
-    // {
-    //     job->intern_data = shared_data;
-    //     new_jobs_.push_back(job);
-    //     return;
-    // }
-    
-    // /* Push back actual job configuration */
-    // job_buffer_.push_back(job);
     return;
 } 
 
@@ -746,7 +750,7 @@ Client::parse_args(const std::string& input)
     /* Last char is ':' */
     if(str.back() == ':')
     {
-        cLOG(Level::ERROR, "syntax error.");
+        cLOG(Level::ERROR, "Syntax error.");
         return result;
     }
 
@@ -757,7 +761,7 @@ Client::parse_args(const std::string& input)
     {
         if(item.empty())
         {
-            cLOG(Level::ERROR, "single argument is empty.");
+            cLOG(Level::ERROR, "Single argument is empty.");
             std::map<int, std::string> end;
             return end;
         }
@@ -950,50 +954,5 @@ Client::system_time(void) const
 
     return actual;
 }
-
-// void
-// Client::upload_stream(std::shared_ptr<JOB> job)
-// {
-//     /* Guarantees that labels or files has been uploaded completely */
-//     /* Check upload status - Current Label Definition Completion Sequence */
-//     // print_info(job->intern_data->string_value);
-//     /* Depends on job syntax, no handling for zpl implemented */
-//     /* feed? */
-//     if(job->intern_data->string_value == "f\n")
-//     {
-//         /* Method call without monitoring */
-//         opcuac_call_method_PrintData(job);
-//         return;
-//     }
-//     else
-//     {
-//         std::shared_ptr<JOB> node = std::make_shared<JOB>(init_job());
-//         node->type_id = id_type::numeric;
-//         node->id_numeric = 10086;
-//         node->namespace_index = 3;
-
-//         opcuac_read_node(node);
-//         int start = node->intern_data->u32_value;
-//         int end = start;
-//         cLOG(Level::INFO, "start counter: " + start);
-
-//         /* Monitored method call */
-//         opcuac_call_method_PrintData(job);
-//         int breaker = 0;
-//         do
-//         {
-//             breaker++;
-//             opcuac_read_node(node);
-//             end = node->intern_data->u32_value;
-//             cLOG(Level::INFO, "end counter: " + std::to_string(end) + 
-//                 " - breaker = " + std::to_string(breaker) + "/100");
-//         } while (end == start && breaker < 100);
-//         if(breaker == 100)
-//         {
-//             cLOG(Level::ERROR, "breaker stopped loop");
-//         }
-//         return;
-//     }
-// }
 
 /* Eof */

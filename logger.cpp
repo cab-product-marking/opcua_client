@@ -47,11 +47,16 @@ Logger::log(Level level, const std::string& message, opcuac::jobsptr job)
             }
             else
             {
+                std::string dummy = local->get_info(PRAEFIX_INIT);
+                if(dummy.size() > 30)
+                {
+                    dummy = dummy.substr(0, 30) + "...";
+                }
                 std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
                 << std::setw(20) << std::left << " job/cab" << FONT_RESET
                 << message 
                 << " | " 
-                << local->get_info(PRAEFIX_INIT) 
+                << dummy
                 << std::endl;
             }
             break;

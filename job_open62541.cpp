@@ -57,7 +57,8 @@ Job::get_data(std::string key)
 void
 Job::add_data(std::string type, opcuac::datasptr data)
 {
-    this->data_.emplace(type, data);
+    /* Override existing element or insert new one */
+    this->data_.insert_or_assign(type, data);
     return;
 }
 
