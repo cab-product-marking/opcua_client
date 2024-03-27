@@ -401,11 +401,10 @@ FodyWeavers.xsd
 open62541/
 open62541_lib/
 build/
-files/
-old_files/
+# files/
 .vscode/
 
 # Internal files 
-# test.md # need for testing on Linux and Windows 
+test.md
 
 # Eof
