@@ -3,7 +3,7 @@
 #include <iostream>
 
 /* Features */
-#define FEATURE_TESTING
+// #define FEATURE_TESTING
 // #define FEATURE_CLIENT_OFF
 
 /* Color features */

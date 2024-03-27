@@ -15,7 +15,7 @@
 
 ### Write node
 # node_read:ID_HEAT_LEVEL:4
-# node_write:ID_HEAT_LEVEL:4:int32_t:10
+# node_write:ID_HEAT_LEVEL:4:int32_t:3
 # node_read:ID_HEAT_LEVEL:4
 # node_read:ID_CLOCK_TIME:4
 # node_write:ID_CLOCK_TIME:4:opc_time_t:10:11:2023:10:10:10:10

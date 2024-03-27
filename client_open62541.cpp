@@ -531,7 +531,7 @@ Client::print_data(opcuac::jobsptr job)
 {
     auto local = std::dynamic_pointer_cast<open62541::JobDecNode>(job);
 
-    auto data = local->get_data(DATA_PRINT);
+    auto data = local->get_data(DATA_UPLOAD);
     auto value = std::dynamic_pointer_cast<open62541::DString>(data);
 
     /* Node id object MethodSet node */

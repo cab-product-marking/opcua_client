@@ -84,80 +84,68 @@
 
 | Task | Check or comment |
 |--------------------|----------------------|
-| ./client.py                                                                                                                               | comment |
-| ./client.py -h                                                                                                                            | comment |
-| ./client.py --help                                                                                                                        | comment |
-| ./client.py -url opc.tcp://192.168.200.70:4840                                                                                            | comment |
-| ./client.py --url=opc.tcp://192.168.200.70:4840                                                                                           | comment |
-| ./client.py -url opc.tcp://opcuser:opcpass@192.168.200.70:4840                                                                            | comment |
-| ./client.py --url=opc.tcp://opcuser:opcpass@192.168.200.70:4840                                                                           | comment |
-| ./client.py -I 192.168.200.70 -P 4840                                                                                                     | comment |
-| ./client.py --ip=192.168.200.70 --port=4840                                                                                               | comment |
-| ./client.py -u opcuser -p opcpass -m user                                                                                                 | comment |
-| ./client.py --user=opcuser --password=opcpass --mode=user                                                                                 | comment |
-| ./client.py -I 192.168.200.70 -P 4840 -u opcuser -p opcpass -m user                                                                       | comment |
-| ./client.py --ip=192.168.200.70 --port=4840 --user=opcuser --password=opcpass --mode=user                                                 | comment |
-| ./client.py -j print:JScript:f                                                                                                            | comment |
-| ./client.py --job=print:JScript:f                                                                                                         | comment |
-| ./client.py -j jobs.txt                                                                                                                   | comment |
-| ./client.py --job=jobs.txt                                                                                                                | comment |
-| ./client.py -j mitem_add:ID_CLOCK_TIME:4                                                                                                  | comment |
-| ./client.py --job=mitem_add:ID_CLOCK_TIME:4                                                                                               | comment |
-| ./client.py -j node_read:ID_HEAT_LEVEL:4                                                                                                  | comment |
-| ./client.py --job=node_read:ID_HEAT_LEVEL:4                                                                                               | comment |
-| ./client.py -j node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                       | comment |
-| ./client.py --job=node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                    | comment |
-| ./client.py -j browse:ID_RIBBON:4                                                                                                         | comment |
-| ./client.py --job=browse:ID_RIBBON:4                                                                                                      | comment |
-| ./client.py -j print:JScript:label.txt:cablogo.png                                                                                        | comment |
-| ./client.py --job=print:JScript:label.txt:cablogo.png                                                                                     | comment |
-| ./client.py -j print:JScript:label.txt                                                                                                    | comment |
-| ./client.py --job=print:JScript:label.txt                                                                                                 | comment |
-| ./client.py -j print:JScript:replace.txt -j print:JScript:PrintNow                                                                        | comment |
-| ./client.py --job=print:JScript:replace.txt --job=print:JScript:PrintNow                                                                  | comment |
-| ./client.py -j "replace:REPLACE:replace REPLACE with OPC UA Client" -j print:JScript:PrintNow                                             | comment |
-| ./client.py --job="replace:REPLACE:replace REPLACE with OPC UA Client" --job=print:JScript:PrintNow                                       | comment |
-| ./client.py -j "replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" -j print:JScript:PrintNow          | comment |
-| ./client.py --job="replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" --job=print:JScript:PrintNow    | comment |
+| ./client                                                                                                                               | io |
+| ./client -h                                                                                                                            | io |
+| ./client --help                                                                                                                        | io |
+| ./client -url opc.tcp://192.168.200.70:4840                                                                                            | io |
+| ./client --url=opc.tcp://192.168.200.70:4840                                                                                           | io |
+| ./client -I 192.168.200.70 -P 4840                                                                                                     | io |
+| ./client --ip=192.168.200.70 --port=4840                                                                                               | io |
+| ./client -j print:JScript:f                                                                                                            | io |
+| ./client --job=print:JScript:f                                                                                                         | io |
+| ./client -j jobs.txt                                                                                                                   | io |
+| ./client --job=jobs.txt                                                                                                                | io |
+| ./client -j mitem_add:ID_CLOCK_TIME:4                                                                                                  | io |
+| ./client --job=mitem_add:ID_CLOCK_TIME:4                                                                                               | io |
+| ./client -j node_read:ID_HEAT_LEVEL:4                                                                                                  | io |
+| ./client --job=node_read:ID_HEAT_LEVEL:4                                                                                               | io |
+| ./client -j node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                       | io |
+| ./client --job=node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                    | io |
+| ./client -j browse:ID_RIBBON:4                                                                                                         | io |
+| ./client --job=browse:ID_RIBBON:4                                                                                                      | io |
+| ./client -j print:JScript:label.txt:cablogo.png                                                                                        | io |
+| ./client --job=print:JScript:label.txt:cablogo.png                                                                                     | io |
+| ./client -j print:JScript:label.txt                                                                                                    | io |
+| ./client --job=print:JScript:label.txt                                                                                                 | io |
+| ./client -j print:JScript:replace.txt -j print:JScript:PrintNow                                                                        | io |
+| ./client --job=print:JScript:replace.txt --job=print:JScript:PrintNow                                                                  | io |
+| ./client -j "replace:REPLACE:replace REPLACE with OPC UA Client" -j print:JScript:PrintNow                                             | io |
+| ./client --job="replace:REPLACE:replace REPLACE with OPC UA Client" --job=print:JScript:PrintNow                                       | io |
+| ./client -j "replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" -j print:JScript:PrintNow          | io |
+| ./client --job="replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" --job=print:JScript:PrintNow    | io |
 
 ## C++ Windows
 
 | Task | Check or comment |
 |--------------------|----------------------|
-| ./client.py                                                                                                                               | comment |
-| ./client.py -h                                                                                                                            | comment |
-| ./client.py --help                                                                                                                        | comment |
-| ./client.py -url opc.tcp://192.168.200.70:4840                                                                                            | comment |
-| ./client.py --url=opc.tcp://192.168.200.70:4840                                                                                           | comment |
-| ./client.py -url opc.tcp://opcuser:opcpass@192.168.200.70:4840                                                                            | comment |
-| ./client.py --url=opc.tcp://opcuser:opcpass@192.168.200.70:4840                                                                           | comment |
-| ./client.py -I 192.168.200.70 -P 4840                                                                                                     | comment |
-| ./client.py --ip=192.168.200.70 --port=4840                                                                                               | comment |
-| ./client.py -u opcuser -p opcpass -m user                                                                                                 | comment |
-| ./client.py --user=opcuser --password=opcpass --mode=user                                                                                 | comment |
-| ./client.py -I 192.168.200.70 -P 4840 -u opcuser -p opcpass -m user                                                                       | comment |
-| ./client.py --ip=192.168.200.70 --port=4840 --user=opcuser --password=opcpass --mode=user                                                 | comment |
-| ./client.py -j print:JScript:f                                                                                                            | comment |
-| ./client.py --job=print:JScript:f                                                                                                         | comment |
-| ./client.py -j jobs.txt                                                                                                                   | comment |
-| ./client.py --job=jobs.txt                                                                                                                | comment |
-| ./client.py -j mitem_add:ID_CLOCK_TIME:4                                                                                                  | comment |
-| ./client.py --job=mitem_add:ID_CLOCK_TIME:4                                                                                               | comment |
-| ./client.py -j node_read:ID_HEAT_LEVEL:4                                                                                                  | comment |
-| ./client.py --job=node_read:ID_HEAT_LEVEL:4                                                                                               | comment |
-| ./client.py -j node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                       | comment |
-| ./client.py --job=node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                    | comment |
-| ./client.py -j browse:ID_RIBBON:4                                                                                                         | comment |
-| ./client.py --job=browse:ID_RIBBON:4                                                                                                      | comment |
-| ./client.py -j print:JScript:label.txt:cablogo.png                                                                                        | comment |
-| ./client.py --job=print:JScript:label.txt:cablogo.png                                                                                     | comment |
-| ./client.py -j print:JScript:label.txt                                                                                                    | comment |
-| ./client.py --job=print:JScript:label.txt                                                                                                 | comment |
-| ./client.py -j print:JScript:replace.txt -j print:JScript:PrintNow                                                                        | comment |
-| ./client.py --job=print:JScript:replace.txt --job=print:JScript:PrintNow                                                                  | comment |
-| ./client.py -j "replace:REPLACE:replace REPLACE with OPC UA Client" -j print:JScript:PrintNow                                             | comment |
-| ./client.py --job="replace:REPLACE:replace REPLACE with OPC UA Client" --job=print:JScript:PrintNow                                       | comment |
-| ./client.py -j "replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" -j print:JScript:PrintNow          | comment |
-| ./client.py --job="replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" --job=print:JScript:PrintNow    | comment |
+| ./client                                                                                                                               | io |
+| ./client -h                                                                                                                            | io |
+| ./client --help                                                                                                                        | io |
+| ./client -url opc.tcp://192.168.200.70:4840                                                                                            | io |
+| ./client --url=opc.tcp://192.168.200.70:4840                                                                                           | io |
+| ./client -I 192.168.200.70 -P 4840                                                                                                     | io |
+| ./client --ip=192.168.200.70 --port=4840                                                                                               | io |
+| ./client -j print:JScript:f                                                                                                            | io |
+| ./client --job=print:JScript:f                                                                                                         | io |
+| ./client -j jobs.txt                                                                                                                   | io |
+| ./client --job=jobs.txt                                                                                                                | io |
+| ./client -j mitem_add:ID_CLOCK_TIME:4                                                                                                  | io |
+| ./client --job=mitem_add:ID_CLOCK_TIME:4                                                                                               | io |
+| ./client -j node_read:ID_HEAT_LEVEL:4                                                                                                  | io |
+| ./client --job=node_read:ID_HEAT_LEVEL:4                                                                                               | io |
+| ./client -j node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                       | io |
+| ./client --job=node_write:ID_HEAT_LEVEL:4:int32_t:6                                                                                    | io |
+| ./client -j browse:ID_RIBBON:4                                                                                                         | io |
+| ./client --job=browse:ID_RIBBON:4                                                                                                      | io |
+| ./client -j print:JScript:label.txt:cablogo.png                                                                                        | io |
+| ./client --job=print:JScript:label.txt:cablogo.png                                                                                     | io |
+| ./client -j print:JScript:label.txt                                                                                                    | io |
+| ./client --job=print:JScript:label.txt                                                                                                 | io |
+| ./client -j print:JScript:replace.txt -j print:JScript:PrintNow                                                                        | io |
+| ./client --job=print:JScript:replace.txt --job=print:JScript:PrintNow                                                                  | io |
+| ./client -j "replace:REPLACE:replace REPLACE with OPC UA Client" -j print:JScript:PrintNow                                             | io |
+| ./client --job="replace:REPLACE:replace REPLACE with OPC UA Client" --job=print:JScript:PrintNow                                       | io |
+| ./client -j "replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" -j print:JScript:PrintNow          | io |
+| ./client --job="replace:REPLACE:replace REPLACE with OPC UA Client:CONTENTS:more contents in CONTENTS" --job=print:JScript:PrintNow    | io |
 
 <!-- Eof -->

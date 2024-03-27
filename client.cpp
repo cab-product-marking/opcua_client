@@ -449,9 +449,9 @@ Client::upload_stream(opcuac::jobsptr job)
     /* Current Label Definition Completion Sequence = CLDCS */
     auto joba = std::make_shared<open62541::Job>("CLDCS", JOB_NODEREAD);
     auto jobb = nodeID_type(joba, "10086", "3");
-
+    
     /* feed? */
-    auto print = job->get_data(DATA_PRINT);
+    auto print = job->get_data(DATA_UPLOAD);
     if(print != nullptr)
     {
         auto value = std::dynamic_pointer_cast<open62541::DString>(print);
@@ -459,6 +459,7 @@ Client::upload_stream(opcuac::jobsptr job)
         {
             /* Method call without monitoring in case feed */
             client_->file_upload(job);
+            
             return;
         }
         else
@@ -684,7 +685,7 @@ Client::create_job(const std::string& input)
                 string_stream << file.rdbuf();
                 file.close();
 
-                jobb->add_data(DATA_PRINT, 
+                jobb->add_data(DATA_UPLOAD, 
                         std::make_shared<open62541::DString>(string_stream.str() + "\n"));
 
                 jobs_.push_back(jobb);
