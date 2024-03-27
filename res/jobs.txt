@@ -9,7 +9,7 @@
 # mitem_del:2258:0
 
 ### Read node
-# node_read:2258:0
+node_read:2258:0
 # node_read:ID_HEAT_LEVEL:4
 # node_read:10024:3 # JOBRDY
 
