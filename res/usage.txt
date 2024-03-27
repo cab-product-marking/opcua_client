@@ -56,7 +56,7 @@ must always be enclosed in quotation marks ("<argument>")! A few examples;
 
 For writing nodes you need to know the data type and the new value.
    node_write:ID_HEAT_LEVEL:4:int32_t:2
-   node_write:ID_CLOCK_TIME:4:datetime:10:10:2010:10:10:10:10
+   node_write:ID_CLOCK_TIME:4:datetime_t:10:10:2010:10:10:10:10
 
 For printing use the following syntax;
    print:JScript:f # feed
@@ -76,6 +76,7 @@ You can find more examples in the file res/jobs.txt. It's possible to use a file
 with datatype *.txt to load jobs direktly from it. The client automatically works with 
 files located in the res/ directory. This does not have to be stated explicitly.
 
+Python code examples.
 Call client anonymus and feed:
    ./client.py -I 192.168.200.70 --port=4840 -j print:JScript:f
    ./clinet.py -I 192.168.200.70 --port=4840 --job="print:JScript:f"
