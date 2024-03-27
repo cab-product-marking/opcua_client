@@ -9,6 +9,7 @@
 #include "common_defines.h"
 #include "common_types.h"
 #include "logger.h"
+#include "os_wrappers.h"
 
 #include <open62541/client_highlevel.h>
 #include <open62541/plugin/log_stdout.h>
@@ -17,11 +18,6 @@
 #define NODE_ID             "Id"
 #define NODE_NS             "Ns"
 #define NODE_TYPE           "Type"
-
-#define NODE_NEW            "└── "
-#define NODE_ADD            "├── "
-#define NODE_EMPTY          "    "
-#define NODE_DOWN           "│   "
 
 namespace open62541
 {

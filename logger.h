@@ -24,11 +24,11 @@
 
 enum class Level
 {
-    INFO, 
-    WARNING,
-    ERROR,
-    JOB,
-    DATA
+    LINFO, 
+    LWARNING,
+    LERROR,
+    LJOB,
+    LDATA
 };
 
 /* Forward declaration */

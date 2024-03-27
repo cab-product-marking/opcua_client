@@ -136,7 +136,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
-    <None Include="client.py" />
     <None Include="LICENSE" />
     <None Include="README.md" />
   </ItemGroup>
@@ -144,24 +143,42 @@
     <Image Include="res\cablogo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="CMakeLists.txt" />
     <Text Include="res\jobs.txt" />
     <Text Include="res\label.txt" />
     <Text Include="res\replace.txt" />
     <Text Include="res\usage.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cab_client.cpp" />
+    <ClCompile Include="client.cpp" />
+    <ClCompile Include="client_freeopcua.cpp" />
+    <ClCompile Include="client_open62541.cpp" />
+    <ClCompile Include="data_freeopcua.cpp" />
+    <ClCompile Include="data_open62541.cpp" />
+    <ClCompile Include="job_freeopcua.cpp" />
+    <ClCompile Include="job_open62541.cpp" />
+    <ClCompile Include="job_open62541_node.cpp" />
+    <ClCompile Include="logger.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="opcua_client.cpp" />
-    <ClCompile Include="NodeTree.cpp" />
+    <ClCompile Include="node_tree.cpp" />
+    <ClCompile Include="os_wrappers.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cab_client.h" />
-    <ClInclude Include="data_types.h" />
-    <ClInclude Include="opcua_client.h" />
-    <ClInclude Include="tools.h" />
-    <ClInclude Include="NodeTree.h" />
+    <ClInclude Include="client.h" />
+    <ClInclude Include="client_freeopcua.h" />
+    <ClInclude Include="client_open62541.h" />
+    <ClInclude Include="common_defines.h" />
+    <ClInclude Include="common_types.h" />
+    <ClInclude Include="data_freeopcua.h" />
+    <ClInclude Include="data_open62541.h" />
+    <ClInclude Include="Iclient_opcua.h" />
+    <ClInclude Include="Idata_opcua.h" />
+    <ClInclude Include="Ijob_opcua.h" />
+    <ClInclude Include="job_freeopcua.h" />
+    <ClInclude Include="job_open62541.h" />
+    <ClInclude Include="job_open62541_node.h" />
+    <ClInclude Include="logger.h" />
+    <ClInclude Include="node_tree.h" />
+    <ClInclude Include="os_wrappers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

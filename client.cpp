@@ -128,7 +128,7 @@ Client::connect(int &argc, char *argv[])
 #ifndef FEATURE_TESTING
     else
     {
-        cLOG(Level::INFO, "You have not entered any arguments. Default? <Y/N>");
+        cLOG(Level::LINFO, "You have not entered any arguments. Default? <Y/N>");
         std::string str;
         str.clear();
         std::cin >> str;
@@ -163,7 +163,7 @@ Client::connect(int &argc, char *argv[])
         {
             std::string file_path = DIR_RES + std::string(str);
 
-            cLOG(Level::INFO, "Use jobs from file: " + file_path);
+            cLOG(Level::LINFO, "Use jobs from file: " + file_path);
             std::ifstream file(file_path);
             std::string line;
             if(file.is_open())
@@ -184,7 +184,7 @@ Client::connect(int &argc, char *argv[])
             }
             else
             {
-                cLOG(Level::ERROR, "Can not open file: " + file_path);
+                cLOG(Level::LERROR, "Can not open file: " + file_path);
             }
         }
         else
@@ -224,7 +224,7 @@ Client::run_iterate()
     {
         if(this->jobs_.empty())
         {
-            cLOG(Level::INFO, "Iterate - No jobs available.");
+            cLOG(Level::LINFO, "Iterate - No jobs available.");
         }
         else
         {
@@ -321,7 +321,7 @@ Client::add_monitored_item(opcuac::jobsptr job)
     /* First add monitored item */
     if(job->status() == STATUS_ACTIVE)
     {
-        jLOG(Level::JOB, "Add monitored item", job);
+        jLOG(Level::LJOB, "Add monitored item", job);
 
         /**
          * It is not possible to let the monitored item callback create the data object as 
@@ -338,7 +338,7 @@ Client::add_monitored_item(opcuac::jobsptr job)
     /* No timestamps for data values are implemented */
     if(job->status() == STATUS_WORK)
     {
-        dLOG(Level::DATA, "First space use monitored data. ", job);
+        dLOG(Level::LDATA, "First space use monitored data. ", job);
     }
     return;
 }
@@ -350,7 +350,7 @@ Client::delete_monitored_item(opcuac::jobsptr job)
     /* The number is used to delay the deletion of the monitored item. */
     if(number++ == 25)
     {
-        jLOG(Level::JOB, "Delete monitored item", job);
+        jLOG(Level::LJOB, "Delete monitored item", job);
 
         client_->del_monitored_item(job);
 
@@ -363,11 +363,11 @@ Client::delete_monitored_item(opcuac::jobsptr job)
 void 
 Client::read_node(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Read node", job);
+    jLOG(Level::LJOB, "Read node", job);
 
     client_->read_node(job);
 
-    dLOG(Level::DATA, "Read node", job);
+    dLOG(Level::LDATA, "Read node", job);
     
     job->status(STATUS_DEAD);
     return;
@@ -376,7 +376,7 @@ Client::read_node(opcuac::jobsptr job)
 void
 Client::write_node(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Write node", job);
+    jLOG(Level::LJOB, "Write node", job);
 
     client_->write_node(job);
 
@@ -387,7 +387,7 @@ Client::write_node(opcuac::jobsptr job)
 void
 Client::browse_nodes(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Browse nodes with NodeTree objects", job);
+    jLOG(Level::LJOB, "Browse nodes with NodeTree objects", job);
 
     client_->browse(job);
 
@@ -398,11 +398,11 @@ Client::browse_nodes(opcuac::jobsptr job)
 void 
 Client::print_label(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Print label with JScript/zpl", job);
+    jLOG(Level::LJOB, "Print label with JScript/zpl", job);
 
     if(job->get_info(PRAEFIX_JOBTYPE) == "FileUpload")
     {
-        cLOG(Level::INFO, "Upload your insert file, bitmap or picture.");
+        cLOG(Level::LINFO, "Upload your insert file, bitmap or picture.");
 
         /* Finish upload before working with other methods */
         client_->file_upload(job);
@@ -413,7 +413,7 @@ Client::print_label(opcuac::jobsptr job)
 
     if(job->get_info(PRAEFIX_JOBTYPE) == "PrintNow")
     {
-        cLOG(Level::INFO, "Print current label.");
+        cLOG(Level::LINFO, "Print current label.");
 
         client_->print_current_label(job);
 
@@ -421,7 +421,7 @@ Client::print_label(opcuac::jobsptr job)
         return;
     }
 
-    cLOG(Level::INFO, "Print contents from job input or file.");
+    cLOG(Level::LINFO, "Print contents from job input or file.");
 
     Client::upload_stream(job);
 
@@ -432,7 +432,7 @@ Client::print_label(opcuac::jobsptr job)
 void 
 Client::replace_label(opcuac::jobsptr job)
 {
-    jLOG(Level::JOB, "Start replace items in label procedure", job);
+    jLOG(Level::LJOB, "Start replace items in label procedure", job);
     
     client_->write_node(job);
 
@@ -470,7 +470,7 @@ Client::upload_stream(opcuac::jobsptr job)
             int start = value->get();
             int end = start;
 
-            cLOG(Level::INFO, "Start data upload.");
+            cLOG(Level::LINFO, "Start data upload.");
             /* Method call print data */
             client_->print_data(job);
 
@@ -486,10 +486,10 @@ Client::upload_stream(opcuac::jobsptr job)
 
             if(breaker == 100)
             {
-                cLOG(Level::ERROR, "Data upload stopped! Check code!");
+                cLOG(Level::LERROR, "Data upload stopped! Check code!");
                 return;
             }
-            cLOG(Level::INFO, "Finish data upload.");
+            cLOG(Level::LINFO, "Finish data upload.");
             return;
         }
     }
@@ -503,7 +503,7 @@ Client::show_usage(void)
     std::ifstream file(file_path);
     if(!file.is_open())
     {
-        cLOG(Level::ERROR, "Can not open file; " + file_path);
+        cLOG(Level::LERROR, "Can not open file; " + file_path);
         return;
     }
     else
@@ -536,7 +536,7 @@ Client::file_finder(const std::string& dir, const std::string& file)
         /* Check the directory */
         if (!std::filesystem::exists(str) || !std::filesystem::is_directory(str)) 
         {
-            cLOG(Level::ERROR, "Directory invalid: " + str);
+            cLOG(Level::LERROR, "Directory invalid: " + str);
             return false;
         }
         /* Iterate inside directory */
@@ -550,7 +550,7 @@ Client::file_finder(const std::string& dir, const std::string& file)
     } 
     catch(const std::filesystem::filesystem_error& e) 
     {
-        cLOG(Level::ERROR, "System directory error");
+        cLOG(Level::LERROR, "System directory error");
     }
     return false;
 }
@@ -560,7 +560,7 @@ Client::create_job(const std::string& input)
 {
     if(input.empty())
     {
-        cLOG(Level::INFO, "Input_string empty.");
+        cLOG(Level::LINFO, "Input_string empty.");
         return;
     }
 
@@ -568,7 +568,7 @@ Client::create_job(const std::string& input)
     std::map<int, std::string> input_map = parse_args(input);
     if(input_map.empty())
     {
-        cLOG(Level::INFO, "Input_map empty.");
+        cLOG(Level::LINFO, "Input_map empty.");
         return;
     }
 
@@ -677,7 +677,7 @@ Client::create_job(const std::string& input)
             jobb->add_info(PRAEFIX_JOBTYPE, "ContentsFile");
             /* Data */
             std::string temp_path = DIR_RES + input_map.find(2)->second;
-            cLOG(Level::INFO, "Use label content from file " + temp_path);
+            cLOG(Level::LINFO, "Use label content from file " + temp_path);
             std::ifstream file(temp_path);
             if(file.is_open())
             {
@@ -693,7 +693,7 @@ Client::create_job(const std::string& input)
             }
             else
             {
-                cLOG(Level::ERROR, "Can not open file " + temp_path);
+                cLOG(Level::LERROR, "Can not open file " + temp_path);
                 return;
             }
         }
@@ -714,7 +714,7 @@ Client::create_job(const std::string& input)
         /* Get data for replacement */
         if(input_map.size() < 3 || !(input_map.size() % 2))
         {
-            cLOG(Level::ERROR, "You entered replace contents with invalid arguments.");
+            cLOG(Level::LERROR, "You entered replace contents with invalid arguments.");
             return;
         }
         /* Create replacement jobs  */
@@ -751,7 +751,7 @@ Client::parse_args(const std::string& input)
     /* Last char is ':' */
     if(str.back() == ':')
     {
-        cLOG(Level::ERROR, "Syntax error.");
+        cLOG(Level::LERROR, "Syntax error.");
         return result;
     }
 
@@ -762,7 +762,7 @@ Client::parse_args(const std::string& input)
     {
         if(item.empty())
         {
-            cLOG(Level::ERROR, "Single argument is empty.");
+            cLOG(Level::LERROR, "Single argument is empty.");
             std::map<int, std::string> end;
             return end;
         }
@@ -802,11 +802,11 @@ Client::print_jobs_(void)
 {
     if(jobs_.empty() == true)
     {
-        cLOG(Level::INFO, "Job list empty.");
+        cLOG(Level::LINFO, "Job list empty.");
         return;
     }
 
-    cLOG(Level::INFO, "Print job list.\n" + CONSOLE_LINE_50);
+    cLOG(Level::LINFO, "Print job list.\n" + CONSOLE_LINE_50);
     for(auto dummy : jobs_)
     {
         print_job(dummy);
@@ -822,7 +822,7 @@ Client::print_job(opcuac::jobsptr job)
 
     if(local == nullptr)
     {
-        cLOG(Level::INFO, "Job is nullptr!");
+        cLOG(Level::LINFO, "Job is nullptr!");
         return;
     }
     else
@@ -944,7 +944,7 @@ Client::system_time(void) const
     actual.mon = time_now.tm_mon + 1;
     actual.year = time_now.tm_year + 1900;
 
-    cLOG(Level::INFO, "Time: "
+    cLOG(Level::LINFO, "Time: "
         + std::to_string(actual.day) + '.'
         + std::to_string(actual.mon) + '.'
         + std::to_string(actual.year) + " | "

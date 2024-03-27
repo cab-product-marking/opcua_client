@@ -17,25 +17,25 @@ Logger::log(Level level, const std::string& message, opcuac::jobsptr job)
     
     switch(level) 
     {
-        case Level::INFO:
+        case Level::LINFO:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_GREEN 
             << std::setw(20) << std::left << " info/cab" << FONT_RESET 
             << message 
             << std::endl;
             break;
-        case Level::WARNING:
+        case Level::LWARNING:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_YELLOW 
             << std::setw(20) << std::left << " warn/cab" << FONT_RESET 
             << message 
             << std::endl;
             break;
-        case Level::ERROR:
+        case Level::LERROR:
             std::cout << FONT_LIGHT_BLUE << prefix << FONT_RED 
             << std::setw(20) << std::left << " error/cab" << FONT_RESET 
             << message 
             << std::endl;
             break;
-        case Level::JOB:
+        case Level::LJOB:
             if(local == nullptr)
             {
                 std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE
@@ -60,7 +60,7 @@ Logger::log(Level level, const std::string& message, opcuac::jobsptr job)
                 << std::endl;
             }
             break;
-        case Level::DATA:
+        case Level::LDATA:
             if(local == nullptr)
             {
                 std::cout << FONT_LIGHT_BLUE << prefix << FONT_BLUE

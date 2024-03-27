@@ -145,7 +145,7 @@ Checking the project settings for Debug and Release is recommended.
 
 The client needs the open62541.dll for runtime. To generate x64 folder start build for Debug and Release.
 Copy *.dll from <paths to>\opcua_client\open62541_lib\Debug\bin to <paths to>\opcua_client\x64\Debug.
-Same procedure for Release build.
+Same procedure for Release build. Rebuild the solution for debug and or release.
 
 Use the client with VS or call the *.exe in <paths to>\opcua_client\x64\Debug or ..\Release.
 

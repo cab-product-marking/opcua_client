@@ -68,7 +68,7 @@ NodeTree::printfile(UA_NodeId& id, std::string filename)
     {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                      "Error, create file browse_out.txt");
-        cLOG(Level::ERROR, "Can not create file browse.txt");
+        cLOG(Level::LERROR, "Can not create file browse.txt");
     }
     else
     {
@@ -89,7 +89,7 @@ NodeTree::print(UA_NodeId& id, std::string filename, std::map<int, bool> map, in
     {
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                      "Error, while open file output_browse.txt");
-        cLOG(Level::ERROR, "Can not open file browse.txt");
+        cLOG(Level::LERROR, "Can not open file browse.txt");
     }
     else
     {
@@ -231,7 +231,7 @@ NodeTree::build_node(UA_ReferenceDescription* ref)
 
     if(ref->displayName.text.length == 0 || ref->displayName.text.data == nullptr)
     {
-        cLOG(Level::ERROR, "Node data in reference description invalid.");
+        cLOG(Level::LERROR, "Node data in reference description invalid.");
         UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                      "Node data in reference description invalid.");
         return nullptr;
@@ -292,7 +292,7 @@ NodeTree::build_node(UA_ReferenceDescription* ref)
             {
                 UA_LOG_ERROR(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND,
                              "Error, node id data string invalid.");
-                cLOG(Level::ERROR, "Node id data string invalid");
+                cLOG(Level::LERROR, "Node id data string invalid");
                 return nullptr;
             }
             std::string idstr;
