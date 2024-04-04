@@ -402,6 +402,7 @@ open62541/
 open62541_lib/
 build/
 files/
+client/
 .vscode/
 
 # Internal files 
